@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thuisbatterij Besparingscalculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    /* ========== BASIS STYLING (PROFESSIONEEL LICHT DASHBOARD) ========== */
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --danger: #dc2626;
+      --success: #15803d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e0edff, #f3f4f6);
+      color: var(--text);
+    }
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+    header {
+      margin-bottom: 24px;
+    }
+    .title {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* ========== STEPPER ========== */
+    .stepper {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.7);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .step.active {
+      border-color: var(--primary);
+      background: #dbeafe;
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+    .step .badge {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      border: 1px solid currentColor;
+    }
+
+    /* ========== LAYOUT ========== */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 16px;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.08);
+      padding: 16px 18px;
+    }
+
+    /* ========== FORM ========== */
+    .field { margin-bottom: 12px; }
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+    .field small {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    input, select {
+      width: 100%;
+      padding: 7px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+    }
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px #bfdbfe;
+      background: #ffffff;
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ========== BUTTONS ========== */
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .footer-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    /* ========== STATUS ========== */
+    .status {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--success); }
+
+    /* ========== RESULTATEN ========== */
+    .results-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .result-tile {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+    .result-tile .label {
+      color: var(--muted);
+      font-size: 0.7rem;
+      margin-bottom: 2px;
+    }
+    .result-tile .value {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.8rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      text-align: right;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: #f3f4f6; }
+
+    #chart {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      padding: 12px;
+      border-radius: 12px;
+      background: #f9fafb;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <header>
+      <div class="title">Thuisbatterij Besparingscalculator</div>
+      <div class="subtitle">Nauwkeurige berekening op basis van uw eigen CSV-data.</div>
+    </header>
+
+    <!-- ========== STEPPER ========== -->
+    <div class="stepper">
+      <div class="step active" id="step-pill-1"><div class="badge">1</div> CSV & Tarief</div>
+      <div class="step" id="step-pill-2"><div class="badge">2</div> Batterij & Financiën</div>
+      <div class="step" id="step-pill-3"><div class="badge">3</div> Tarieven</div>
+      <div class="step" id="step-pill-4"><div class="badge">4</div> Resultaat</div>
+    </div>
+
+    <div class="layout">
+
+      <!-- ========== LINKERKOLOM: WIZARD ========== -->
+      <div class="card" id="wizard-container">
+
+        <!-- ===== STEP 1 ===== -->
+        <div id="step-1">
+          <h2>Stap 1 · Tarief & CSV-bestanden</h2>
+          <p>Kies uw tarief en upload uw CSV-bestanden.</p>
+
+          <div class="field">
+            <label>Huidig tarief</label>
+            <select id="tariff-type">
+              <option value="">— Kies tarief —</option>
+              <option value="enkel">Enkel</option>
+              <option value="dag_nacht">Dag/nacht</option>
+              <option value="dynamisch">Dynamisch</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>load.csv</label>
+            <input type="file" id="file-load" accept=".csv" />
+          </div>
+
+          <div class="field">
+            <label>pv.csv</label>
+            <input type="file" id="file-pv" accept=".csv" />
+          </div>
+
+          <div class="field">
+            <label>prices.csv</label>
+            <input type="file" id="file-prices" accept=".csv" />
+          </div>
+
+          <div id="csv-status" class="status">Nog geen bestanden verwerkt.</div>
+
+          <div class="footer-buttons">
+            <button class="btn-ghost" disabled>Vorige</button>
+            <div>
+              <button class="btn-secondary" id="btn-parse-csv">CSV verwerken</button>
+              <button class="btn-primary" id="to-step-2" disabled>Volgende</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== STEP 2 ===== -->
+        <div id="step-2" style="display:none;">
+          <h2>Stap 2 · Batterij & financiële parameters</h2>
+
+          <div class="row">
+            <div class="field">
+              <label>E (kWh)</label>
+              <input type="number" id="E" />
+              <small>Bruikbare batterijcapaciteit</small>
+            </div>
+
+            <div class="field">
+              <label>P (kW)</label>
+              <input type="number" id="P" />
+              <small>Laad/ontlaadvermogen</small>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>DoD (%)</label>
+              <input type="number" id="DoD" />
+            </div>
+
+            <div class="field">
+              <label>η_rt (%)</label>
+              <input type="number" id="eta_rt" />
+              <small>Round-trip efficiency</small>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Cycli/jaar</label>
+            <input type="number" id="cycles" />
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>CAPEX (€)</label>
+              <input type="number" id="capex" />
+            </div>
+
+            <div class="field">
+              <label>OPEX/jaar (€)</label>
+              <input type="number" id="opex" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Horizon (jaren)</label>
+              <input type="number" id="horizon" />
+            </div>
+
+            <div class="field">
+              <label>Rente (%)</label>
+              <input type="number" id="interest" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Vastrecht/jaar (€)</label>
+            <input type="number" id="fixed-cost" />
+          </div>
+
+          <div class="footer-buttons">
+            <button class="btn-secondary" id="back-to-1">Vorige</button>
+            <button class="btn-primary" id="to-step-3">Volgende</button>
+          </div>
+        </div>
+
+        <!-- ===== STEP 3 ===== -->
+        <div id="step-3" style="display:none;">
+          <h2>Stap 3 · Tarieven</h2>
+
+          <p>Standaardwaarden (NL):</p>
+          <ul style="font-size:0.8rem; color:var(--muted);">
+            <li>Enkel: €0,29 import · €0,07 export</li>
+            <li>Dag/Nacht: €0,31 dag · €0,26 nacht · €0,07 export</li>
+            <li>Dynamisch: import via CSV · export €0,07</li>
+          </ul>
+
+          <h3>Enkel tarief</h3>
+          <div class="row">
+            <div class="field"><label>Import enkel</label><input id="p_enkel_imp" /></div>
+            <div class="field"><label>Export enkel</label><input id="p_enkel_exp" /></div>
+          </div>
+
+          <h3>Dag/Nacht</h3>
+          <div class="row">
+            <div class="field"><label>Dag</label><input id="p_dag" /></div>
+            <div class="field"><label>Nacht</label><input id="p_nacht" /></div>
+            <div class="field"><label>Export DN</label><input id="p_exp_dn" /></div>
+          </div>
+
+          <h3>Dynamisch</h3>
+          <div class="field">
+            <label>Export dynamisch</label>
+            <input id="p_export_dyn" />
+          </div>
+
+          <div id="compute-status" class="status"></div>
+
+          <div class="footer-buttons">
+            <button class="btn-secondary" id="back-to-2">Vorige</button>
+            <button class="btn-primary" id="btn-compute">Bereken</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== RECHTERKOLOM: RESULTATEN ========== -->
+      <div class="card">
+        <h2>Resultaten</h2>
+
+        <div id="results-tiles" class="results-summary" style="display:none;">
+          <div class="result-tile">
+            <div class="label">Besparing enkel</div>
+            <div class="value" id="res-save-enkel">–</div>
+          </div>
+          <div class="result-tile">
+            <div class="label">Besparing dag/nacht</div>
+            <div class="value" id="res-save-dn">–</div>
+          </div>
+          <div class="result-tile">
+            <div class="label">Besparing dynamisch</div>
+            <div class="value" id="res-save-dyn">–</div>
+          </div>
+        </div>
+
+        <div id="results-table-container" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>Kosten referentie (S1)</th>
+                <th>Kosten met batterij (S3)</th>
+                <th>Besparing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Enkel</td>
+                <td id="tbl-s1-enkel">–</td>
+                <td id="tbl-s3-enkel">–</td>
+                <td id="tbl-save-enkel">–</td>
+              </tr>
+              <tr>
+                <td>Dag/nacht</td>
+                <td id="tbl-s1-dn">–</td>
+                <td id="tbl-s3-dn">–</td>
+                <td id="tbl-save-dn">–</td>
+              </tr>
+              <tr>
+                <td>Dynamisch</td>
+                <td id="tbl-s1-dyn">–</td>
+                <td id="tbl-s3-dyn">–</td>
+                <td id="tbl-save-dyn">–</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="chart">(Grafiek volgt later)</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "https://batteryengine-server.onrender.com";
+
+    let parsedData = {
+      load_kwh: null,
+      pv_kwh: null,
+      prices_dyn: null
+    };
+
+    function activateStep(num) {
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById("step-pill-" + i).classList.toggle("active", i === num);
+        const stepBlock = document.getElementById("step-" + i);
+        if (stepBlock) {
+          stepBlock.style.display = i === num ? "block" : "none";
+        }
+      }
+    }
+
+    function fmtEuro(v) {
+      if (v === null || isNaN(v)) return "–";
+      return "€ " + v.toFixed(2).replace(".", ",");
+    }
+
+    // ============ CSV PARSER =============
+    document.getElementById("btn-parse-csv").addEventListener("click", async () => {
+      const tariffType = document.getElementById("tariff-type").value;
+      const loadFile = document.getElementById("file-load").files[0];
+      const pvFile = document.getElementById("file-pv").files[0];
+      const pricesFile = document.getElementById("file-prices").files[0];
+      const status = document.getElementById("csv-status");
+
+      if (!tariffType) {
+        status.textContent = "Kies eerst een tarief.";
+        status.className = "status error";
+        return;
+      }
+      if (!loadFile || !pvFile || !pricesFile) {
+        status.textContent = "Upload alle drie de CSV-bestanden.";
+        status.className = "status error";
+        return;
+      }
+
+      status.textContent = "Bestanden verwerken...";
+      status.className = "status";
+
+      try {
+        const [loadText, pvText, pricesText] = await Promise.all([
+          loadFile.text(),
+          pvFile.text(),
+          pricesFile.text()
+        ]);
+
+        const body = {
+          load_file: loadText,
+          pv_file: pvText,
+          prices_file: pricesText
+        };
+
+        const res = await fetch(API_BASE + "/parse_csv", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+
+        if (data.error === "INVALID") {
+          status.textContent = "CSV-bestanden ongeldig.";
+          status.className = "status error";
+          return;
+        }
+
+        parsedData.load_kwh = data.load_kwh;
+        parsedData.pv_kwh = data.pv_kwh;
+        parsedData.prices_dyn = data.prices_dyn;
+
+        status.textContent =
+          "CSV verwerkt (" +
+          data.load_kwh.length + " load, " +
+          data.pv_kwh.length + " pv, " +
+          data.prices_dyn.length + " prices).";
+        status.className = "status success";
+
+        document.getElementById("to-step-2").disabled = false;
+
+      } catch (err) {
+        status.textContent = "Fout bij csv-verwerking: " + err.message;
+        status.className = "status error";
+      }
+    });
+
+    // NAVIGATIE
+    document.getElementById("to-step-2").addEventListener("click", ()=>activateStep(2));
+    document.getElementById("back-to-1").addEventListener("click",()=>activateStep(1));
+    document.getElementById("to-step-3").addEventListener("click",()=>activateStep(3));
+    document.getElementById("back-to-2").addEventListener("click",()=>activateStep(2));
+
+    // ============ COMPUTE =============
+    document.getElementById("btn-compute").addEventListener("click", async ()=>{
+
+      const status = document.getElementById("compute-status");
+
+      if (!parsedData.load_kwh) {
+        status.textContent = "CSV-data ontbreekt.";
+        status.className = "status error";
+        return;
+      }
+
+      const body = {
+        load_kwh: parsedData.load_kwh,
+        pv_kwh: parsedData.pv_kwh,
+        prices_dyn: parsedData.prices_dyn,
+        p_enkel_imp: parseFloat(p_enkel_imp.value || "0.29"),
+        p_enkel_exp: parseFloat(p_enkel_exp.value || "0.07"),
+        p_dag: parseFloat(p_dag.value || "0.31"),
+        p_nacht: parseFloat(p_nacht.value || "0.26"),
+        p_exp_dn: parseFloat(p_exp_dn.value || "0.07"),
+        E: parseFloat(E.value || "0"),
+        P: parseFloat(P.value || "0"),
+        DoD: parseFloat(DoD.value || "0"),
+        eta_rt: parseFloat(eta_rt.value || "0"),
+        Vastrecht: parseFloat(fixed-cost.value || "0")
+      };
+
+      status.textContent = "Berekening uitvoeren...";
+      status.className = "status";
+
+      try {
+        const res = await fetch(API_BASE + "/compute", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+
+        const S1 = data.S1;
+        const S3_enkel = data.S3_enkel;
+        const S3_dn = data.S3_dn;
+        const S3_dyn = data.S3_dyn;
+
+        const saveEnkel = S1 - S3_enkel;
+        const saveDn = S1 - S3_dn;
+        const saveDyn = S1 - S3_dyn;
+
+        document.getElementById("res-save-enkel").textContent = fmtEuro(saveEnkel);
+        document.getElementById("res-save-dn").textContent = fmtEuro(saveDn);
+        document.getElementById("res-save-dyn").textContent = fmtEuro(saveDyn);
+
+        document.getElementById("tbl-s1-enkel").textContent = fmtEuro(S1);
+        document.getElementById("tbl-s3-enkel").textContent = fmtEuro(S3_enkel);
+        document.getElementById("tbl-save-enkel").textContent = fmtEuro(saveEnkel);
+
+        document.getElementById("tbl-s1-dn").textContent = fmtEuro(S1);
+        document.getElementById("tbl-s3-dn").textContent = fmtEuro(S3_dn);
+        document.getElementById("tbl-save-dn").textContent = fmtEuro(saveDn);
+
+        document.getElementById("tbl-s1-dyn").textContent = fmtEuro(S1);
+        document.getElementById("tbl-s3-dyn").textContent = fmtEuro(S3_dyn);
+        document.getElementById("tbl-save-dyn").textContent = fmtEuro(saveDyn);
+
+        document.getElementById("results-tiles").style.display = "grid";
+        document.getElementById("results-table-container").style.display = "block";
+
+        status.textContent = "Berekening afgerond.";
+        status.className = "status success";
+
+        activateStep(4);
+
+      } catch (err) {
+        status.textContent = "Fout bij berekening: " + err.message;
+        status.className = "status error";
+      }
+    });
+
+    // DEFAULT TARIEVEN VOORINLADEN
+    window.addEventListener("DOMContentLoaded",() => {
+      p_enkel_imp.value = "0.29";
+      p_enkel_exp.value = "0.07";
+      p_dag.value = "0.31";
+      p_nacht.value = "0.26";
+      p_exp_dn.value = "0.07";
+      p_export_dyn.value = "0.07";
+    });
+  </script>
+
+</body>
+</html>
