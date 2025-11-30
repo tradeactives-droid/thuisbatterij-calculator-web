@@ -825,6 +825,74 @@
       p_exp_dn.value = "0.07";
       p_export_dyn.value = "0.07";
     });
+
+// -----------------------------
+// SNELLE BEREKENING — UI LOGICA
+// -----------------------------
+
+// Zonnepanelen toggle
+document.getElementById("quick-has-pv").addEventListener("change", e => {
+  document.getElementById("quick-pv-field").style.display =
+    e.target.checked ? "block" : "none";
+});
+
+// EV toggle
+document.getElementById("quick-has-ev").addEventListener("change", e => {
+  document.getElementById("quick-ev-field").style.display =
+    e.target.checked ? "block" : "none";
+});
+
+// Warmtepomp toggle
+document.getElementById("quick-has-hp").addEventListener("change", e => {
+  document.getElementById("quick-hp-field").style.display =
+    e.target.checked ? "block" : "none";
+});
+
+
+// -----------------------------
+// TARIEF LOGICA VOOR STEP 13
+// -----------------------------
+const quickTariff = document.getElementById("quick-tariff");
+
+quickTariff.addEventListener("change", () => {
+  const val = quickTariff.value;
+
+  // Alles verbergen
+  document.getElementById("quick-tariff-enkel").style.display = "none";
+  document.getElementById("quick-tariff-dn").style.display = "none";
+  document.getElementById("quick-tariff-dyn").style.display = "none";
+
+  if (val === "enkel") {
+    document.getElementById("quick-tariff-enkel").style.display = "block";
+    quick-enkel-imp.value = "0.29";
+    quick-enkel-exp.value = "0.07";
+  }
+
+  if (val === "dag_nacht") {
+    document.getElementById("quick-tariff-dn").style.display = "block";
+    quick-dn-dag.value = "0.31";
+    quick-dn-nacht.value = "0.26";
+    quick-dn-exp.value = "0.07";
+  }
+
+  if (val === "dynamisch") {
+    document.getElementById("quick-tariff-dyn").style.display = "block";
+    quick-dyn-exp.value = "0.07";
+  }
+});
+
+
+// -----------------------------
+// BUTTONS SNELLE BEREKENING
+// -----------------------------
+document.getElementById("quick-back").addEventListener("click", () => {
+  activateStep(0);
+});
+
+document.getElementById("quick-next").addEventListener("click", () => {
+  activateStep(14); // resultaten
+});
+    
   </script>
 
 </body>
