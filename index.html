@@ -335,50 +335,56 @@
       </div>
 
       <!-- ========== STEP 4 — RESULTATEN ========== -->
-      <div id="step-4" style="display:none;">
-        <h2>Resultaten</h2>
+<div id="step-4" style="display:none;">
+  <h2>Resultaten</h2>
 
-        <div id="results-tiles" class="results-summary" style="display:none;">
-          <div class="result-tile"><div class="label">Besparing enkel</div><div class="value" id="res-save-enkel">–</div></div>
-          <div class="result-tile"><div class="label">Besparing dag/nacht</div><div class="value" id="res-save-dn">–</div></div>
-          <div class="result-tile"><div class="label">Besparing dynamisch</div><div class="value" id="res-save-dyn">–</div></div>
-        </div>
+  <!-- Top blokken -->
+  <div class="results-summary" style="margin-bottom:20px;">
+    <div class="result-tile">
+      <div class="label">Huidige situatie (met saldering)</div>
+      <div class="value" id="res-A1">–</div>
+    </div>
 
-        <div id="results-table-container" style="display:none;">
-          <table>
-            <thead>
-              <tr>
-                <th>Scenario</th>
-                <th>Kosten referentie (S1)</th>
-                <th>Kosten met batterij (S3)</th>
-                <th>Besparing</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Enkel</td>
-                <td id="tbl-s1-enkel">–</td>
-                <td id="tbl-s3-enkel">–</td>
-                <td id="tbl-save-enkel">–</td>
-              </tr>
-              <tr>
-                <td>Dag/nacht</td>
-                <td id="tbl-s1-dn">–</td>
-                <td id="tbl-s3-dn">–</td>
-                <td id="tbl-save-dn">–</td>
-              </tr>
-              <tr>
-                <td>Dynamisch</td>
-                <td id="tbl-s1-dyn">–</td>
-                <td id="tbl-s3-dyn">–</td>
-                <td id="tbl-save-dyn">–</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="result-tile" style="background:#fee2e2;">
+      <div class="label">Toekomst zonder saldering</div>
+      <div class="value" id="res-B1">–</div>
+    </div>
 
-        <div id="chart">(Grafiek volgt later)</div>
-      </div>
+    <div class="result-tile" style="background:#dcfce7;">
+      <div class="label">Toekomst met batterij</div>
+      <div class="value" id="res-C1">–</div>
+    </div>
+  </div>
+
+  <!-- Conclusies -->
+  <h3>Conclusies</h3>
+  <table>
+    <tr>
+      <th>Extra kosten bij stop saldering</th>
+      <td id="res-extra-saldering">–</td>
+    </tr>
+    <tr>
+      <th>Jaarlijkse besparing door batterij</th>
+      <td id="res-batt-saving">–</td>
+    </tr>
+    <tr>
+      <th>Verschil toekomst vs nu (met batterij)</th>
+      <td id="res-future-vs-now">–</td>
+    </tr>
+  </table>
+
+  <!-- Energie-inzichten -->
+  <h3 style="margin-top:25px;">Energie-inzichten</h3>
+  <table>
+    <tr><th colspan="2">Zonder saldering, geen batterij</th></tr>
+    <tr><td>Import (kWh)</td><td id="B1-import">–</td></tr>
+    <tr><td>Export (kWh)</td><td id="B1-export">–</td></tr>
+
+    <tr><th colspan="2" style="padding-top:10px;">Zonder saldering, met batterij</th></tr>
+    <tr><td>Import (kWh)</td><td id="C1-import">–</td></tr>
+    <tr><td>Export (kWh)</td><td id="C1-export">–</td></tr>
+  </table>
+</div>
 
     </div> <!-- einde wizard container -->
 
