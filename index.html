@@ -664,6 +664,11 @@ document.getElementById("to-step-0-next").addEventListener("click", () => {
 
     // DEFAULT TARIEVEN VOORINLADEN
     window.addEventListener("DOMContentLoaded",() => {
+      
+        // Wizard start op stap 0
+  activateStep(0);
+
+      // Standaard tarieven invullen
       p_enkel_imp.value = "0.29";
       p_enkel_exp.value = "0.07";
       p_dag.value = "0.31";
