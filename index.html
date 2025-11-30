@@ -410,17 +410,158 @@
           </div>
         </div>
 
-        <!-- ===== STEP 13 — SNELLE TARIEVEN ===== -->
-        <div id="step-13" style="display:none;">
-          <h2>Snelle berekening · Tarieven</h2>
-          <!-- Wordt in stap B gevuld -->
-        </div>
+       <!-- ===== STEP 13 — SNELLE TARIEVEN & PARAMETERS ===== -->
+<div id="step-13" style="display:none;">
 
-        <!-- ===== STEP 14 — SNELLE RESULTATEN ===== -->
-        <div id="step-14" style="display:none;">
-          <h2>Snelle berekening · Resultaten</h2>
-          <!-- Wordt in stap B gevuld -->
-        </div>
+  <h2>Snelle berekening · Gegevens</h2>
+  <p>Vul uw basisgegevens in voor een snelle schatting.</p>
+
+  <h3>Tariefkeuze</h3>
+  <div class="field">
+    <select id="quick-tariff">
+      <option value="">— Kies tarief —</option>
+      <option value="enkel">Enkel</option>
+      <option value="dag_nacht">Dag/Nacht</option>
+      <option value="dynamisch">Dynamisch</option>
+    </select>
+  </div>
+
+  <h3>Zonnepanelen</h3>
+  <div class="field">
+    <label><input type="checkbox" id="quick-has-pv"> Ik heb zonnepanelen</label>
+  </div>
+  <div class="field" id="quick-pv-field" style="display:none;">
+    <label>Jaaropbrengst (kWh)</label>
+    <input type="number" id="quick-pv-kwh" placeholder="b.v. 3500" />
+  </div>
+
+  <h3>Elektrische wagen</h3>
+  <div class="field">
+    <label><input type="checkbox" id="quick-has-ev"> Ik heb een EV</label>
+  </div>
+  <div class="field" id="quick-ev-field" style="display:none;">
+    <label>Km per jaar</label>
+    <input type="number" id="quick-ev-km" placeholder="b.v. 12000" />
+  </div>
+
+  <h3>Warmtepomp</h3>
+  <div class="field">
+    <label><input type="checkbox" id="quick-has-hp"> Ik heb een warmtepomp</label>
+  </div>
+  <div class="field" id="quick-hp-field" style="display:none;">
+    <label>Verbruik per jaar (kWh)</label>
+    <input type="number" id="quick-hp-kwh" placeholder="b.v. 3000" />
+  </div>
+
+  <h3>Batterijparameters</h3>
+  <div class="row">
+    <div class="field">
+      <label>E (kWh)</label>
+      <input type="number" id="quick-E" placeholder="b.v. 10" />
+    </div>
+    <div class="field">
+      <label>P (kW)</label>
+      <input type="number" id="quick-P" placeholder="b.v. 3.5" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label>DoD (%)</label>
+      <input type="number" id="quick-DoD" placeholder="90" />
+    </div>
+    <div class="field">
+      <label>η_rt (%)</label>
+      <input type="number" id="quick-eta" placeholder="92" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label>CAPEX (€)</label>
+      <input type="number" id="quick-capex" placeholder="b.v. 6500" />
+    </div>
+    <div class="field">
+      <label>OPEX (€ / jaar)</label>
+      <input type="number" id="quick-opex" placeholder="100" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label>Horizon (jaar)</label>
+      <input type="number" id="quick-horizon" placeholder="15" />
+    </div>
+    <div class="field">
+      <label>Rente (%)</label>
+      <input type="number" id="quick-interest" placeholder="4" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Vastrecht per jaar (€)</label>
+    <input type="number" id="quick-vastrecht" placeholder="350" />
+  </div>
+
+  <h3>Tarieven</h3>
+
+  <div id="quick-tariff-enkel" style="display:none;">
+    <div class="row">
+      <div class="field"><label>Import</label><input id="quick-enkel-imp" /></div>
+      <div class="field"><label>Export</label><input id="quick-enkel-exp" /></div>
+    </div>
+  </div>
+
+  <div id="quick-tariff-dn" style="display:none;">
+    <div class="row">
+      <div class="field"><label>Dag</label><input id="quick-dn-dag" /></div>
+      <div class="field"><label>Nacht</label><input id="quick-dn-nacht" /></div>
+      <div class="field"><label>Export</label><input id="quick-dn-exp" /></div>
+    </div>
+  </div>
+
+  <div id="quick-tariff-dyn" style="display:none;">
+    <div class="field">
+      <label>Export dynamisch</label>
+      <input id="quick-dyn-exp" />
+    </div>
+  </div>
+
+  <div class="footer-buttons">
+    <button class="btn-secondary" id="quick-back">Vorige</button>
+    <button class="btn-primary" id="quick-next">Volgende</button>
+  </div>
+
+</div>
+
+<!-- ===== STEP 14 — SNELLE RESULTATEN ===== -->
+<div id="step-14" style="display:none;">
+  <h2>Snelle berekening · Resultaten</h2>
+
+  <p id="quick-result-status" class="status">Berekening wordt uitgevoerd...</p>
+
+  <div class="results-summary">
+    <div class="result-tile">
+      <div class="label">Totale kosten</div>
+      <div class="value" id="quick-total">–</div>
+    </div>
+
+    <div class="result-tile">
+      <div class="label">Besparing</div>
+      <div class="value" id="quick-saving">–</div>
+    </div>
+
+    <div class="result-tile">
+      <div class="label">Terugverdientijd</div>
+      <div class="value" id="quick-payback">–</div>
+    </div>
+  </div>
+
+  <div class="footer-buttons">
+    <button class="btn-secondary" id="quick-back-13">Vorige</button>
+    <button class="btn-primary" id="quick-restart">Nieuwe snelle berekening</button>
+  </div>
+</div>
 
       </div> <!-- EINDE wizard-container -->
 
