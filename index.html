@@ -560,6 +560,24 @@
       }
     });
 
+    // ===== STARTSCHERM (STEP 0) =====
+document.getElementById("to-step-0-next").addEventListener("click", () => {
+  const type = document.querySelector('input[name="calc-type"]:checked');
+
+  if (!type) {
+    alert("Kies eerst een berekeningstype.");
+    return;
+  }
+
+  if (type.value === "snelle") {
+    // Snelle flow — gaan naar stap 1 van snelle berekening
+    activateStep(10); // tijdelijk, wordt straks in stap B gekoppeld
+  } else {
+    // Nauwkeurige flow — ga naar jouw huidige STEP 1
+    activateStep(1);
+  }
+});
+    
     // NAVIGATIE
     document.getElementById("to-step-2").addEventListener("click", ()=>activateStep(2));
     document.getElementById("back-to-1").addEventListener("click",()=>activateStep(1));
