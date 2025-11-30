@@ -222,7 +222,6 @@
       <div class="subtitle">Nauwkeurige berekening op basis van uw eigen CSV-data.</div>
     </header>
 
-    <!-- ========== STEPPER ========== -->
     <div class="stepper">
       <div class="step active" id="step-pill-1"><div class="badge">1</div> CSV & Tarief</div>
       <div class="step" id="step-pill-2"><div class="badge">2</div> Batterij & Financiën</div>
@@ -231,27 +230,19 @@
     </div>
 
     <div class="layout">
-
-      <!-- ========== LINKERKOLOM: WIZARD ========== -->
       <div class="card" id="wizard-container">
 
-        <!-- ===== STEP 0 — BEREKENINGSTYPE ===== -->
+        <!-- ==== STEP 0 ==== -->
         <div id="step-0">
           <h2>Stap 0 · Kies uw berekeningstype</h2>
           <p>Selecteer of u een snelle (geschatte) of nauwkeurige berekening wilt uitvoeren.</p>
 
           <div class="field">
-            <label class="choice">
-              <input type="radio" name="calc-type" value="snelle">
-              Snelle berekening (zonder CSV)
-            </label>
+            <label><input type="radio" name="calc-type" value="snelle"> Snelle berekening</label>
           </div>
 
           <div class="field">
-            <label class="choice">
-              <input type="radio" name="calc-type" value="nauwkeurige">
-              Nauwkeurige berekening (met CSV-bestanden)
-            </label>
+            <label><input type="radio" name="calc-type" value="nauwkeurige"> Nauwkeurige berekening</label>
           </div>
 
           <div class="footer-buttons">
@@ -260,10 +251,9 @@
           </div>
         </div>
 
-        <!-- ===== STEP 1 ===== -->
+        <!-- ==== STEP 1 ==== -->
         <div id="step-1">
           <h2>Stap 1 · Tarief & CSV-bestanden</h2>
-          <p>Kies uw tarief en upload uw CSV-bestanden.</p>
 
           <div class="field">
             <label>Huidig tarief</label>
@@ -301,70 +291,33 @@
           </div>
         </div>
 
-        <!-- ===== STEP 2 ===== -->
+        <!-- ==== STEP 2 ==== -->
         <div id="step-2" style="display:none;">
           <h2>Stap 2 · Batterij & financiële parameters</h2>
 
           <div class="row">
-            <div class="field">
-              <label>E (kWh)</label>
-              <input type="number" id="E" />
-              <small>Bruikbare batterijcapaciteit</small>
-            </div>
-
-            <div class="field">
-              <label>P (kW)</label>
-              <input type="number" id="P" />
-              <small>Laad/ontlaadvermogen</small>
-            </div>
+            <div class="field"><label>E (kWh)</label><input id="E" type="number"/></div>
+            <div class="field"><label>P (kW)</label><input id="P" type="number"/></div>
           </div>
 
           <div class="row">
-            <div class="field">
-              <label>DoD (%)</label>
-              <input type="number" id="DoD" />
-            </div>
-
-            <div class="field">
-              <label>η_rt (%)</label>
-              <input type="number" id="eta_rt" />
-              <small>Round-trip efficiency</small>
-            </div>
+            <div class="field"><label>DoD (%)</label><input id="DoD" type="number"/></div>
+            <div class="field"><label>η_rt (%)</label><input id="eta_rt" type="number"/></div>
           </div>
 
-          <div class="field">
-            <label>Cycli/jaar</label>
-            <input type="number" id="cycles" />
+          <div class="field"><label>Cycli/jaar</label><input id="cycles" type="number"/></div>
+
+          <div class="row">
+            <div class="field"><label>CAPEX (€)</label><input id="capex" type="number"/></div>
+            <div class="field"><label>OPEX (€ / jaar)</label><input id="opex" type="number"/></div>
           </div>
 
           <div class="row">
-            <div class="field">
-              <label>CAPEX (€)</label>
-              <input type="number" id="capex" />
-            </div>
-
-            <div class="field">
-              <label>OPEX/jaar (€)</label>
-              <input type="number" id="opex" />
-            </div>
+            <div class="field"><label>Horizon (jaren)</label><input id="horizon" type="number"/></div>
+            <div class="field"><label>Rente (%)</label><input id="interest" type="number"/></div>
           </div>
 
-          <div class="row">
-            <div class="field">
-              <label>Horizon (jaren)</label>
-              <input type="number" id="horizon" />
-            </div>
-
-            <div class="field">
-              <label>Rente (%)</label>
-              <input type="number" id="interest" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Vastrecht/jaar (€)</label>
-            <input type="number" id="fixed-cost" />
-          </div>
+          <div class="field"><label>Vastrecht/jaar (€)</label><input id="fixed-cost" type="number"/></div>
 
           <div class="footer-buttons">
             <button class="btn-secondary" id="back-to-1">Vorige</button>
@@ -372,34 +325,27 @@
           </div>
         </div>
 
-        <!-- ===== STEP 3 ===== -->
+        <!-- ==== STEP 3 ==== -->
         <div id="step-3" style="display:none;">
           <h2>Stap 3 · Tarieven</h2>
 
-          <p>Standaardwaarden (NL):</p>
-          <ul style="font-size:0.8rem; color:var(--muted);">
-            <li>Enkel: €0,29 import · €0,07 export</li>
-            <li>Dag/Nacht: €0,31 dag · €0,26 nacht · €0,07 export</li>
-            <li>Dynamisch: import via CSV · export €0,07</li>
-          </ul>
-
-          <h3>Enkel tarief</h3>
+          <h3>Enkel</h3>
           <div class="row">
-            <div class="field"><label>Import enkel</label><input id="p_enkel_imp" /></div>
-            <div class="field"><label>Export enkel</label><input id="p_enkel_exp" /></div>
+            <div class="field"><label>Import</label><input id="p_enkel_imp"></div>
+            <div class="field"><label>Export</label><input id="p_enkel_exp"></div>
           </div>
 
           <h3>Dag/Nacht</h3>
           <div class="row">
-            <div class="field"><label>Dag</label><input id="p_dag" /></div>
-            <div class="field"><label>Nacht</label><input id="p_nacht" /></div>
-            <div class="field"><label>Export DN</label><input id="p_exp_dn" /></div>
+            <div class="field"><label>Dag</label><input id="p_dag"></div>
+            <div class="field"><label>Nacht</label><input id="p_nacht"></div>
+            <div class="field"><label>Export DN</label><input id="p_exp_dn"></div>
           </div>
 
           <h3>Dynamisch</h3>
           <div class="field">
             <label>Export dynamisch</label>
-            <input id="p_export_dyn" />
+            <input id="p_export_dyn">
           </div>
 
           <div id="compute-status" class="status"></div>
@@ -410,209 +356,95 @@
           </div>
         </div>
 
-       <!-- ===== STEP 13 — SNELLE TARIEVEN & PARAMETERS ===== -->
-<div id="step-13" style="display:none;">
+        <!-- ==== STEP 13 ==== -->
+        <div id="step-13" style="display:none;">
+          <h2>Snelle berekening · Gegevens</h2>
 
-  <h2>Snelle berekening · Gegevens</h2>
-  <p>Vul uw basisgegevens in voor een snelle schatting.</p>
+          <h3>Tarief</h3>
+          <select id="quick-tariff">
+            <option value="">— Kies tarief —</option>
+            <option value="enkel">Enkel</option>
+            <option value="dag_nacht">Dag/Nacht</option>
+            <option value="dynamisch">Dynamisch</option>
+          </select>
 
-  <h3>Tariefkeuze</h3>
-  <div class="field">
-    <select id="quick-tariff">
-      <option value="">— Kies tarief —</option>
-      <option value="enkel">Enkel</option>
-      <option value="dag_nacht">Dag/Nacht</option>
-      <option value="dynamisch">Dynamisch</option>
-    </select>
-  </div>
+          <h3>Batterijparameters</h3>
+          <div class="row">
+            <div class="field"><label>E (kWh)</label><input id="quick-E"></div>
+            <div class="field"><label>P (kW)</label><input id="quick-P"></div>
+          </div>
 
-  <h3>Zonnepanelen</h3>
-  <div class="field">
-    <label><input type="checkbox" id="quick-has-pv"> Ik heb zonnepanelen</label>
-  </div>
-  <div class="field" id="quick-pv-field" style="display:none;">
-    <label>Jaaropbrengst (kWh)</label>
-    <input type="number" id="quick-pv-kwh" placeholder="b.v. 3500" />
-  </div>
+          <div class="row">
+            <div class="field"><label>DoD (%)</label><input id="quick-DoD"></div>
+            <div class="field"><label>η_rt (%)</label><input id="quick-eta"></div>
+          </div>
 
-  <h3>Elektrische wagen</h3>
-  <div class="field">
-    <label><input type="checkbox" id="quick-has-ev"> Ik heb een EV</label>
-  </div>
-  <div class="field" id="quick-ev-field" style="display:none;">
-    <label>Km per jaar</label>
-    <input type="number" id="quick-ev-km" placeholder="b.v. 12000" />
-  </div>
+          <h3>Tarieven</h3>
 
-  <h3>Warmtepomp</h3>
-  <div class="field">
-    <label><input type="checkbox" id="quick-has-hp"> Ik heb een warmtepomp</label>
-  </div>
-  <div class="field" id="quick-hp-field" style="display:none;">
-    <label>Verbruik per jaar (kWh)</label>
-    <input type="number" id="quick-hp-kwh" placeholder="b.v. 3000" />
-  </div>
+          <div id="quick-tariff-enkel" style="display:none;">
+            <div class="row">
+              <div class="field"><label>Import</label><input id="quick-enkel-imp"></div>
+              <div class="field"><label>Export</label><input id="quick-enkel-exp"></div>
+            </div>
+          </div>
 
-  <h3>Batterijparameters</h3>
-  <div class="row">
-    <div class="field">
-      <label>E (kWh)</label>
-      <input type="number" id="quick-E" placeholder="b.v. 10" />
-    </div>
-    <div class="field">
-      <label>P (kW)</label>
-      <input type="number" id="quick-P" placeholder="b.v. 3.5" />
-    </div>
-  </div>
+          <div id="quick-tariff-dn" style="display:none;">
+            <div class="row">
+              <div class="field"><label>Dag</label><input id="quick-dn-dag"></div>
+              <div class="field"><label>Nacht</label><input id="quick-dn-nacht"></div>
+              <div class="field"><label>Export</label><input id="quick-dn-exp"></div>
+            </div>
+          </div>
 
-  <div class="row">
-    <div class="field">
-      <label>DoD (%)</label>
-      <input type="number" id="quick-DoD" placeholder="90" />
-    </div>
-    <div class="field">
-      <label>η_rt (%)</label>
-      <input type="number" id="quick-eta" placeholder="92" />
-    </div>
-  </div>
+          <div id="quick-tariff-dyn" style="display:none;">
+            <div class="field"><label>Export dynamisch</label><input id="quick-dyn-exp"></div>
+          </div>
 
-  <div class="row">
-    <div class="field">
-      <label>CAPEX (€)</label>
-      <input type="number" id="quick-capex" placeholder="b.v. 6500" />
-    </div>
-    <div class="field">
-      <label>OPEX (€ / jaar)</label>
-      <input type="number" id="quick-opex" placeholder="100" />
-    </div>
-  </div>
+          <div class="footer-buttons">
+            <button class="btn-secondary" id="quick-back">Vorige</button>
+            <button class="btn-primary" id="quick-next">Volgende</button>
+          </div>
+        </div>
 
-  <div class="row">
-    <div class="field">
-      <label>Horizon (jaar)</label>
-      <input type="number" id="quick-horizon" placeholder="15" />
-    </div>
-    <div class="field">
-      <label>Rente (%)</label>
-      <input type="number" id="quick-interest" placeholder="4" />
-    </div>
-  </div>
+        <!-- ==== STEP 14 ==== -->
+        <div id="step-14" style="display:none;">
+          <h2>Snelle berekening · Resultaten</h2>
 
-  <div class="field">
-    <label>Vastrecht per jaar (€)</label>
-    <input type="number" id="quick-vastrecht" placeholder="350" />
-  </div>
+          <div class="results-summary">
+            <div class="result-tile"><div class="label">Totale kosten</div><div id="quick-total" class="value">–</div></div>
+            <div class="result-tile"><div class="label">Besparing</div><div id="quick-saving" class="value">–</div></div>
+            <div class="result-tile"><div class="label">Terugverdientijd</div><div id="quick-payback" class="value">–</div></div>
+          </div>
 
-  <h3>Tarieven</h3>
+          <div class="footer-buttons">
+            <button class="btn-secondary" id="quick-back-13">Vorige</button>
+            <button class="btn-primary" id="quick-restart">Nieuwe snelle berekening</button>
+          </div>
+        </div>
 
-  <div id="quick-tariff-enkel" style="display:none;">
-    <div class="row">
-      <div class="field"><label>Import</label><input id="quick-enkel-imp" /></div>
-      <div class="field"><label>Export</label><input id="quick-enkel-exp" /></div>
-    </div>
-  </div>
+      </div>
 
-  <div id="quick-tariff-dn" style="display:none;">
-    <div class="row">
-      <div class="field"><label>Dag</label><input id="quick-dn-dag" /></div>
-      <div class="field"><label>Nacht</label><input id="quick-dn-nacht" /></div>
-      <div class="field"><label>Export</label><input id="quick-dn-exp" /></div>
-    </div>
-  </div>
-
-  <div id="quick-tariff-dyn" style="display:none;">
-    <div class="field">
-      <label>Export dynamisch</label>
-      <input id="quick-dyn-exp" />
-    </div>
-  </div>
-
-  <div class="footer-buttons">
-    <button class="btn-secondary" id="quick-back">Vorige</button>
-    <button class="btn-primary" id="quick-next">Volgende</button>
-  </div>
-
-</div>
-
-<!-- ===== STEP 14 — SNELLE RESULTATEN ===== -->
-<div id="step-14" style="display:none;">
-  <h2>Snelle berekening · Resultaten</h2>
-
-  <p id="quick-result-status" class="status">Berekening wordt uitgevoerd...</p>
-
-  <div class="results-summary">
-    <div class="result-tile">
-      <div class="label">Totale kosten</div>
-      <div class="value" id="quick-total">–</div>
-    </div>
-
-    <div class="result-tile">
-      <div class="label">Besparing</div>
-      <div class="value" id="quick-saving">–</div>
-    </div>
-
-    <div class="result-tile">
-      <div class="label">Terugverdientijd</div>
-      <div class="value" id="quick-payback">–</div>
-    </div>
-  </div>
-
-  <div class="footer-buttons">
-    <button class="btn-secondary" id="quick-back-13">Vorige</button>
-    <button class="btn-primary" id="quick-restart">Nieuwe snelle berekening</button>
-  </div>
-</div>
-
-      </div> <!-- EINDE wizard-container -->
-
-      <!-- ========== RECHTERKOLOM: RESULTATEN ========== -->
+      <!-- ==== RECHTERKOLOM ==== -->
       <div class="card">
         <h2>Resultaten</h2>
 
         <div id="results-tiles" class="results-summary" style="display:none;">
-          <div class="result-tile">
-            <div class="label">Besparing enkel</div>
-            <div class="value" id="res-save-enkel">–</div>
-          </div>
-          <div class="result-tile">
-            <div class="label">Besparing dag/nacht</div>
-            <div class="value" id="res-save-dn">–</div>
-          </div>
-          <div class="result-tile">
-            <div class="label">Besparing dynamisch</div>
-            <div class="value" id="res-save-dyn">–</div>
-          </div>
+          <div class="result-tile"><div class="label">Besparing enkel</div><div id="res-save-enkel" class="value">–</div></div>
+          <div class="result-tile"><div class="label">Besparing dag/nacht</div><div id="res-save-dn" class="value">–</div></div>
+          <div class="result-tile"><div class="label">Besparing dynamisch</div><div id="res-save-dyn" class="value">–</div></div>
         </div>
 
         <div id="results-table-container" style="display:none;">
           <table>
             <thead>
               <tr>
-                <th>Scenario</th>
-                <th>Kosten referentie (S1)</th>
-                <th>Kosten met batterij (S3)</th>
-                <th>Besparing</th>
+                <th>Scenario</th><th>Kosten referentie</th><th>Kosten batterij</th><th>Besparing</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Enkel</td>
-                <td id="tbl-s1-enkel">–</td>
-                <td id="tbl-s3-enkel">–</td>
-                <td id="tbl-save-enkel">–</td>
-              </tr>
-              <tr>
-                <td>Dag/nacht</td>
-                <td id="tbl-s1-dn">–</td>
-                <td id="tbl-s3-dn">–</td>
-                <td id="tbl-save-dn">–</td>
-              </tr>
-              <tr>
-                <td>Dynamisch</td>
-                <td id="tbl-s1-dyn">–</td>
-                <td id="tbl-s3-dyn">–</td>
-                <td id="tbl-save-dyn">–</td>
-              </tr>
+              <tr><td>Enkel</td><td id="tbl-s1-enkel">–</td><td id="tbl-s3-enkel">–</td><td id="tbl-save-enkel">–</td></tr>
+              <tr><td>Dag/nacht</td><td id="tbl-s1-dn">–</td><td id="tbl-s3-dn">–</td><td id="tbl-save-dn">–</td></tr>
+              <tr><td>Dynamisch</td><td id="tbl-s1-dyn">–</td><td id="tbl-s3-dyn">–</td><td id="tbl-save-dyn">–</td></tr>
             </tbody>
           </table>
         </div>
@@ -621,279 +453,3 @@
       </div>
     </div>
   </div>
-
-  <script>
-    const API_BASE = "https://batteryengine-server.onrender.com";
-
-    let parsedData = {
-      load_kwh: null,
-      pv_kwh: null,
-      prices_dyn: null
-    };
-
-    function activateStep(num) {
-      for (let i = 0; i <= 14; i++) {
-        const pill = document.getElementById("step-pill-" + i);
-        if (pill) pill.classList.toggle("active", i === num);
-
-        const block = document.getElementById("step-" + i);
-        if (block) block.style.display = i === num ? "block" : "none";
-      }
-    }
-
-    function fmtEuro(v) {
-      if (v === null || isNaN(v)) return "–";
-      return "€ " + v.toFixed(2).replace(".", ",");
-    }
-
-    // ============ CSV PARSER =============
-    document.getElementById("btn-parse-csv").addEventListener("click", async () => {
-      const tariffType = document.getElementById("tariff-type").value;
-      const loadFile = document.getElementById("file-load").files[0];
-      const pvFile = document.getElementById("file-pv").files[0];
-      const pricesFile = document.getElementById("file-prices").files[0];
-      const status = document.getElementById("csv-status");
-
-      if (!tariffType) {
-        status.textContent = "Kies eerst een tarief.";
-        status.className = "status error";
-        return;
-      }
-      if (!loadFile || !pvFile || !pricesFile) {
-        status.textContent = "Upload alle drie de CSV-bestanden.";
-        status.className = "status error";
-        return;
-      }
-
-      status.textContent = "Bestanden verwerken...";
-      status.className = "status";
-
-      try {
-        const [loadText, pvText, pricesText] = await Promise.all([
-          loadFile.text(),
-          pvFile.text(),
-          pricesFile.text()
-        ]);
-
-        const body = {
-          load_file: loadText,
-          pv_file: pvText,
-          prices_file: pricesText
-        };
-
-        const res = await fetch(API_BASE + "/parse_csv", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(body)
-        });
-
-        const data = await res.json();
-
-        if (data.error === "INVALID") {
-          status.textContent = "CSV-bestanden ongeldig.";
-          status.className = "status error";
-          return;
-        }
-
-        parsedData.load_kwh = data.load_kwh;
-        parsedData.pv_kwh = data.pv_kwh;
-        parsedData.prices_dyn = data.prices_dyn;
-
-        status.textContent =
-          "CSV verwerkt (" +
-          data.load_kwh.length + " load, " +
-          data.pv_kwh.length + " pv, " +
-          data.prices_dyn.length + " prices).";
-        status.className = "status success";
-
-        document.getElementById("to-step-2").disabled = false;
-
-      } catch (err) {
-        status.textContent = "Fout bij csv-verwerking: " + err.message;
-        status.className = "status error";
-      }
-    });
-
-    // ===== STARTSCHERM (STEP 0) =====
-    document.getElementById("to-step-0-next").addEventListener("click", () => {
-      const type = document.querySelector('input[name="calc-type"]:checked');
-
-      if (!type) {
-        alert("Kies eerst een berekeningstype.");
-        return;
-      }
-
-      if (type.value === "snelle") {
-        activateStep(13);  
-      } else {
-        activateStep(1);
-      }
-    });
-
-    // NAVIGATIE
-    document.getElementById("to-step-2").addEventListener("click", ()=>activateStep(2));
-    document.getElementById("back-to-1").addEventListener("click",()=>activateStep(1));
-    document.getElementById("to-step-3").addEventListener("click",()=>activateStep(3));
-    document.getElementById("back-to-2").addEventListener("click",()=>activateStep(2));
-
-    // ============ COMPUTE =============
-    document.getElementById("btn-compute").addEventListener("click", async ()=>{
-
-      const status = document.getElementById("compute-status");
-
-      if (!parsedData.load_kwh) {
-        status.textContent = "CSV-data ontbreekt.";
-        status.className = "status error";
-        return;
-      }
-
-      const body = {
-        load_kwh: parsedData.load_kwh,
-        pv_kwh: parsedData.pv_kwh,
-        prices_dyn: parsedData.prices_dyn,
-        p_enkel_imp: parseFloat(p_enkel_imp.value || "0.29"),
-        p_enkel_exp: parseFloat(p_enkel_exp.value || "0.07"),
-        p_dag: parseFloat(p_dag.value || "0.31"),
-        p_nacht: parseFloat(p_nacht.value || "0.26"),
-        p_exp_dn: parseFloat(p_exp_dn.value || "0.07"),
-        E: parseFloat(E.value || "0"),
-        P: parseFloat(P.value || "0"),
-        DoD: parseFloat(DoD.value || "0"),
-        eta_rt: parseFloat(eta_rt.value || "0"),
-        Vastrecht: parseFloat(fixed-cost.value || "0")
-      };
-
-      status.textContent = "Berekening uitvoeren...";
-      status.className = "status";
-
-      try {
-        const res = await fetch(API_BASE + "/compute", {
-          method: "POST",
-          headers: {"Content-Type": "application/json"},
-          body: JSON.stringify(body)
-        });
-
-        const data = await res.json();
-
-        const S1 = data.S1;
-        const S3_enkel = data.S3_enkel;
-        const S3_dn = data.S3_dn;
-        const S3_dyn = data.S3_dyn;
-
-        const saveEnkel = S1 - S3_enkel;
-        const saveDn = S1 - S3_dn;
-        const saveDyn = S1 - S3_dyn;
-
-        document.getElementById("res-save-enkel").textContent = fmtEuro(saveEnkel);
-        document.getElementById("res-save-dn").textContent = fmtEuro(saveDn);
-        document.getElementById("res-save-dyn").textContent = fmtEuro(saveDyn);
-
-        document.getElementById("tbl-s1-enkel").textContent = fmtEuro(S1);
-        document.getElementById("tbl-s3-enkel").textContent = fmtEuro(S3_enkel);
-        document.getElementById("tbl-save-enkel").textContent = fmtEuro(saveEnkel);
-
-        document.getElementById("tbl-s1-dn").textContent = fmtEuro(S1);
-        document.getElementById("tbl-s3-dn").textContent = fmtEuro(S3_dn);
-        document.getElementById("tbl-save-dn").textContent = fmtEuro(saveDn);
-
-        document.getElementById("tbl-s1-dyn").textContent = fmtEuro(S1);
-        document.getElementById("tbl-s3-dyn").textContent = fmtEuro(S3_dyn);
-        document.getElementById("tbl-save-dyn").textContent = fmtEuro(saveDyn);
-
-        document.getElementById("results-tiles").style.display = "grid";
-        document.getElementById("results-table-container").style.display = "block";
-
-        status.textContent = "Berekening afgerond.";
-        status.className = "status success";
-
-        activateStep(4);
-
-      } catch (err) {
-        status.textContent = "Fout bij berekening: " + err.message;
-        status.className = "status error";
-      }
-    });
-
-    // DEFAULT TARIEVEN VOORINLADEN
-    window.addEventListener("DOMContentLoaded",() => {
-      activateStep(0);
-
-      p_enkel_imp.value = "0.29";
-      p_enkel_exp.value = "0.07";
-      p_dag.value = "0.31";
-      p_nacht.value = "0.26";
-      p_exp_dn.value = "0.07";
-      p_export_dyn.value = "0.07";
-    });
-
-// -----------------------------
-// SNELLE BEREKENING — UI LOGICA
-// -----------------------------
-
-// Zonnepanelen toggle
-document.getElementById("quick-has-pv").addEventListener("change", e => {
-  document.getElementById("quick-pv-field").style.display =
-    e.target.checked ? "block" : "none";
-});
-
-// EV toggle
-document.getElementById("quick-has-ev").addEventListener("change", e => {
-  document.getElementById("quick-ev-field").style.display =
-    e.target.checked ? "block" : "none";
-});
-
-// Warmtepomp toggle
-document.getElementById("quick-has-hp").addEventListener("change", e => {
-  document.getElementById("quick-hp-field").style.display =
-    e.target.checked ? "block" : "none";
-});
-
-
-// -----------------------------
-// TARIEF LOGICA VOOR STEP 13
-// -----------------------------
-const quickTariff = document.getElementById("quick-tariff");
-
-quickTariff.addEventListener("change", () => {
-  const val = quickTariff.value;
-
-  // Alles verbergen
-  document.getElementById("quick-tariff-enkel").style.display = "none";
-  document.getElementById("quick-tariff-dn").style.display = "none";
-  document.getElementById("quick-tariff-dyn").style.display = "none";
-
-  if (val === "enkel") {
-    document.getElementById("quick-tariff-enkel").style.display = "block";
-    quick-enkel-imp.value = "0.29";
-    quick-enkel-exp.value = "0.07";
-  }
-
-  if (val === "dag_nacht") {
-    document.getElementById("quick-tariff-dn").style.display = "block";
-    quick-dn-dag.value = "0.31";
-    quick-dn-nacht.value = "0.26";
-    quick-dn-exp.value = "0.07";
-  }
-
-  if (val === "dynamisch") {
-    document.getElementById("quick-tariff-dyn").style.display = "block";
-    quick-dyn-exp.value = "0.07";
-  }
-});
-
-
-// -----------------------------
-// BUTTONS SNELLE BEREKENING
-// -----------------------------
-document.getElementById("quick-back").addEventListener("click", () => {
-  activateStep(0);
-});
-
-document.getElementById("quick-next").addEventListener("click", () => {
-  activateStep(14); // resultaten
-});
-    
-  </script>
-
-</body>
-</html>
