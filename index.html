@@ -236,30 +236,30 @@
       <div class="card" id="wizard-container">
 
         <!-- ===== STEP 0 — BEREKENINGSTYPE ===== -->
-<div id="step-0">
-  <h2>Stap 0 · Kies uw berekeningstype</h2>
-  <p>Selecteer of u een snelle (geschatte) of nauwkeurige berekening wilt uitvoeren.</p>
+        <div id="step-0">
+          <h2>Stap 0 · Kies uw berekeningstype</h2>
+          <p>Selecteer of u een snelle (geschatte) of nauwkeurige berekening wilt uitvoeren.</p>
 
-  <div class="field">
-    <label class="choice">
-      <input type="radio" name="calc-type" value="snelle">
-      Snelle berekening (zonder CSV)
-    </label>
-  </div>
+          <div class="field">
+            <label class="choice">
+              <input type="radio" name="calc-type" value="snelle">
+              Snelle berekening (zonder CSV)
+            </label>
+          </div>
 
-  <div class="field">
-    <label class="choice">
-      <input type="radio" name="calc-type" value="nauwkeurige">
-      Nauwkeurige berekening (met CSV-bestanden)
-    </label>
-  </div>
+          <div class="field">
+            <label class="choice">
+              <input type="radio" name="calc-type" value="nauwkeurige">
+              Nauwkeurige berekening (met CSV-bestanden)
+            </label>
+          </div>
 
-  <div class="footer-buttons">
-    <button class="btn-ghost" disabled>Vorige</button>
-    <button class="btn-primary" id="to-step-0-next">Volgende</button>
-  </div>
-</div>
-        
+          <div class="footer-buttons">
+            <button class="btn-ghost" disabled>Vorige</button>
+            <button class="btn-primary" id="to-step-0-next">Volgende</button>
+          </div>
+        </div>
+
         <!-- ===== STEP 1 ===== -->
         <div id="step-1">
           <h2>Stap 1 · Tarief & CSV-bestanden</h2>
@@ -409,7 +409,20 @@
             <button class="btn-primary" id="btn-compute">Bereken</button>
           </div>
         </div>
-      </div>
+
+        <!-- ===== STEP 13 — SNELLE TARIEVEN ===== -->
+        <div id="step-13" style="display:none;">
+          <h2>Snelle berekening · Tarieven</h2>
+          <!-- Wordt in stap B gevuld -->
+        </div>
+
+        <!-- ===== STEP 14 — SNELLE RESULTATEN ===== -->
+        <div id="step-14" style="display:none;">
+          <h2>Snelle berekening · Resultaten</h2>
+          <!-- Wordt in stap B gevuld -->
+        </div>
+
+      </div> <!-- EINDE wizard-container -->
 
       <!-- ========== RECHTERKOLOM: RESULTATEN ========== -->
       <div class="card">
@@ -478,12 +491,12 @@
     };
 
     function activateStep(num) {
-      for (let i = 0; i <= 4; i++) {
-        document.getElementById("step-pill-" + i).classList.toggle("active", i === num);
-        const stepBlock = document.getElementById("step-" + i);
-        if (stepBlock) {
-          stepBlock.style.display = i === num ? "block" : "none";
-        }
+      for (let i = 0; i <= 14; i++) {
+        const pill = document.getElementById("step-pill-" + i);
+        if (pill) pill.classList.toggle("active", i === num);
+
+        const block = document.getElementById("step-" + i);
+        if (block) block.style.display = i === num ? "block" : "none";
       }
     }
 
@@ -561,23 +574,21 @@
     });
 
     // ===== STARTSCHERM (STEP 0) =====
-document.getElementById("to-step-0-next").addEventListener("click", () => {
-  const type = document.querySelector('input[name="calc-type"]:checked');
+    document.getElementById("to-step-0-next").addEventListener("click", () => {
+      const type = document.querySelector('input[name="calc-type"]:checked');
 
-  if (!type) {
-    alert("Kies eerst een berekeningstype.");
-    return;
-  }
+      if (!type) {
+        alert("Kies eerst een berekeningstype.");
+        return;
+      }
 
-  if (type.value === "snelle") {
-    // Snelle flow — gaan naar stap 1 van snelle berekening
-    activateStep(10); // tijdelijk, wordt straks in stap B gekoppeld
-  } else {
-    // Nauwkeurige flow — ga naar jouw huidige STEP 1
-    activateStep(1);
-  }
-});
-    
+      if (type.value === "snelle") {
+        activateStep(13);  
+      } else {
+        activateStep(1);
+      }
+    });
+
     // NAVIGATIE
     document.getElementById("to-step-2").addEventListener("click", ()=>activateStep(2));
     document.getElementById("back-to-1").addEventListener("click",()=>activateStep(1));
@@ -664,11 +675,8 @@ document.getElementById("to-step-0-next").addEventListener("click", () => {
 
     // DEFAULT TARIEVEN VOORINLADEN
     window.addEventListener("DOMContentLoaded",() => {
-      
-        // Wizard start op stap 0
-  activateStep(0);
+      activateStep(0);
 
-      // Standaard tarieven invullen
       p_enkel_imp.value = "0.29";
       p_enkel_exp.value = "0.07";
       p_dag.value = "0.31";
