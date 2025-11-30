@@ -235,6 +235,31 @@
       <!-- ========== LINKERKOLOM: WIZARD ========== -->
       <div class="card" id="wizard-container">
 
+        <!-- ===== STEP 0 — BEREKENINGSTYPE ===== -->
+<div id="step-0">
+  <h2>Stap 0 · Kies uw berekeningstype</h2>
+  <p>Selecteer of u een snelle (geschatte) of nauwkeurige berekening wilt uitvoeren.</p>
+
+  <div class="field">
+    <label class="choice">
+      <input type="radio" name="calc-type" value="snelle">
+      Snelle berekening (zonder CSV)
+    </label>
+  </div>
+
+  <div class="field">
+    <label class="choice">
+      <input type="radio" name="calc-type" value="nauwkeurige">
+      Nauwkeurige berekening (met CSV-bestanden)
+    </label>
+  </div>
+
+  <div class="footer-buttons">
+    <button class="btn-ghost" disabled>Vorige</button>
+    <button class="btn-primary" id="to-step-0-next">Volgende</button>
+  </div>
+</div>
+        
         <!-- ===== STEP 1 ===== -->
         <div id="step-1">
           <h2>Stap 1 · Tarief & CSV-bestanden</h2>
