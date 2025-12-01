@@ -721,4 +721,37 @@ window.addEventListener("DOMContentLoaded", () => {
   p_exp_dn.value = "0.07";
   p_export_dyn.value = "0.07";
 });
+
+// ------------------------------
+// PDF GENERATOR
+// ------------------------------
+document.getElementById("btn-download-pdf").addEventListener("click", () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Thuisbatterij adviesrapport", 14, 16);
+
+    doc.setFontSize(12);
+    doc.text("1. Berekeningsmethode:", 14, 30);
+    doc.text(document.getElementById("adv-method").innerText, 14, 38, { maxWidth: 180 });
+
+    doc.text("2. Bronnen & Aannames:", 14, doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 80);
+    doc.text(document.getElementById("adv-assumptions").innerText, 14, doc.lastAutoTable ? doc.lastAutoTable.finalY + 18 : 88, { maxWidth: 180 });
+
+    doc.text("3. Financiële Analyse:", 14, 120);
+    doc.text(document.getElementById("adv-financial").innerText, 14, 128, { maxWidth: 180 });
+
+    doc.text("4. Energie-inzichten:", 14, 160);
+    doc.text(document.getElementById("adv-energy").innerText, 14, 168, { maxWidth: 180 });
+
+    doc.text("5. Beperkingen & Interpretatie:", 14, 200);
+    doc.text(document.getElementById("adv-limits").innerText, 14, 208, { maxWidth: 180 });
+
+    doc.text("6. Conclusie & Advies:", 14, 238);
+    doc.text(document.getElementById("adv-conclusion").innerText, 14, 246, { maxWidth: 180 });
+
+    doc.save("Thuisbatterij-Adviesrapport.pdf");
+});
+    
 </script>
