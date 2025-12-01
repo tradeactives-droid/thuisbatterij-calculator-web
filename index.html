@@ -607,6 +607,8 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 const advice = document.getElementById("advice-card");
 advice.style.display = "block";
 
+document.getElementById("btn-download-pdf").style.display = "inline-block";
+
 // Berekeningen voor extra inzichten:
 const total_pv = parsedData.pv_kwh.reduce((a,b)=>a+b,0);
 const total_load = parsedData.load_kwh.reduce((a,b)=>a+b,0);
