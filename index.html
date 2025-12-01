@@ -592,6 +592,14 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("res-batt-saving").textContent = fmtEuro(data.saving_by_battery);
     document.getElementById("res-future-vs-now").textContent = fmtEuro(data.future_vs_now_with_battery);
 
+    // Payback tonen
+if (data.payback_years === null || data.payback_years <= 0) {
+    document.getElementById("res-payback").textContent = "Niet rendabel";
+} else {
+    document.getElementById("res-payback").textContent =
+        data.payback_years.toFixed(1) + " jaar";
+}
+
       // ✅ Terugverdientijd tonen
     if (data.payback_years === null || data.payback_years <= 0 || isNaN(data.payback_years)) {
       document.getElementById("res-payback").textContent = "Niet rendabel";
