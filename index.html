@@ -516,62 +516,67 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     return;
   }
 
+  // ---- VOORBEREIDING INPUT ----
   const body = {
     load_kwh: parsedData.load_kwh,
     pv_kwh: parsedData.pv_kwh,
     prices_dyn: parsedData.prices_dyn,
-    p_enkel_imp: parseFloat(p_enkel_imp.value||"0.29"),
-    p_enkel_exp: parseFloat(p_enkel_exp.value||"0.07"),
-    p_dag: parseFloat(p_dag.value||"0.31"),
-    p_nacht: parseFloat(p_nacht.value||"0.26"),
-    p_exp_dn: parseFloat(p_exp_dn.value||"0.07"),
-    E: parseFloat(E.value||"0"),
-    P: parseFloat(P.value||"0"),
-    DoD: parseFloat(DoD.value||"0")/100,
-    eta_rt: parseFloat(eta_rt.value||"0")/100,
-    Vastrecht: parseFloat(document.getElementById("fixed-cost").value||"0")
+
+    p_enkel_imp: parseFloat(p_enkel_imp.value || "0.29"),
+    p_enkel_exp: parseFloat(p_enkel_exp.value || "0.07"),
+
+    p_dag: parseFloat(p_dag.value || "0.31"),
+    p_nacht: parseFloat(p_nacht.value || "0.26"),
+    p_exp_dn: parseFloat(p_exp_dn.value || "0.07"),
+
+    E: parseFloat(E.value || "0"),
+    P: parseFloat(P.value || "0"),
+
+    DoD: parseFloat(DoD.value || "0") / 100,
+    eta_rt: parseFloat(eta_rt.value || "0") / 100,
+
+    Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0")
   };
 
   status.textContent = "Berekenen...";
   status.className = "status";
 
   try {
+    // ---- API CALL ----
     const res = await fetch(API_BASE + "/compute", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
 
-    const data = await res.json();
-    if (!data || !("S1" in data)) {
-      status.textContent = "Serverfout — controleer backend.";
+    const data = await res.json();  // <------ DIT IS DE JUISTE DATA
+
+    if (!data || !("A1_current" in data)) {
+      status.textContent = "Serverfout — backend geeft geen A1 terug.";
       status.className = "status error";
       return;
     }
 
-    const S1 = data.S1;
-    document.getElementById("res-save-enkel").textContent = fmtEuro(S1 - data.S3_enkel);
-    document.getElementById("res-save-dn").textContent = fmtEuro(S1 - data.S3_dn);
-    document.getElementById("res-save-dyn").textContent = fmtEuro(S1 - data.S3_dyn);
+    // ---- RESULTATEN IN STEP 4 INVULLEN ----
+    document.getElementById("res-A1").textContent = fmtEuro(data.A1_current);
+    document.getElementById("res-B1").textContent = fmtEuro(data.B1_future_no_batt);
+    document.getElementById("res-C1").textContent = fmtEuro(data.C1_future_with_batt);
 
-    document.getElementById("tbl-s1-enkel").textContent = fmtEuro(S1);
-    document.getElementById("tbl-s3-enkel").textContent = fmtEuro(data.S3_enkel);
-    document.getElementById("tbl-save-enkel").textContent = fmtEuro(S1 - data.S3_enkel);
+    document.getElementById("res-extra-saldering").textContent = fmtEuro(data.extra_cost_when_saldering_stops);
+    document.getElementById("res-batt-saving").textContent = fmtEuro(data.saving_by_battery);
+    document.getElementById("res-future-vs-now").textContent = fmtEuro(data.future_vs_now_with_battery);
 
-    document.getElementById("tbl-s1-dn").textContent = fmtEuro(S1);
-    document.getElementById("tbl-s3-dn").textContent = fmtEuro(data.S3_dn);
-    document.getElementById("tbl-save-dn").textContent = fmtEuro(S1 - data.S3_dn);
+    // ---- ENERGIE-INZICHTEN ----
+    document.getElementById("B1-import").textContent = data.flows.B1_import.toFixed(1);
+    document.getElementById("B1-export").textContent = data.flows.B1_export.toFixed(1);
 
-    document.getElementById("tbl-s1-dyn").textContent = fmtEuro(S1);
-    document.getElementById("tbl-s3-dyn").textContent = fmtEuro(data.S3_dyn);
-    document.getElementById("tbl-save-dyn").textContent = fmtEuro(S1 - data.S3_dyn);
+    document.getElementById("C1-import").textContent = data.flows.C1_import.toFixed(1);
+    document.getElementById("C1-export").textContent = data.flows.C1_export.toFixed(1);
 
-    document.getElementById("results-tiles").style.display = "grid";
-    document.getElementById("results-table-container").style.display = "block";
-
+    // ---- STAP WEERGAVE ----
+    activateStep(4);
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
-    activateStep(4);
 
   } catch (err) {
     status.textContent = "Fout: " + err.message;
