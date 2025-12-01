@@ -746,6 +746,28 @@ document.getElementById("adv-conclusion").innerHTML = `
       : "De geschatte terugverdientijd bedraagt <b>" + data.payback_years.toFixed(1) + " jaar</b>."}
   </p>
 `;
+
+// ---------------------------------------------------------
+// ENERGIE-INZICHTEN PER TARIEF INVULLEN
+// ---------------------------------------------------------
+
+// B1 – Zonder batterij
+document.getElementById("B1-imp-enkel").textContent = data.S2_enkel.import.toFixed(1);
+document.getElementById("B1-imp-dn").textContent    = data.S2_dn.import.toFixed(1);
+document.getElementById("B1-imp-dyn").textContent   = data.S2_dyn.import.toFixed(1);
+
+document.getElementById("B1-exp-enkel").textContent = data.S2_enkel.export.toFixed(1);
+document.getElementById("B1-exp-dn").textContent    = data.S2_dn.export.toFixed(1);
+document.getElementById("B1-exp-dyn").textContent   = data.S2_dyn.export.toFixed(1);
+
+// C1 – Met batterij
+document.getElementById("C1-imp-enkel").textContent = data.S3_enkel.import.toFixed(1);
+document.getElementById("C1-imp-dn").textContent    = data.S3_dn.import.toFixed(1);
+document.getElementById("C1-imp-dyn").textContent   = data.S3_dyn.import.toFixed(1);
+
+document.getElementById("C1-exp-enkel").textContent = data.S3_enkel.export.toFixed(1);
+document.getElementById("C1-exp-dn").textContent    = data.S3_dn.export.toFixed(1);
+document.getElementById("C1-exp-dyn").textContent   = data.S3_dyn.export.toFixed(1);
     
     activateStep(4);
     status.textContent = "Berekening afgerond.";
