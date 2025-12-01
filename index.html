@@ -723,92 +723,56 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // ------------------------------
-// PDF GENERATOR – mét grafiek
+// PDF GENERATOR (incl. grafiek)
 // ------------------------------
 document.getElementById("btn-download-pdf").addEventListener("click", () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let y = 16;
 
-    let y = 16;
+  // Titel
+  doc.setFontSize(16);
+  doc.text("Thuisbatterij adviesrapport", 14, y);
+  y += 10;
 
-    // Titel
-    doc.setFontSize(16);
-    doc.text("Thuisbatterij Adviesrapport", 14, y);
-    y += 14;
-
-    doc.setFontSize(12);
-
-    // 1. Methodologie
-    doc.text("1. Berekeningsmethode", 14, y);
-    y += 6;
-    let split = doc.splitTextToSize(
-        document.getElementById("adv-method").innerText,
-        180
-    );
-    doc.text(split, 14, y);
-    y += split.length * 6 + 10;
-
-    // 2. Bronnen & aannames
-    doc.text("2. Bronnen & Aannames", 14, y);
-    y += 6;
-    split = doc.splitTextToSize(
-        document.getElementById("adv-assumptions").innerText,
-        180
-    );
-    doc.text(split, 14, y);
-    y += split.length * 6 + 10;
-
-    // 3. Financiële analyse
-    doc.text("3. Financiële Analyse", 14, y);
-    y += 6;
-    split = doc.splitTextToSize(
-        document.getElementById("adv-financial").innerText,
-        180
-    );
-    doc.text(split, 14, y);
-    y += split.length * 6 + 10;
-
-    // 📊 GRAFIEK IN PDF
-    const chartCanvas = document.getElementById("chart");
-    const chartImage = chartCanvas.toDataURL("image/png");
-
-    doc.text("Grafiek – Jaarlijkse kosten", 14, y);
-    y += 4;
-
+  // Grafiek als afbeelding
+  const chartCanvas = document.getElementById("chart");
+  if (chartCanvas) {
+    const chartImage = chartCanvas.toDataURL("image/png", 1.0);
     doc.addImage(chartImage, "PNG", 14, y, 180, 80);
     y += 90;
+  }
 
-    // 4. Energie-inzichten
-    doc.text("4. Energie-inzichten", 14, y);
+  doc.setFontSize(12);
+
+  function addSection(title, elementId) {
+    const text = document.getElementById(elementId).innerText.trim();
+    if (!text) return;
+
+    // simpele pagina-breek als we te laag zitten
+    if (y > 260) {
+      doc.addPage();
+      y = 20;
+    }
+
+    doc.setFont(undefined, "bold");
+    doc.text(title, 14, y);
     y += 6;
-    split = doc.splitTextToSize(
-        document.getElementById("adv-energy").innerText,
-        180
-    );
-    doc.text(split, 14, y);
-    y += split.length * 6 + 10;
 
-    // 5. Beperkingen
-    doc.text("5. Beperkingen & Interpretatie", 14, y);
-    y += 6;
-    split = doc.splitTextToSize(
-        document.getElementById("adv-limits").innerText,
-        180
-    );
-    doc.text(split, 14, y);
-    y += split.length * 6 + 10;
+    doc.setFont(undefined, "normal");
+    const lines = doc.splitTextToSize(text, 180);
+    doc.text(lines, 14, y);
+    y += lines.length * 6 + 4;
+  }
 
-    // 6. Conclusie
-    doc.text("6. Conclusie & Advies", 14, y);
-    y += 6;
-    split = doc.splitTextToSize(
-        document.getElementById("adv-conclusion").innerText,
-        180
-    );
-    doc.text(split, 14, y);
+  addSection("1. Berekeningsmethode", "adv-method");
+  addSection("2. Bronnen & Aannames", "adv-assumptions");
+  addSection("3. Financiële Analyse", "adv-financial");
+  addSection("4. Energie-inzichten", "adv-energy");
+  addSection("5. Beperkingen & Interpretatie", "adv-limits");
+  addSection("6. Conclusie & Advies", "adv-conclusion");
 
-    // Opslaan
-    doc.save("Thuisbatterij-Adviesrapport.pdf");
+  doc.save("Thuisbatterij-Adviesrapport.pdf");
 });
     
 </script>
