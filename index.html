@@ -178,20 +178,28 @@
     <div class="card" id="wizard-container">
 
       <!-- STEP 0 -->
-      <div id="step-0">
-        <h2>Stap 0 · Kies uw berekeningstype</h2>
-        <div class="field">
-          <label><input type="radio" name="calc-type" value="snelle"> Snelle berekening</label>
-        </div>
-        <div class="field">
-          <label><input type="radio" name="calc-type" value="nauwkeurige"> Nauwkeurige berekening (CSV)</label>
-        </div>
+ <div id="step-0">
+  <h2>Stap 0 · Kies uw berekeningstype</h2>
 
-        <div class="footer-buttons">
-          <button class="btn-ghost" disabled>Vorige</button>
-          <button class="btn-primary" id="to-step-0-next">Volgende</button>
-        </div>
-      </div>
+  <div class="field" style="display:flex; flex-direction:column; gap:10px;">
+
+    <label style="display:flex; align-items:center; gap:8px;">
+      <input type="radio" name="calc-type" value="snelle">
+      <span>Snelle berekening</span>
+    </label>
+
+    <label style="display:flex; align-items:center; gap:8px;">
+      <input type="radio" name="calc-type" value="nauwkeurige">
+      <span>Nauwkeurige berekening (CSV)</span>
+    </label>
+
+  </div>
+
+  <div class="footer-buttons">
+    <button class="btn-ghost" disabled>Vorige</button>
+    <button class="btn-primary" id="to-step-0-next">Volgende</button>
+  </div>
+</div>
 
       <!-- STEP 1 -->
       <div id="step-1" style="display:none;">
