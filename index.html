@@ -369,28 +369,17 @@
 
   </div> <!-- EINDE .layout -->
 
-  <!-- ███████████  ADVIES & VERANTWOORDING — ONDER HELE LAYOUT  ███████████ -->
-  <div class="card" style="margin-top: 26px; padding: 26px;">
-    <h2>Uitleg & Verantwoording</h2>
+  <!-- ███████████  ADVIES & VERANTWOORDING (DYNAMISCH) — ALLEEN IN RESULTAAT  ███████████ -->
+<div id="advice-card" class="card" style="margin-top: 26px; padding: 26px; display:none;">
+  <h2>Uitleg & Verantwoording</h2>
 
-    <h3>1. Berekeningsmethode (Methodologie)</h3>
-    <p>De berekening is gebaseerd op uurdata van verbruik, productie (PV) en tarieven. Per uur worden import, export en batterijwerking berekend op basis van fysische energiebalansen.</p>
-
-    <h3>2. Bronnen & aannames</h3>
-    <p>De gebruikte data komt uit load.csv, pv.csv en prices.csv. Tarieven en batterijparameters worden door de gebruiker ingevoerd.</p>
-
-    <h3>3. Financiële berekening</h3>
-    <p>Kosten = importkosten – exportopbrengsten + vastrecht. Besparing = B1 – C1. Terugverdientijd = CAPEX / jaarlijkse besparing.</p>
-
-    <h3>4. Energie-inzichten</h3>
-    <p>Een batterij verhoogt de zelfconsumptie, verlaagt netafname tijdens dure uren en vermindert export van goedkope stroom.</p>
-
-    <h3>5. Interpretatie & beperkingen</h3>
-    <p>Resultaten zijn een simulatie. Werkelijke prestaties kunnen afwijken door weer, gedrag, degradatie en prijsschommelingen.</p>
-
-    <h3>6. Conclusie & advies</h3>
-    <p>De batterij kan een significante kostenreductie opleveren afhankelijk van verbruikspatroon en tariefstructuur.</p>
-  </div>
+  <div id="adv-method"></div>
+  <div id="adv-assumptions"></div>
+  <div id="adv-financial"></div>
+  <div id="adv-energy"></div>
+  <div id="adv-limits"></div>
+  <div id="adv-conclusion"></div>
+</div>
 
   <script>
 const API_BASE = "https://batteryengine-server.onrender.com";
