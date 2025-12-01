@@ -154,15 +154,20 @@
       border-radius: 12px;
       background: #f9fafb;
     }
+
+    /* ✅ FIX RADIO-BUTTONS — goed onder elkaar */
+    #step-0 label {
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 10px !important;
+      font-size: 1rem !important;
+      width: auto !important;
+    }
   </style>
 </head>
 
-/* FIX radio-buttons in stap 0 */
-#step-0 .field label,
-#step-0 label {
-  justify-content: flex-start !important;
-}
-  
 <body>
 <div class="page">
 
@@ -184,28 +189,26 @@
     <div class="card" id="wizard-container">
 
       <!-- STEP 0 -->
-<div id="step-0">
-  <h2>Stap 0 · Kies uw berekeningstype</h2>
+      <div id="step-0">
+        <h2>Stap 0 · Kies uw berekeningstype</h2>
 
-  <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+        <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+          <label>
+            <input type="radio" name="calc-type" value="snelle">
+            <span>Snelle berekening</span>
+          </label>
 
-    <label style="display:flex; align-items:center; gap:10px; font-size:1rem;">
-      <input type="radio" name="calc-type" value="snelle">
-      <span>Snelle berekening</span>
-    </label>
+          <label>
+            <input type="radio" name="calc-type" value="nauwkeurige">
+            <span>Nauwkeurige berekening (CSV)</span>
+          </label>
+        </div>
 
-    <label style="display:flex; align-items:center; gap:10px; font-size:1rem;">
-      <input type="radio" name="calc-type" value="nauwkeurige">
-      <span>Nauwkeurige berekening (CSV)</span>
-    </label>
-
-  </div>
-
-  <div class="footer-buttons">
-    <button class="btn-ghost" disabled>Vorige</button>
-    <button class="btn-primary" id="to-step-0-next">Volgende</button>
-  </div>
-</div>
+        <div class="footer-buttons">
+          <button class="btn-ghost" disabled>Vorige</button>
+          <button class="btn-primary" id="to-step-0-next">Volgende</button>
+        </div>
+      </div>
 
       <!-- STEP 1 -->
       <div id="step-1" style="display:none;">
@@ -260,7 +263,7 @@
           </div>
         </div>
 
-                <div class="row">
+        <div class="row">
           <div class="field">
             <label>DoD (%)</label>
             <input type="number" id="DoD">
@@ -348,66 +351,62 @@
         </div>
       </div>
 
-      <!-- ========== STEP 4 — RESULTATEN ========== -->
-<div id="step-4" style="display:none;">
-  <h2>Resultaten</h2>
+      <!-- STEP 4 — RESULTATEN -->
+      <div id="step-4" style="display:none;">
+        <h2>Resultaten</h2>
 
-  <!-- Top blokken -->
-  <div class="results-summary" style="margin-bottom:20px;">
-    <div class="result-tile">
-      <div class="label">Huidige situatie (met saldering)</div>
-      <div class="value" id="res-A1">–</div>
+        <div class="results-summary" style="margin-bottom:20px;">
+          <div class="result-tile">
+            <div class="label">Huidige situatie (met saldering)</div>
+            <div class="value" id="res-A1">–</div>
+          </div>
+
+          <div class="result-tile" style="background:#fee2e2;">
+            <div class="label">Toekomst zonder saldering</div>
+            <div class="value" id="res-B1">–</div>
+          </div>
+
+          <div class="result-tile" style="background:#dcfce7;">
+            <div class="label">Toekomst met batterij</div>
+            <div class="value" id="res-C1">–</div>
+          </div>
+        </div>
+
+        <h3>Conclusies</h3>
+        <table>
+          <tr>
+            <th>Extra kosten bij stop saldering</th>
+            <td id="res-extra-saldering">–</td>
+          </tr>
+          <tr>
+            <th>Jaarlijkse besparing door batterij</th>
+            <td id="res-batt-saving">–</td>
+          </tr>
+          <tr>
+            <th>Verschil toekomst vs nu (met batterij)</th>
+            <td id="res-future-vs-now">–</td>
+          </tr>
+          <tr>
+            <th>Terugverdientijd batterij</th>
+            <td id="res-payback">–</td>
+          </tr>
+        </table>
+
+        <h3 style="margin-top:25px;">Energie-inzichten</h3>
+        <table>
+          <tr><th colspan="2">Zonder saldering, geen batterij</th></tr>
+          <tr><td>Import (kWh)</td><td id="B1-import">–</td></tr>
+          <tr><td>Export (kWh)</td><td id="B1-export">–</td></tr>
+
+          <tr><th colspan="2" style="padding-top:10px;">Zonder saldering, met batterij</th></tr>
+          <tr><td>Import (kWh)</td><td id="C1-import">–</td></tr>
+          <tr><td>Export (kWh)</td><td id="C1-export">–</td></tr>
+        </table>
+
+      </div>
     </div>
 
-    <div class="result-tile" style="background:#fee2e2;">
-      <div class="label">Toekomst zonder saldering</div>
-      <div class="value" id="res-B1">–</div>
-    </div>
-
-    <div class="result-tile" style="background:#dcfce7;">
-      <div class="label">Toekomst met batterij</div>
-      <div class="value" id="res-C1">–</div>
-    </div>
-  </div>
-
- <!-- Conclusies -->
-  <h3>Conclusies</h3>
-  <table>
-    <tr>
-      <th>Extra kosten bij stop saldering</th>
-      <td id="res-extra-saldering">–</td>
-    </tr>
-    <tr>
-      <th>Jaarlijkse besparing door batterij</th>
-      <td id="res-batt-saving">–</td>
-    </tr>
-    <tr>
-      <th>Verschil toekomst vs nu (met batterij)</th>
-      <td id="res-future-vs-now">–</td>
-    </tr>
-    <tr>
-  <th>Terugverdientijd batterij</th>
-  <td id="res-payback">–</td>
-</tr>
-  </table>
-
-  <!-- Energie-inzichten -->
-  <h3 style="margin-top:25px;">Energie-inzichten</h3>
-  <table>
-    <tr><th colspan="2">Zonder saldering, geen batterij</th></tr>
-    <tr><td>Import (kWh)</td><td id="B1-import">–</td></tr>
-    <tr><td>Export (kWh)</td><td id="B1-export">–</td></tr>
-
-    <tr><th colspan="2" style="padding-top:10px;">Zonder saldering, met batterij</th></tr>
-    <tr><td>Import (kWh)</td><td id="C1-import">–</td></tr>
-    <tr><td>Export (kWh)</td><td id="C1-export">–</td></tr>
-  </table>
-</div>
-
-    </div> <!-- einde wizard container -->
-
-
-    <!-- RESULTATENRECHTERKOLOM -->
+    <!-- RESULTATEN RECHTERKANT -->
     <div class="card">
       <h2>Resultaten</h2>
 
@@ -438,10 +437,10 @@
       <div id="chart">(Grafiek volgt later)</div>
     </div>
 
-  </div> <!-- einde layout -->
-</div> <!-- einde page -->
+  </div>
+</div>
 
-<!-- ============= SCRIPT ============= -->
+<!-- SCRIPT -->
 <script>
 const API_BASE = "https://batteryengine-server.onrender.com";
 
@@ -534,13 +533,11 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     return;
   }
 
-  // ---- VOORBEREIDING INPUT ----
   const body = {
     load_kwh: parsedData.load_kwh,
     pv_kwh: parsedData.pv_kwh,
     prices_dyn: parsedData.prices_dyn || [],
 
-    // Tarieven
     p_enkel_imp: parseFloat(p_enkel_imp.value || "0.29"),
     p_enkel_exp: parseFloat(p_enkel_exp.value || "0.07"),
     p_dag: parseFloat(p_dag.value || "0.31"),
@@ -548,20 +545,17 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     p_exp_dn: parseFloat(p_exp_dn.value || "0.07"),
     p_export_dyn: parseFloat(p_export_dyn.value || "0.07"),
 
-    // Batterij
     E: parseFloat(E.value || "0"),
     P: parseFloat(P.value || "0"),
     DoD: parseFloat(DoD.value || "0") / 100,
     eta_rt: parseFloat(eta_rt.value || "0") / 100,
 
-    // Financiën
     capex: parseFloat(capex.value || "0"),
     opex: parseFloat(opex.value || "0"),
     horizon: parseFloat(horizon.value || "0"),
     interest: parseFloat(interest.value || "0"),
     cycles: parseFloat(cycles.value || "0"),
 
-    // Vastrecht
     Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0")
 };
 
@@ -569,14 +563,13 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   status.className = "status";
 
   try {
-    // ---- API CALL ----
     const res = await fetch(API_BASE + "/compute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
 
-    const data = await res.json();  // <------ DIT IS DE JUISTE DATA
+    const data = await res.json();
 
     if (!data || !("A1_current" in data)) {
       status.textContent = "Serverfout — backend geeft geen A1 terug.";
@@ -584,7 +577,6 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       return;
     }
 
-    // ---- RESULTATEN IN STEP 4 INVULLEN ----
     document.getElementById("res-A1").textContent = fmtEuro(data.A1_current);
     document.getElementById("res-B1").textContent = fmtEuro(data.B1_future_no_batt);
     document.getElementById("res-C1").textContent = fmtEuro(data.C1_future_with_batt);
@@ -593,21 +585,18 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("res-batt-saving").textContent = fmtEuro(data.saving_by_battery);
     document.getElementById("res-future-vs-now").textContent = fmtEuro(data.future_vs_now_with_battery);
 
-      // ✅ Terugverdientijd tonen
     if (data.payback_years === null || data.payback_years <= 0 || isNaN(data.payback_years)) {
       document.getElementById("res-payback").textContent = "Niet rendabel";
     } else {
       document.getElementById("res-payback").textContent = data.payback_years.toFixed(1) + " jaar";
     }
 
-    // ---- ENERGIE-INZICHTEN ----
     document.getElementById("B1-import").textContent = data.flows.B1_import.toFixed(1);
     document.getElementById("B1-export").textContent = data.flows.B1_export.toFixed(1);
 
     document.getElementById("C1-import").textContent = data.flows.C1_import.toFixed(1);
     document.getElementById("C1-export").textContent = data.flows.C1_export.toFixed(1);
 
-    // ---- STAP WEERGAVE ----
     activateStep(4);
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
@@ -618,7 +607,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   }
 });
 
-/* Default values + init */
+/* Default values */
 window.addEventListener("DOMContentLoaded", () => {
   activateStep(0);
   p_enkel_imp.value = "0.29";
