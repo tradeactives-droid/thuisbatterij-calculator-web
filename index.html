@@ -207,9 +207,10 @@
     <div class="step" id="step-pill-4"><div class="badge">4</div> Resultaat</div>
   </div>
 
+  <!-- ███████████  LAYOUT MET 2 KOLOMMEN  ███████████ -->
   <div class="layout">
 
-    <!-- LEFT PANEL (WIZARD) -->
+    <!-- ███████████  LINKER PANEL (STAPPEN)  ███████████ -->
     <div class="card" id="wizard-container">
 
       <!-- STEP 0 -->
@@ -358,52 +359,51 @@
         </table>
 
       </div>
+    </div>
 
-    <!-- RIGHT PANEL (GRAFIEK) -->
+    <!-- ███████████  RECHTER PANEL (GRAFIEK)  ███████████ -->
     <div class="card">
       <h2>Resultaten</h2>
-
       <canvas id="chart" height="140"></canvas>
     </div>
 
-  </div>
-    <!-- ███████  ADVIES & VERANTWOORDINGS-RAPPORT  ███████ -->
-  <div class="card" style="margin-top: 26px; padding: 24px;">
+  </div> <!-- EINDE .layout -->
+
+  <!-- ███████████  ADVIES & VERANTWOORDING — ONDER HELE LAYOUT  ███████████ -->
+  <div class="card" style="margin-top: 26px; padding: 26px;">
     <h2>Uitleg & Verantwoording</h2>
 
     <h3>1. Berekeningsmethode (Methodologie)</h3>
-    <p>De berekening is gebaseerd op uurdata van verbruik, productie (PV) en tarieven. Per uur worden import, export en batterijwerking berekend ...</p>
+    <p>De berekening is gebaseerd op uurdata van verbruik, productie (PV) en tarieven. Per uur worden import, export en batterijwerking berekend op basis van fysische energiebalansen.</p>
 
     <h3>2. Bronnen & aannames</h3>
-    <p>De gebruikte data komt rechtstreeks uit de CSV’s ...</p>
+    <p>De gebruikte data komt uit load.csv, pv.csv en prices.csv. Tarieven en batterijparameters worden door de gebruiker ingevoerd.</p>
 
     <h3>3. Financiële berekening</h3>
-    <p>Alle kosten worden per uur bepaald op basis van importprijzen, exportprijzen ...</p>
+    <p>Kosten = importkosten – exportopbrengsten + vastrecht. Besparing = B1 – C1. Terugverdientijd = CAPEX / jaarlijkse besparing.</p>
 
     <h3>4. Energie-inzichten</h3>
-    <p>De batterij verlaagt import, verhoogt zelfconsumptie ...</p>
+    <p>Een batterij verhoogt de zelfconsumptie, verlaagt netafname tijdens dure uren en vermindert export van goedkope stroom.</p>
 
     <h3>5. Interpretatie & beperkingen</h3>
-    <p>Resultaten zijn een simulatie, werkelijke waarden kunnen afwijken door weer, verbruikspatroon ...</p>
+    <p>Resultaten zijn een simulatie. Werkelijke prestaties kunnen afwijken door weer, gedrag, degradatie en prijsschommelingen.</p>
 
     <h3>6. Conclusie & advies</h3>
-    <p>De batterij bespaart € X per jaar en heeft een terugverdientijd van Y jaar ...</p>
+    <p>De batterij kan een significante kostenreductie opleveren afhankelijk van verbruikspatroon en tariefstructuur.</p>
   </div>
-  <!-- ███████ EINDE ADVIES-RAPPORT ███████ -->
-</div>
 
-<!-- SCRIPT -->
-<script>
+  <script>
 const API_BASE = "https://batteryengine-server.onrender.com";
 
 let parsedData = { load_kwh:null, pv_kwh:null, prices_dyn:null };
 
 function activateStep(n) {
   for (let i = 0; i <= 14; i++) {
-    const p = document.getElementById("step-pill-" + i);
-    if (p) p.classList.toggle("active", i === n);
-    const b = document.getElementById("step-" + i);
-    if (b) b.style.display = i === n ? "block" : "none";
+    const pill = document.getElementById("step-pill-" + i);
+    if (pill) pill.classList.toggle("active", i === n);
+
+    const block = document.getElementById("step-" + i);
+    if (block) block.style.display = i === n ? "block" : "none";
   }
 }
 
@@ -412,7 +412,9 @@ function fmtEuro(v) {
   return "€ " + v.toFixed(2).replace(".", ",");
 }
 
-/* CSV parsing */
+// ------------------------
+// CSV VERWERKING
+// ------------------------
 document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   const loadFile = document.getElementById("file-load").files[0];
   const pvFile = document.getElementById("file-pv").files[0];
@@ -461,21 +463,31 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   }
 });
 
-/* Start → step select */
+// ------------------------
+// BUTTONS STEP 0 → START
+// ------------------------
 document.getElementById("to-step-0-next").addEventListener("click", () => {
   const type = document.querySelector('input[name="calc-type"]:checked');
   if (!type) return alert("Kies eerst een type.");
-  if (type.value === "snelle") activateStep(13);
-  else activateStep(1);
+
+  if (type.value === "snelle") {
+    activateStep(13);   // jouw quick-mode
+  } else {
+    activateStep(1);    // CSV-modus
+  }
 });
 
-/* Navigation */
+// ------------------------
+// NAVIGATIE
+// ------------------------
 document.getElementById("to-step-2").addEventListener("click", ()=>activateStep(2));
 document.getElementById("back-to-1").addEventListener("click", ()=>activateStep(1));
 document.getElementById("to-step-3").addEventListener("click", ()=>activateStep(3));
 document.getElementById("back-to-2").addEventListener("click", ()=>activateStep(2));
 
-/* Compute */
+// ------------------------
+// BEREKENING STARTEN
+// ------------------------
 document.getElementById("btn-compute").addEventListener("click", async () => {
   const status = document.getElementById("compute-status");
 
@@ -529,7 +541,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       return;
     }
 
-    // ——— RESULTATEN INVULLEN ———
+    // ------------------------
+    // VUL RESULTATEN IN
+    // ------------------------
     document.getElementById("res-A1").textContent = fmtEuro(data.A1_current);
     document.getElementById("res-B1").textContent = fmtEuro(data.B1_future_no_batt);
     document.getElementById("res-C1").textContent = fmtEuro(data.C1_future_with_batt);
@@ -550,7 +564,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("C1-import").textContent = data.flows.C1_import.toFixed(1);
     document.getElementById("C1-export").textContent = data.flows.C1_export.toFixed(1);
 
-    // ——— GRAFIEK OPBOUWEN ———
+    // ------------------------
+    // GRAFIEK
+    // ------------------------
     const chartCanvas = document.getElementById("chart");
     if (chartCanvas) {
       const ctx = chartCanvas.getContext("2d");
@@ -598,9 +614,12 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   }
 });
 
-/* Default values */
+// ------------------------
+// DEFAULT WAARDEN
+// ------------------------
 window.addEventListener("DOMContentLoaded", () => {
   activateStep(0);
+
   p_enkel_imp.value = "0.29";
   p_enkel_exp.value = "0.07";
   p_dag.value = "0.31";
@@ -609,6 +628,3 @@ window.addEventListener("DOMContentLoaded", () => {
   p_export_dyn.value = "0.07";
 });
 </script>
-
-</body>
-</html>
