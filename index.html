@@ -654,10 +654,6 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
 
-    activateStep(4);
-    status.textContent = "Berekening afgerond.";
-    status.className = "status success";
-
   } catch (err) {
     status.textContent = "Fout: " + err.message;
     status.className = "status error";
