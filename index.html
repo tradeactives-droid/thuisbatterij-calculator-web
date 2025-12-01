@@ -94,8 +94,10 @@
     .field small { font-size: 0.7rem; color: var(--muted); }
 
     input, select {
-      width: 100%; padding: 7px 8px;
-      border-radius: 8px; border: 1px solid var(--border);
+      width: 100%;
+      padding: 7px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
       background: #f9fafb;
     }
     input:focus, select:focus {
@@ -146,19 +148,21 @@
     th:first-child, td:first-child { text-align: left; }
     th { background: #f3f4f6; }
 
-
-    /* ✅ FIX RADIO-BUTTONS — goed onder elkaar */
+    /* ✔ FIX RADIOBUTTONS */
     #step-0 label {
       display: flex !important;
       flex-direction: row !important;
       align-items: center !important;
-      justify-content: flex-start !important;
       gap: 10px !important;
-      font-size: 1rem !important;
-      width: auto !important;
+      justify-content: flex-start !important;
+      width: fit-content !important;
     }
-    </style>
-  <!-- Chart.js voor de grafiek -->
+
+    #step-0 input[type="radio"] {
+      margin-left: 0 !important;
+    }
+  </style>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -243,7 +247,6 @@
 
       <!-- STEP 2 -->
       <div id="step-2" style="display:none;">
-
         <h2>Stap 2 · Batterij & financiële parameters</h2>
 
         <div class="row">
@@ -377,7 +380,7 @@
             <td id="res-batt-saving">–</td>
           </tr>
           <tr>
-            <th>Verschil toekomst vs nu (met batterij)</th>
+            <th>Verschil toekomst vs huidige situatie</th>
             <td id="res-future-vs-now">–</td>
           </tr>
           <tr>
@@ -388,11 +391,11 @@
 
         <h3 style="margin-top:25px;">Energie-inzichten</h3>
         <table>
-          <tr><th colspan="2">Zonder saldering, geen batterij</th></tr>
+          <tr><th colspan="2">Zonder saldering · geen batterij</th></tr>
           <tr><td>Import (kWh)</td><td id="B1-import">–</td></tr>
           <tr><td>Export (kWh)</td><td id="B1-export">–</td></tr>
 
-          <tr><th colspan="2" style="padding-top:10px;">Zonder saldering, met batterij</th></tr>
+          <tr><th colspan="2" style="padding-top:10px;">Zonder saldering · met batterij</th></tr>
           <tr><td>Import (kWh)</td><td id="C1-import">–</td></tr>
           <tr><td>Export (kWh)</td><td id="C1-export">–</td></tr>
         </table>
@@ -400,7 +403,7 @@
       </div>
     </div>
 
-    <!-- RESULTATEN RECHTERKANT -->
+    <!-- RECHTERKANT RESULTATEN -->
     <div class="card">
       <h2>Resultaten</h2>
 
@@ -551,7 +554,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     cycles: parseFloat(cycles.value || "0"),
 
     Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0")
-};
+  };
 
   status.textContent = "Berekenen...";
   status.className = "status";
@@ -571,6 +574,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       return;
     }
 
+    // ——— RESULTATEN INVULLEN ———
     document.getElementById("res-A1").textContent = fmtEuro(data.A1_current);
     document.getElementById("res-B1").textContent = fmtEuro(data.B1_future_no_batt);
     document.getElementById("res-C1").textContent = fmtEuro(data.C1_future_with_batt);
@@ -588,18 +592,15 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("B1-import").textContent = data.flows.B1_import.toFixed(1);
     document.getElementById("B1-export").textContent = data.flows.B1_export.toFixed(1);
 
-     document.getElementById("C1-import").textContent = data.flows.C1_import.toFixed(1);
+    document.getElementById("C1-import").textContent = data.flows.C1_import.toFixed(1);
     document.getElementById("C1-export").textContent = data.flows.C1_export.toFixed(1);
 
-    // === GRAFIEK TEKENEN ===
+    // ——— GRAFIEK OPBOUWEN ———
     const chartCanvas = document.getElementById("chart");
     if (chartCanvas) {
       const ctx = chartCanvas.getContext("2d");
 
-      // oude grafiek verwijderen als die al bestaat
-      if (window.costChart) {
-        window.costChart.destroy();
-      }
+      if (window.costChart) window.costChart.destroy();
 
       window.costChart = new Chart(ctx, {
         type: "bar",
@@ -620,20 +621,11 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { display: true }
-          },
           scales: {
             y: {
               beginAtZero: true,
               ticks: {
-                callback: (value) => {
-                  try {
-                    return "€ " + Number(value).toFixed(0).replace(".", ",");
-                  } catch {
-                    return value;
-                  }
-                }
+                callback: (value) => "€ " + value.toString().replace(".", ",")
               }
             }
           }
@@ -641,7 +633,6 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       });
     }
 
-    // ---- STAP WEERGAVE ----
     activateStep(4);
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
@@ -662,7 +653,4 @@ window.addEventListener("DOMContentLoaded", () => {
   p_exp_dn.value = "0.07";
   p_export_dyn.value = "0.07";
 });
-</script>
-
-</body>
-</html>
+</script>  
