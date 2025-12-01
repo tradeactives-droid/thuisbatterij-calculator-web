@@ -723,56 +723,59 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // ------------------------------
-// PDF GENERATOR (incl. grafiek)
+// PDF GENERATOR — CLEAN VERSION
 // ------------------------------
 document.getElementById("btn-download-pdf").addEventListener("click", () => {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  let y = 16;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
 
-  // Titel
-  doc.setFontSize(16);
-  doc.text("Thuisbatterij adviesrapport", 14, y);
-  y += 10;
+    let y = 40;  // startmarge
 
-  // Grafiek als afbeelding
-  const chartCanvas = document.getElementById("chart");
-  if (chartCanvas) {
-    const chartImage = chartCanvas.toDataURL("image/png", 1.0);
-    doc.addImage(chartImage, "PNG", 14, y, 180, 80);
-    y += 90;
-  }
+    // ---- TITEL ----
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("Thuisbatterij Adviesrapport", 40, y);
+    y += 30;
 
-  doc.setFontSize(12);
+    // ---- HULPFUNCTIE ----
+    const addSection = (title, htmlId) => {
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text(title, 40, y);
+        y += 20;
 
-  function addSection(title, elementId) {
-    const text = document.getElementById(elementId).innerText.trim();
-    if (!text) return;
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "normal");
 
-    // simpele pagina-breek als we te laag zitten
-    if (y > 260) {
-      doc.addPage();
-      y = 20;
+        const text = document.getElementById(htmlId).innerText.trim();
+        const split = doc.splitTextToSize(text, 520);
+        doc.text(split, 40, y);
+
+        y += split.length * 14 + 20; // spacing per lijn
+    };
+
+    // ---- SECTIES ----
+    addSection("1. Berekeningsmethode", "adv-method");
+    addSection("2. Bronnen & Aannames", "adv-assumptions");
+    addSection("3. Financiële Analyse", "adv-financial");
+    addSection("4. Energie-inzichten", "adv-energy");
+    addSection("5. Beperkingen & Interpretatie", "adv-limits");
+    addSection("6. Conclusie & Advies", "adv-conclusion");
+
+    // ---- GRAFIEK ----
+    const chartCanvas = document.getElementById("chart");
+    if (chartCanvas) {
+        const img = chartCanvas.toDataURL("image/png");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("Grafiek – Jaarlijkse kosten", 40, y);
+        y += 15;
+
+        doc.addImage(img, "PNG", 40, y, 520, 220);
+        y += 240;
     }
 
-    doc.setFont(undefined, "bold");
-    doc.text(title, 14, y);
-    y += 6;
-
-    doc.setFont(undefined, "normal");
-    const lines = doc.splitTextToSize(text, 180);
-    doc.text(lines, 14, y);
-    y += lines.length * 6 + 4;
-  }
-
-  addSection("1. Berekeningsmethode", "adv-method");
-  addSection("2. Bronnen & Aannames", "adv-assumptions");
-  addSection("3. Financiële Analyse", "adv-financial");
-  addSection("4. Energie-inzichten", "adv-energy");
-  addSection("5. Beperkingen & Interpretatie", "adv-limits");
-  addSection("6. Conclusie & Advies", "adv-conclusion");
-
-  doc.save("Thuisbatterij-Adviesrapport.pdf");
+    doc.save("Thuisbatterij-Adviesrapport.pdf");
 });
     
 </script>
