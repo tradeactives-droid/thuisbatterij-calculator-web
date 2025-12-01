@@ -593,6 +593,102 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       });
     }
 
+// ------------------------------
+// ADVIESRAPPORT — AUTOMATISCH OPBOUWEN
+// ------------------------------
+
+const advice = document.getElementById("advice-card");
+advice.style.display = "block";
+
+// Berekeningen voor extra inzichten:
+const total_pv = parsedData.pv_kwh.reduce((a,b)=>a+b,0);
+const total_load = parsedData.load_kwh.reduce((a,b)=>a+b,0);
+
+const self_consumption = ((total_load - data.flows.C1_import) / total_pv) * 100;
+const autarky = ((total_pv - data.flows.C1_export) / total_load) * 100;
+
+document.getElementById("adv-method").innerHTML = `
+  <h3>1. Berekeningsmethode</h3>
+  <p>
+    De simulatie gebruikt uurdata uit de CSV-bestanden (verbruik, productie en prijzen). 
+    Voor elk uur berekent het model import, export en batterijgedrag op basis van 
+    batterijcapaciteit (E), vermogen (P), DoD en rendement (η).
+  </p>
+  <p>
+    Drie scenario’s worden vergeleken:<br>
+    • <b>A1</b>: Huidige situatie met saldering<br>
+    • <b>B1</b>: Toekomst zonder saldering, geen batterij<br>
+    • <b>C1</b>: Toekomst zonder saldering, met batterij
+  </p>
+`;
+
+document.getElementById("adv-assumptions").innerHTML = `
+  <h3>2. Bronnen & Aannames</h3>
+  <p>
+    Alle uurwaarden komen rechtstreeks uit de CSV-bestanden. 
+    Tarieven en batterijparameters zijn door de gebruiker ingevoerd.
+    De berekening gaat uit van een volledig afgebouwde salderingsregeling.
+  </p>
+`;
+
+document.getElementById("adv-financial").innerHTML = `
+  <h3>3. Financiële Analyse</h3>
+  <p>
+    • Huidige kosten (A1): <b>${fmtEuro(data.A1_current)}</b><br>
+    • Kosten toekomst zonder batterij (B1): <b>${fmtEuro(data.B1_future_no_batt)}</b><br>
+    • Kosten toekomst met batterij (C1): <b>${fmtEuro(data.C1_future_with_batt)}</b><br>
+    • Jaarlijkse besparing batterij: <b>${fmtEuro(data.saving_by_battery)}</b><br>
+    • Extra kosten na salderingsstop: <b>${fmtEuro(data.extra_cost_when_saldering_stops)}</b>
+  </p>
+  <p>
+    Terugverdientijd: 
+    <b>${isNaN(data.payback_years) || data.payback_years <= 0 
+      ? "Niet rendabel"
+      : data.payback_years.toFixed(1) + " jaar"}</b>.
+  </p>
+`;
+
+document.getElementById("adv-energy").innerHTML = `
+  <h3>4. Energie-inzichten</h3>
+  <p>
+    • Import zonder batterij: <b>${data.flows.B1_import.toFixed(1)} kWh</b><br>
+    • Import met batterij: <b>${data.flows.C1_import.toFixed(1)} kWh</b><br>
+    • Export zonder batterij: <b>${data.flows.B1_export.toFixed(1)} kWh</b><br>
+    • Export met batterij: <b>${data.flows.C1_export.toFixed(1)} kWh</b><br>
+  </p>
+  <p>
+    • Zelfconsumptiegraad: <b>${self_consumption.toFixed(1)}%</b><br>
+    • Autarkiegraad: <b>${autarky.toFixed(1)}%</b>
+  </p>
+  <p>
+    De batterij vermindert dure import en voorkomt goedkope export, 
+    waardoor de totale energiekosten dalen.
+  </p>
+`;
+
+document.getElementById("adv-limits").innerHTML = `
+  <h3>5. Beperkingen & Interpretatie</h3>
+  <p>
+    Resultaten zijn gebaseerd op historische CSV-data. 
+    Werkelijke prestaties kunnen afwijken door:
+    verbruiksveranderingen, weersomstandigheden, batterijdegradatie 
+    en dynamische prijzen.
+  </p>
+`;
+
+document.getElementById("adv-conclusion").innerHTML = `
+  <h3>6. Conclusie & Advies</h3>
+  <p>
+    De batterij verlaagt de jaarlijkse energiekosten met 
+    <b>${fmtEuro(data.saving_by_battery)}</b>.
+  </p>
+  <p>
+    ${data.payback_years <= 0 || isNaN(data.payback_years)
+      ? "Op basis van de huidige parameters is een batterij financieel niet rendabel."
+      : "De geschatte terugverdientijd bedraagt <b>" + data.payback_years.toFixed(1) + " jaar</b>."}
+  </p>
+`;
+    
     activateStep(4);
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
