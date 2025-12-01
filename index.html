@@ -596,8 +596,63 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("B1-import").textContent = data.flows.B1_import.toFixed(1);
     document.getElementById("B1-export").textContent = data.flows.B1_export.toFixed(1);
 
-    document.getElementById("C1-import").textContent = data.flows.C1_import.toFixed(1);
+     document.getElementById("C1-import").textContent = data.flows.C1_import.toFixed(1);
     document.getElementById("C1-export").textContent = data.flows.C1_export.toFixed(1);
+
+    // === GRAFIEK TEKENEN ===
+    const chartCanvas = document.getElementById("chart");
+    if (chartCanvas) {
+      const ctx = chartCanvas.getContext("2d");
+
+      // oude grafiek verwijderen als die al bestaat
+      if (window.costChart) {
+        window.costChart.destroy();
+      }
+
+      window.costChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: [
+            "Huidig (A1)",
+            "Toekomst zonder batterij (B1)",
+            "Toekomst met batterij (C1)"
+          ],
+          datasets: [{
+            label: "Jaarlijkse kosten (€)",
+            data: [
+              data.A1_current,
+              data.B1_future_no_batt,
+              data.C1_future_with_batt
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: (value) => {
+                  try {
+                    return "€ " + Number(value).toFixed(0).replace(".", ",");
+                  } catch {
+                    return value;
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ---- STAP WEERGAVE ----
+    activateStep(4);
+    status.textContent = "Berekening afgerond.";
+    status.className = "status success";
 
     activateStep(4);
     status.textContent = "Berekening afgerond.";
