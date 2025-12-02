@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <title>Thuisbatterij Besparingscalculator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- ======================= -->
+  <!--        STYLING          -->
+  <!-- ======================= -->
   <style>
     :root {
       --primary: #2563eb;
       --primary-dark: #1d4ed8;
-      --bg: #f3f4f6;
+      --bg: #f5f7fa;
       --card-bg: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
       --danger: #dc2626;
       --success: #15803d;
       --highlight: #dbeafe;
@@ -22,633 +25,220 @@
     body {
       margin: 0;
       font-family: system-ui, sans-serif;
-      background: radial-gradient(circle at top, #e0edff, #f3f4f6);
+      background: #f5f7fa;
       color: var(--text);
     }
 
-    .page { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
-    .title { font-size: 1.6rem; font-weight: 700; }
-    .subtitle { font-size: 0.9rem; color: var(--muted); }
+    .page { max-width: 1200px; margin: 0 auto; padding: 32px 18px 60px; }
+    .title { font-size: 2rem; font-weight: 700; }
+    .subtitle { margin-top: 4px; font-size: 1rem; color: var(--muted); }
 
-    .stepper { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    /* STEPPER */
+    .stepper { display:flex; gap:10px; margin:24px 0; flex-wrap:wrap; }
     .step {
-      display: flex; align-items: center; gap: 8px;
-      padding: 6px 12px; border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.7);
-      font-size: 0.8rem; color: var(--muted);
+      display:flex; align-items:center; gap:8px;
+      padding:7px 14px; border-radius:999px;
+      background:#fff; border:1px solid var(--border);
+      font-size:0.85rem; color:var(--muted);
     }
     .step.active {
-      border-color: var(--primary);
-      background: #dbeafe;
-      color: var(--primary-dark);
-      font-weight: 600;
+      background:var(--highlight);
+      border-color:var(--primary);
+      color:var(--primary-dark);
+      font-weight:600;
     }
-    .step .badge {
-      width: 22px; height: 22px; border-radius: 999px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; border: 1px solid currentColor;
+    .badge {
+      width:22px; height:22px; border-radius:999px; border:1px solid currentColor;
+      display:flex; align-items:center; justify-content:center; font-size:0.8rem;
     }
 
-    .layout { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,2fr); gap: 16px; }
-    @media(max-width:900px) { .layout { grid-template-columns: 1fr; } }
+    .layout { display:grid; grid-template-columns:minmax(0,3fr) minmax(0,2fr); gap:24px; }
+    @media(max-width:900px) { .layout { grid-template-columns:1fr; } }
 
     .card {
-      background: var(--card-bg); border-radius: 16px;
-      border: 1px solid var(--border);
-      box-shadow: 0 18px 40px rgba(15,23,42,0.08);
-      padding: 16px 18px;
+      background:var(--card-bg); border-radius:16px; padding:24px;
+      border:1px solid var(--border); box-shadow:0 24px 60px rgba(0,0,0,0.04);
     }
 
-    .field { margin-bottom: 12px; }
-    .field label { font-size: 0.85rem; display:flex; justify-content:space-between; margin-bottom:4px; }
-
+    .field { margin-bottom:16px; }
+    .field label { display:block; margin-bottom:7px; font-weight:600; }
     input, select {
-      width: 100%; padding: 7px 8px; border-radius: 8px;
-      border: 1px solid var(--border); background: #f9fafb;
-    }
-    input:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px #bfdbfe;
-      background: #ffffff;
+      width:100%; padding:10px 12px; border-radius:8px;
+      border:1px solid var(--border); font-size:0.9rem; background:#fafbfc;
     }
 
-    button {
-      border:none; padding:8px 14px; border-radius:999px;
-      font-size:0.85rem; cursor:pointer;
-    }
+    button { border:none; border-radius:8px; padding:10px 18px; font-size:0.9rem; cursor:pointer; }
     .btn-primary { background:var(--primary); color:white; }
-    .btn-secondary { background:#e5e7eb; }
-    .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
+    .btn-secondary { background:#e2e8f0; color:#1e293b; }
 
-    .status { font-size:0.8rem; color:var(--muted); }
-    .status.error { color:var(--danger); }
-    .status.success { color:var(--success); }
-
-    table { width:100%; border-collapse:collapse; font-size:0.8rem; margin-top:10px; }
-    th,td {
-      border:1px solid var(--border); padding:6px 8px; text-align:right;
-    }
+    table { width:100%; border-collapse:collapse; margin-top:14px; font-size:0.85rem; }
+    th,td { border:1px solid var(--border); padding:8px 10px; text-align:right; }
     th:first-child, td:first-child { text-align:left; }
-    th { background:#f3f4f6; }
-    td.highlight { background:var(--highlight); font-weight:bold; }
+    th { background:#f1f5f9; font-weight:600; }
+
+    td.highlight { background:var(--highlight); font-weight:700; }
+
+    #chart { margin-top:20px; }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
 <div class="page">
 
-  <header>
-    <div class="title">Thuisbatterij Besparingscalculator</div>
-    <div class="subtitle">Nauwkeurige berekening op basis van uw eigen CSV-data.</div>
-  </header>
+<header>
+  <div class="title">Thuisbatterij Besparingscalculator</div>
+  <div class="subtitle">Nauwkeurige berekening met CSV-data en volledig adviesrapport.</div>
+</header>
 
-  <div class="stepper">
-    <div class="step active" id="step-pill-0"><div class="badge">0</div> Start</div>
-    <div class="step" id="step-pill-1"><div class="badge">1</div> CSV & Tarief</div>
-    <div class="step" id="step-pill-2"><div class="badge">2</div> Batterij</div>
-    <div class="step" id="step-pill-3"><div class="badge">3</div> Tarieven</div>
-    <div class="step" id="step-pill-4"><div class="badge">4</div> Resultaat</div>
-  </div>
-
-  <div class="layout">
-    <div class="card" id="wizard-container">
-
-      <!-- STEP 0 -->
-      <div id="step-0">
-        <h2>Stap 0 · Kies uw berekeningstype</h2>
-        <label><input type="radio" name="calc-type" value="snelle"> Snelle berekening</label>
-        <label><input type="radio" name="calc-type" value="nauwkeurige"> Nauwkeurige CSV-berekening</label>
-        <button class="btn-primary" id="to-step-0-next">Volgende</button>
-      </div>
-
-      <!-- STEP 1 -->
-      <div id="step-1" style="display:none;">
-        <h2>Stap 1 · Tarief & CSV-bestanden</h2>
-
-        <div class="field">
-          <label>Huidig tarief</label>
-          <select id="tariff-type">
-            <option value="enkel">Enkel</option>
-            <option value="dag_nacht">Dag/Nacht</option>
-            <option value="dynamisch">Dynamisch</option>
-          </select>
-        </div>
-
-        <div class="field"><label>load.csv</label><input type="file" id="file-load"></div>
-        <div class="field"><label>pv.csv</label><input type="file" id="file-pv"></div>
-        <div class="field"><label>prices.csv</label><input type="file" id="file-prices"></div>
-
-        <div id="csv-status" class="status">Nog geen CSV verwerkt.</div>
-
-        <button class="btn-primary" id="btn-parse-csv">CSV verwerken</button>
-        <button class="btn-primary" id="to-step-2" disabled>Volgende</button>
-      </div>
-
-      <!-- STEP 2 -->
-      <div id="step-2" style="display:none;">
-        <h2>Stap 2 · Batterij</h2>
-        <div class="field"><label>E (kWh)</label><input id="E"></div>
-        <div class="field"><label>P (kW)</label><input id="P"></div>
-        <div class="field"><label>DoD (%)</label><input id="DoD"></div>
-        <div class="field"><label>η_rt (%)</label><input id="eta_rt"></div>
-        <div class="field"><label>Vastrecht €/jaar</label><input id="fixed-cost"></div>
-
-        <button class="btn-secondary" id="back-to-1">Vorige</button>
-        <button class="btn-primary" id="to-step-3">Volgende</button>
-      </div>
-
-      <!-- STEP 3 -->
-      <div id="step-3" style="display:none;">
-        <h2>Stap 3 · Tarieven</h2>
-
-        <h3>Enkel</h3>
-        <div class="field"><label>Import</label><input id="p_enkel_imp"></div>
-        <div class="field"><label>Export</label><input id="p_enkel_exp"></div>
-
-        <h3>Dag/Nacht</h3>
-        <div class="field"><label>Dag</label><input id="p_dag"></div>
-        <div class="field"><label>Nacht</label><input id="p_nacht"></div>
-        <div class="field"><label>Export</label><input id="p_exp_dn"></div>
-
-        <h3>Dynamisch</h3>
-        <div class="field"><label>Exportprijs</label><input id="p_export_dyn"></div>
-
-        <div id="compute-status" class="status"></div>
-
-        <button class="btn-secondary" id="back-to-2">Vorige</button>
-        <button class="btn-primary" id="btn-compute">Bereken</button>
-      </div>
-
-      <!-- STEP 4 -->
-      <div id="step-4" style="display:none;">
-        <h2>Resultaten</h2>
-
-        <table>
-          <tr><th></th><th>Enkel</th><th>Dag/Nacht</th><th>Dynamisch</th></tr>
-          <tr><td>A1 huidige situatie</td>
-            <td id="A1-enkel">–</td><td id="A1-dn">–</td><td id="A1-dyn">–</td></tr>
-
-          <tr><td>B1 toekomst zonder batterij</td>
-            <td id="B1-enkel">–</td><td id="B1-dn">–</td><td id="B1-dyn">–</td></tr>
-
-          <tr><td>C1 toekomst met batterij</td>
-            <td id="C1-enkel">–</td><td id="C1-dn">–</td><td id="C1-dyn">–</td></tr>
-        </table>
-
-        <h3>Energie-inzichten</h3>
-
-        <table>
-          <tr><th></th><th>Enkel</th><th>Dag/Nacht</th><th>Dynamisch</th></tr>
-
-          <tr><td>B1 import</td>
-            <td id="B1-imp-enkel">–</td><td id="B1-imp-dn">–</td><td id="B1-imp-dyn">–</td></tr>
-
-          <tr><td>B1 export</td>
-            <td id="B1-exp-enkel">–</td><td id="B1-exp-dn">–</td><td id="B1-exp-dyn">–</td></tr>
-
-          <tr><td>C1 import</td>
-            <td id="C1-imp-enkel">–</td><td id="C1-imp-dn">–</td><td id="C1-imp-dyn">–</td></tr>
-
-          <tr><td>C1 export</td>
-            <td id="C1-exp-enkel">–</td><td id="C1-exp-dn">–</td><td id="C1-exp-dyn">–</td></tr>
-        </table>
-      </div>
-
-    </div>
-
-    <div class="card">
-      <h2>Grafiek</h2>
-      <canvas id="chart" height="140"></canvas>
-    </div>
-  </div>
+<!-- ======================= -->
+<!--        STEPPER          -->
+<!-- ======================= -->
+<div class="stepper">
+  <div class="step active" id="step-pill-0"><div class="badge">0</div> Start</div>
+  <div class="step" id="step-pill-1"><div class="badge">1</div> CSV & Tarief</div>
+  <div class="step" id="step-pill-2"><div class="badge">2</div> Batterij</div>
+  <div class="step" id="step-pill-3"><div class="badge">3</div> Tarieven</div>
+  <div class="step" id="step-pill-4"><div class="badge">4</div> Resultaat</div>
 </div>
 
-// ----------------------------------------
-// PDF GENERATOR — DEEL 1 (HEADER + INTRO)
-// ----------------------------------------
-function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
-
-  let y = 50;
-  const left = 40;
-  const maxWidth = 520;
-
-  // -----------------------
-  // TITELBLOK
-  // -----------------------
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text("Thuisbatterij Adviesrapport", left, y);
-  y += 35;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  const now = new Date().toLocaleDateString("nl-NL");
-  doc.text(`Datum: ${now}`, left, y);
-  y += 25;
-
-  // -----------------------
-  // INLEIDING
-  // -----------------------
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("1. Inleiding", left, y); 
-  y += 20;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  const intro =
-    "Dit rapport toont een volledige financiële en energetische analyse " +
-    "van uw woning met en zonder thuisbatterij, onder drie tariefstructuren: " +
-    "Enkel tarief, Dag/Nacht tarief en Dynamisch tarief. " +
-    "Alle berekeningen zijn uitgevoerd op basis van uw eigen upload (CSV-data).";
-  let lines = doc.splitTextToSize(intro, maxWidth);
-  doc.text(lines, left, y);
-  y += lines.length * 14 + 20;
-
-  // -----------------------
-  // 2. Tarievenoverzicht
-  // -----------------------
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("2. Tarievenoverzicht", left, y);
-  y += 20;
-
-  // TARIEXTABEL
-  function pdfTable(rows) {
-    const cellH = 20;
-
-    rows.forEach((row, r) => {
-      let x = left;
-      row.forEach((text, c) => {
-        doc.setFont("helvetica", r === 0 ? "bold" : "normal");
-        doc.rect(x, y, 150, cellH);
-        doc.text(String(text), x + 10, y + 14);
-        x += 150;
-      });
-      y += cellH;
-    });
-    y += 15;
-  }
-
-  const tariffTable = [
-    ["Tarief", "Importprijs", "Exportprijs"],
-    [
-      "Enkel",
-      document.getElementById("p_enkel_imp").value + " €/kWh",
-      document.getElementById("p_enkel_exp").value + " €/kWh"
-    ],
-    [
-      "Dag/Nacht",
-      document.getElementById("p_dag").value + " / " +
-      document.getElementById("p_nacht").value + " €/kWh",
-      document.getElementById("p_exp_dn").value + " €/kWh"
-    ],
-    [
-      "Dynamisch",
-      "CSV (uurprijzen)",
-      document.getElementById("p_export_dyn").value + " €/kWh"
-    ]
-  ];
-
-  pdfTable(tariffTable);
-
-  // -----------------------
-  // 3. Kostenmatrix (A1/B1/C1)
-  // -----------------------
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("3. Jaarlijkse kostenmatrix", left, y);
-  y += 20;
-
-  const A1 = document.getElementById("res-A1").textContent;
-  const B1 = document.getElementById("res-B1").textContent;
-  const C1 = document.getElementById("res-C1").textContent;
-
-  const costTable = [
-    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
-    [
-      "A1 – Huidige situatie",
-      document.getElementById("A1-enkel").textContent,
-      document.getElementById("A1-dn").textContent,
-      document.getElementById("A1-dyn").textContent
-    ],
-    [
-      "B1 – Toekomst zonder batterij",
-      document.getElementById("B1-enkel").textContent,
-      document.getElementById("B1-dn").textContent,
-      document.getElementById("B1-dyn").textContent
-    ],
-    [
-      "C1 – Toekomst met batterij",
-      document.getElementById("C1-enkel").textContent,
-      document.getElementById("C1-dn").textContent,
-      document.getElementById("C1-dyn").textContent
-    ]
-  ];
-
-  pdfTable(costTable);
-
-  // -----------------------
-  // EINDE DEEL 1
-  // -----------------------
-  return { doc, y, left, maxWidth };
-}
-
-  // -------------------------------------------------------
-// PDF – DEEL 2
-// Secties 3 t/m 5 + helpers
-// -------------------------------------------------------
-
-// 3. KOSTENMATRIX (A1/B1/C1 × Enkel/DN/Dyn)
-function pdf_addCostMatrix(doc, data, startY) {
-  let y = startY;
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("3. Kostenmatrix", 40, y);
-  y += 20;
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-
-  const rows = [
-    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
-    ["A1 (huidig)", 
-      euro(data.A1_per_tariff.enkel),
-      euro(data.A1_per_tariff.dag_nacht),
-      euro(data.A1_per_tariff.dynamisch)
-    ],
-    ["B1 (zonder batterij)",
-      euro(data.S2_enkel.total_cost),
-      euro(data.S2_dn.total_cost),
-      euro(data.S2_dyn.total_cost)
-    ],
-    ["C1 (met batterij)",
-      euro(data.S3_enkel.total_cost),
-      euro(data.S3_dn.total_cost),
-      euro(data.S3_dyn.total_cost)
-    ]
-  ];
-
-  y = pdf_drawTable(doc, rows, 40, y);
-  return y + 20;
-}
-
-// 4. IMPORT/EXPORT – per tarief
-function pdf_addEnergyTables(doc, data, startY) {
-  let y = startY;
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("4. Energie-inzichten per tarief", 40, y);
-  y += 20;
-
-  const rowsImp = [
-    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
-    ["B1 (zonder batterij)",
-      data.S2_enkel.import.toFixed(1),
-      data.S2_dn.import.toFixed(1),
-      data.S2_dyn.import.toFixed(1)
-    ],
-    ["C1 (met batterij)",
-      data.S3_enkel.import.toFixed(1),
-      data.S3_dn.import.toFixed(1),
-      data.S3_dyn.import.toFixed(1)
-    ]
-  ];
-
-  doc.setFontSize(12);
-  doc.text("Import (kWh)", 40, y);
-  y += 14;
-  y = pdf_drawTable(doc, rowsImp, 40, y);
-
-  const rowsExp = [
-    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
-    ["B1 (zonder batterij)",
-      data.S2_enkel.export.toFixed(1),
-      data.S2_dn.export.toFixed(1),
-      data.S2_dyn.export.toFixed(1)
-    ],
-    ["C1 (met batterij)",
-      data.S3_enkel.export.toFixed(1),
-      data.S3_dn.export.toFixed(1),
-      data.S3_dyn.export.toFixed(1)
-    ]
-  ];
-
-  y += 20;
-  doc.text("Export (kWh)", 40, y);
-  y += 14;
-  y = pdf_drawTable(doc, rowsExp, 40, y);
-
-  return y + 20;
-}
-
-// 5. BATTERIJSTATEN
-function pdf_addBatteryStats(doc, stats, startY) {
-  let y = startY;
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("5. Batterijprestaties", 40, y);
-  y += 20;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-
-  const rows = [
-    ["Parameter", "Waarde"],
-    ["Aantal cycli/jaar", stats.cycles_per_year],
-    ["Laadverlies (%)", (stats.loss_charge * 100).toFixed(1)],
-    ["Ontlaadverlies (%)", (stats.loss_discharge * 100).toFixed(1)],
-    ["Totale round-trip efficiëntie (%)", (stats.efficiency_rt * 100).toFixed(1)],
-    ["Autonomie (uur)", stats.autonomy_hours.toFixed(1)]
-  ];
-
-  y = pdf_drawTable(doc, rows, 40, y);
-
-  return y + 20;
-}
-
-// ----------------------------
-// HELPER – Tabel tekenen
-// ----------------------------
-function pdf_drawTable(doc, rows, x, startY) {
-  let y = startY;
-  const colWidths = [150, 120, 120, 120];
-  const rowHeight = 18;
-
-  doc.setDrawColor(180);
-  doc.setLineWidth(0.5);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-
-  // Header
-  doc.setFont("helvetica", "bold");
-  for (let i = 0; i < rows[0].length; i++) {
-    doc.text(rows[0][i], x + colWidths.slice(0, i).reduce((a,b)=>a+b,0) + 4, y);
-  }
-  y += rowHeight;
-  doc.setFont("helvetica", "normal");
-
-  // Rows
-  for (let r = 1; r < rows.length; r++) {
-    const row = rows[r];
-
-    let colX = x;
-    for (let c = 0; c < row.length; c++) {
-      doc.text(String(row[c]), colX + 4, y);
-      colX += colWidths[c];
-    }
-
-    y += rowHeight;
-  }
-
-  // Border box
-  const totalWidth = colWidths.reduce((a,b)=>a+b,0);
-  const totalHeight = rows.length * rowHeight;
-  doc.rect(x, startY - rowHeight, totalWidth, totalHeight);
-
-  return y;
-}
-
-// ----------------------------
-// HELPER – Euro formatter
-// ----------------------------
-function euro(v) {
-  if (v === null || isNaN(v)) return "–";
-  return "€ " + v.toFixed(2).replace(".", ",");
-}
-
- <!-- =============================================== -->
-<!--                 PDF EXPORT (deel 3)             -->
-<!-- =============================================== -->
-
-function pdfAddCostMatrix(doc, data) {
-  doc.addPage();
-  const X = 40;
-  let y = 60;
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text("Kostenmatrix", X, y);
-  y += 25;
-
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("Scenario", X, y);
-  doc.text("Enkel", X+180, y);
-  doc.text("Dag/Nacht", X+300, y);
-  doc.text("Dynamisch", X+430, y);
-  y += 14;
-
-  doc.setFont("helvetica","normal");
-
-  const row = (label, e, dn, d) => {
-    doc.text(label, X, y);
-    doc.text(fmtEuro(e), X+180, y);
-    doc.text(fmtEuro(dn), X+300, y);
-    doc.text(fmtEuro(d), X+430, y);
-    y += 14;
-  };
-
-  row("A1 – Huidige situatie",
-      data.A1_per_tariff.enkel,
-      data.A1_per_tariff.dag_nacht,
-      data.A1_per_tariff.dynamisch);
-
-  row("B1 – Zonder batterij",
-      data.S2_enkel.total_cost,
-      data.S2_dn.total_cost,
-      data.S2_dyn.total_cost);
-
-  row("C1 – Met batterij",
-      data.S3_enkel.total_cost,
-      data.S3_dn.total_cost,
-      data.S3_dyn.total_cost);
-
-  y += 30;
-}
-
-function pdfAddBatteryStats(doc, data) {
-  doc.addPage();
-  const X = 40;
-  let y = 60;
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text("Batterijstaten & Energieflow", X, y);
-  y += 25;
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "normal");
-
-  const s3 = data.S3_enkel; // Enkel als referentie
-  const lines = [
-    `Totale import mét batterij: ${s3.import.toFixed(1)} kWh`,
-    `Totale export mét batterij: ${s3.export.toFixed(1)} kWh`,
-    `Battery E-vermogen: ${data.input?.E ?? '-'} kWh`,
-    `Battery P-vermogen: ${data.input?.P ?? '-'} kW`,
-    `Battery DoD: ${(data.input?.DoD*100).toFixed(0) ?? '-'}%`,
-    `Battery round-trip efficiëntie: ${(data.input?.eta_rt*100).toFixed(0) ?? '-'}%`
-  ];
-
-  lines.forEach(line => {
-    doc.text(line, X, y);
-    y += 16;
-  });
-
-  y += 20;
-}
-
-function pdfAddChart(doc) {
-  const chart = document.getElementById("chart");
-  if (!chart) return;
-  try {
-    const img = chart.toDataURL("image/png");
-    doc.addPage();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("Grafiek – Jaarlijkse kosten", 40, 60);
-    doc.addImage(img, "PNG", 40, 90, 520, 230);
-  } catch(e) {}
-}
-
-// =====================================================
-//  PDF EXPORT KNOP
-// =====================================================
-document.getElementById("btn-download-pdf").addEventListener("click", () => {
-  if (!window.computedResult) {
-    alert("Voer eerst een berekening uit.");
-    return;
-  }
-
-  const data = window.computedResult;
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: "pt", format: "a4" });
-
-  pdfHeader(doc);
-  pdfIntroText(doc);
-  pdfAddTariffMatrix(doc, data);
-  pdfAddEnergyTables(doc, data);
-  pdfAddCostMatrix(doc, data);
-  pdfAddBatteryStats(doc, data);
-  pdfAddChart(doc);
-
-  doc.save("Thuisbatterij-adviesrapport.pdf");
-});
-
-</script>   
-  
+<div class="layout">
+<div class="card" id="wizard-container">
+
+<!-- ======================= -->
+<!--        STEP 0           -->
+<!-- ======================= -->
+<div id="step-0">
+  <h2>Stap 0 · Kies uw berekeningstype</h2>
+
+  <label><input type="radio" name="calc-type" value="snelle"> Snelle berekening</label><br>
+  <label><input type="radio" name="calc-type" value="nauwkeurige"> Nauwkeurige CSV-berekening</label><br>
+
+  <button class="btn-primary" id="to-step-0-next">Volgende</button>
+</div>
+
+<!-- ======================= -->
+<!--        STEP 1           -->
+<!-- ======================= -->
+<div id="step-1" style="display:none;">
+  <h2>Stap 1 · Tarief & CSV-bestanden</h2>
+
+  <div class="field">
+    <label>Huidig tarief</label>
+    <select id="tariff-type">
+      <option value="enkel">Enkel</option>
+      <option value="dag_nacht">Dag/Nacht</option>
+      <option value="dynamisch">Dynamisch</option>
+    </select>
+  </div>
+
+  <div class="field"><label>load.csv</label><input type="file" id="file-load"></div>
+  <div class="field"><label>pv.csv</label><input type="file" id="file-pv"></div>
+  <div class="field"><label>prices.csv (dynamisch)</label><input type="file" id="file-prices"></div>
+
+  <div id="csv-status" class="status">Nog geen CSV verwerkt.</div>
+
+  <button class="btn-primary" id="btn-parse-csv">CSV verwerken</button>
+  <button class="btn-primary" id="to-step-2" disabled>Volgende</button>
+</div>
+
+<!-- ======================= -->
+<!--        STEP 2           -->
+<!-- ======================= -->
+<div id="step-2" style="display:none;">
+  <h2>Stap 2 · Batterij</h2>
+
+  <div class="field"><label>E (kWh)</label><input id="E" type="number"></div>
+  <div class="field"><label>P (kW)</label><input id="P" type="number"></div>
+  <div class="field"><label>DoD (%)</label><input id="DoD" type="number"></div>
+  <div class="field"><label>η_rt (%)</label><input id="eta_rt" type="number"></div>
+  <div class="field"><label>Vastrecht (€/jaar)</label><input id="fixed-cost" type="number"></div>
+
+  <button class="btn-secondary" id="back-to-1">Vorige</button>
+  <button class="btn-primary" id="to-step-3">Volgende</button>
+</div>
+
+<!-- ======================= -->
+<!--        STEP 3           -->
+<!-- ======================= -->
+<div id="step-3" style="display:none;">
+  <h2>Stap 3 · Tarieven</h2>
+
+  <h3>Enkel tarief</h3>
+  <div class="field"><label>Import</label><input id="p_enkel_imp"></div>
+  <div class="field"><label>Export</label><input id="p_enkel_exp"></div>
+
+  <h3>Dag/Nacht</h3>
+  <div class="field"><label>Dag</label><input id="p_dag"></div>
+  <div class="field"><label>Nacht</label><input id="p_nacht"></div>
+  <div class="field"><label>Export</label><input id="p_exp_dn"></div>
+
+  <h3>Dynamisch tarief</h3>
+  <div class="field"><label>Exportprijs</label><input id="p_export_dyn"></div>
+
+  <div id="compute-status" class="status"></div>
+
+  <button class="btn-secondary" id="back-to-2">Vorige</button>
+  <button class="btn-primary" id="btn-compute">Bereken</button>
+</div>
+
+<!-- ======================= -->
+<!--        STEP 4           -->
+<!-- ======================= -->
+<div id="step-4" style="display:none;">
+  <h2>Resultaten</h2>
+
+  <div class="results-summary">
+    <div class="result-tile"><div class="label">Huidige situatie (A1)</div><div class="value" id="res-A1">–</div></div>
+    <div class="result-tile"><div class="label">Zonder batterij (B1)</div><div class="value" id="res-B1">–</div></div>
+    <div class="result-tile"><div class="label">Met batterij (C1)</div><div class="value" id="res-C1">–</div></div>
+  </div>
+
+  <h3>Tariefmatrix</h3>
+  <table>
+    <tr><th>Scenario</th><th>Enkel</th><th>Dag/Nacht</th><th>Dynamisch</th></tr>
+
+    <tr><td>Huidige situatie</td><td id="A1-enkel">–</td><td id="A1-dn">–</td><td id="A1-dyn">–</td></tr>
+    <tr><td>Zonder batterij</td><td id="B1-enkel">–</td><td id="B1-dn">–</td><td id="B1-dyn">–</td></tr>
+    <tr><td>Met batterij</td><td id="C1-enkel">–</td><td id="C1-dn">–</td><td id="C1-dyn">–</td></tr>
+  </table>
+
+  <h3>Energie-inzichten</h3>
+  <table>
+    <tr><th></th><th>Enkel</th><th>Dag/Nacht</th><th>Dynamisch</th></tr>
+
+    <tr><td>B1 Import</td><td id="B1-imp-enkel">–</td><td id="B1-imp-dn">–</td><td id="B1-imp-dyn">–</td></tr>
+    <tr><td>B1 Export</td><td id="B1-exp-enkel">–</td><td id="B1-exp-dn">–</td><td id="B1-exp-dyn">–</td></tr>
+
+    <tr><td>C1 Import</td><td id="C1-imp-enkel">–</td><td id="C1-imp-dn">–</td><td id="C1-imp-dyn">–</td></tr>
+    <tr><td>C1 Export</td><td id="C1-exp-enkel">–</td><td id="C1-exp-dn">–</td><td id="C1-exp-dyn">–</td></tr>
+  </table>
+
+  <button class="btn-primary" id="btn-download-pdf">📄 Download PDF</button>
+</div>
+
+</div>
+
+<!-- ======================= -->
+<!-- GRAFIEK (rechterkolom) -->
+<!-- ======================= -->
+<div class="card">
+  <h2>Grafiek — Jaarlijkse kosten</h2>
+  <canvas id="chart" height="140"></canvas>
+</div>
+
+</div> <!-- /layout -->
+</div> <!-- /page -->
+
+<!-- ======================= -->
+<!--     SCRIPTS BEGINT      -->
+<!-- ======================= -->
 <script>
 const API_BASE = "https://batteryengine-server.onrender.com";
 let parsedData = {};
 
-// STEP NAVIGATIE
 function activateStep(n) {
   for (let i = 0; i < 5; i++) {
     document.getElementById("step-pill-" + i).classList.toggle("active", i === n);
@@ -658,7 +248,7 @@ function activateStep(n) {
 
 function fmtEuro(x) { return "€ " + x.toFixed(2).replace(".", ","); }
 
-// CSV PARSEN
+/* CSV PROCESSING */
 document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   const loadFile = file-load.files[0];
   const pvFile = file-pv.files[0];
@@ -666,7 +256,7 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   const status = csv-status;
 
   if (!loadFile || !pvFile || !pricesFile) {
-    status.textContent = "Alle 3 CSV-bestanden zijn vereist.";
+    status.textContent = "Alle 3 CSV-bestanden zijn nodig.";
     status.className = "status error";
     return;
   }
@@ -678,9 +268,9 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   ]);
 
   const res = await fetch(API_BASE + "/parse_csv", {
-    method: "POST",
-    headers: { "Content-Type":"application/json" },
-    body: JSON.stringify({
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
       load_file: loadText,
       pv_file: pvText,
       prices_file: pricesText
@@ -689,7 +279,7 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
 
   const data = await res.json();
   if (data.error) {
-    status.textContent = "CSV fout.";
+    status.textContent = "Fout in CSV.";
     status.className = "status error";
     return;
   }
@@ -700,7 +290,7 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   to-step-2.disabled = false;
 });
 
-// NAVIGATIE
+/* NAVIGATIE */
 to-step-0-next.addEventListener("click", () => {
   const choice = document.querySelector('input[name="calc-type"]:checked');
   if (!choice) return alert("Selecteer een optie.");
@@ -711,7 +301,7 @@ back-to-1.addEventListener("click", ()=>activateStep(1));
 to-step-3.addEventListener("click", ()=>activateStep(3));
 back-to-2.addEventListener("click", ()=>activateStep(2));
 
-// COMPUTE
+/* COMPUTE */
 btn-compute.addEventListener("click", async () => {
   compute-status.textContent = "Berekenen…";
 
@@ -719,16 +309,21 @@ btn-compute.addEventListener("click", async () => {
     load_kwh: parsedData.load_kwh,
     pv_kwh: parsedData.pv_kwh,
     prices_dyn: parsedData.prices_dyn,
+
     p_enkel_imp: parseFloat(p_enkel_imp.value),
     p_enkel_exp: parseFloat(p_enkel_exp.value),
+
     p_dag: parseFloat(p_dag.value),
     p_nacht: parseFloat(p_nacht.value),
     p_exp_dn: parseFloat(p_exp_dn.value),
+
     p_export_dyn: parseFloat(p_export_dyn.value),
+
     E: parseFloat(E.value),
     P: parseFloat(P.value),
-    DoD: parseFloat(DoD.value)/100,
-    eta_rt: parseFloat(eta_rt.value)/100,
+    DoD: parseFloat(DoD.value) / 100,
+    eta_rt: parseFloat(eta_rt.value) / 100,
+
     Vastrecht: parseFloat(fixed-cost.value),
     current_tariff: tariff-type.value
   };
@@ -740,23 +335,27 @@ btn-compute.addEventListener("click", async () => {
   });
 
   const data = await res.json();
+  window.computedResult = data;
 
-  // A1
+  /* Tegels */
+  res-A1.textContent = fmtEuro(data.A1_current);
+  res-B1.textContent = fmtEuro(data.B1_future_no_batt);
+  res-C1.textContent = fmtEuro(data.C1_future_with_batt);
+
+  /* Tariefmatrix */
   A1-enkel.textContent = fmtEuro(data.A1_per_tariff.enkel);
   A1-dn.textContent    = fmtEuro(data.A1_per_tariff.dag_nacht);
   A1-dyn.textContent   = fmtEuro(data.A1_per_tariff.dynamisch);
 
-  // B1
   B1-enkel.textContent = fmtEuro(data.S2_enkel.total_cost);
   B1-dn.textContent    = fmtEuro(data.S2_dn.total_cost);
   B1-dyn.textContent   = fmtEuro(data.S2_dyn.total_cost);
 
-  // C1
   C1-enkel.textContent = fmtEuro(data.S3_enkel.total_cost);
   C1-dn.textContent    = fmtEuro(data.S3_dn.total_cost);
   C1-dyn.textContent   = fmtEuro(data.S3_dyn.total_cost);
 
-  // Energie
+  /* Energie-inzichten */
   B1-imp-enkel.textContent = data.S2_enkel.import.toFixed(1);
   B1-imp-dn.textContent    = data.S2_dn.import.toFixed(1);
   B1-imp-dyn.textContent   = data.S2_dyn.import.toFixed(1);
@@ -773,22 +372,105 @@ btn-compute.addEventListener("click", async () => {
   C1-exp-dn.textContent    = data.S3_dn.export.toFixed(1);
   C1-exp-dyn.textContent   = data.S3_dyn.export.toFixed(1);
 
-  // GRAFIEK
-  if (window.chartRef) window.chartRef.destroy();
-  const ctx = chart.getContext("2d");
-
-  window.chartRef = new Chart(ctx, {
+  /* Chart.js */
+  if (window.costChart) window.costChart.destroy();
+  window.costChart = new Chart(chart.getContext("2d"), {
     type:"bar",
     data:{
-      labels:["A1","B1","C1"],
+      labels:["A1", "B1", "C1"],
       datasets:[{
-        label:"Kosten €",
+        label:"Jaarlijkse kosten (€)",
         data:[data.A1_current, data.B1_future_no_batt, data.C1_future_with_batt]
       }]
     }
   });
 
+  compute-status.textContent = "Klaar.";
+  compute-status.className = "status success";
   activateStep(4);
+});
+
+/* ======================= */
+/*     PDF EXPORT          */
+/* ======================= */
+function pdfExport(data) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:"pt", format:"a4" });
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.text("Thuisbatterij Adviesrapport", 40, 60);
+
+  doc.setFontSize(14);
+  doc.text("Tarievenmatrix", 40, 110);
+
+  // Simple stable table
+  const rows = [
+    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
+    ["Huidige situatie", 
+      fmtEuro(data.A1_per_tariff.enkel),
+      fmtEuro(data.A1_per_tariff.dag_nacht),
+      fmtEuro(data.A1_per_tariff.dynamisch)
+    ],
+    ["Zonder batterij",
+      fmtEuro(data.S2_enkel.total_cost),
+      fmtEuro(data.S2_dn.total_cost),
+      fmtEuro(data.S2_dyn.total_cost)
+    ],
+    ["Met batterij",
+      fmtEuro(data.S3_enkel.total_cost),
+      fmtEuro(data.S3_dn.total_cost),
+      fmtEuro(data.S3_dyn.total_cost)
+    ]
+  ];
+
+  let y = 140;
+  rows.forEach(r=>{
+    doc.text(r[0], 40, y);
+    doc.text(r[1], 220, y);
+    doc.text(r[2], 350, y);
+    doc.text(r[3], 480, y);
+    y += 20;
+  });
+
+  doc.addPage();
+  doc.setFontSize(14);
+  doc.text("Energie-inzichten (kWh)", 40, 60);
+  y = 90;
+
+  const rows2 = [
+    ["", "Enkel", "Dag/Nacht", "Dynamisch"],
+    ["B1 Import", data.S2_enkel.import.toFixed(1), data.S2_dn.import.toFixed(1), data.S2_dyn.import.toFixed(1)],
+    ["B1 Export", data.S2_enkel.export.toFixed(1), data.S2_dn.export.toFixed(1), data.S2_dyn.export.toFixed(1)],
+    ["C1 Import", data.S3_enkel.import.toFixed(1), data.S3_dn.import.toFixed(1), data.S3_dyn.import.toFixed(1)],
+    ["C1 Export", data.S3_enkel.export.toFixed(1), data.S3_dn.export.toFixed(1), data.S3_dyn.export.toFixed(1)]
+  ];
+  rows2.forEach(r=>{
+    doc.text(r[0], 40, y);
+    doc.text(r[1], 220, y);
+    doc.text(r[2], 350, y);
+    doc.text(r[3], 480, y);
+    y += 20;
+  });
+
+  doc.save("Thuisbatterij-adviesrapport.pdf");
+}
+
+document.getElementById("btn-download-pdf").addEventListener("click", () => {
+  pdfExport(window.computedResult);
+});
+
+/* Defaults */
+window.addEventListener("DOMContentLoaded", () => {
+  activateStep(0);
+  p_enkel_imp.value = "0.29";
+  p_enkel_exp.value = "0.07";
+
+  p_dag.value       = "0.31";
+  p_nacht.value     = "0.26";
+  p_exp_dn.value    = "0.07";
+
+  p_export_dyn.value = "0.07";
 });
 </script>
 
