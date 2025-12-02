@@ -690,3 +690,263 @@ window.addEventListener("DOMContentLoaded", () => {
   p_export_dyn.value="0.07";
 });
 </script>
+
+// ------------------------
+// CSV VERWERKING
+// ------------------------
+document.getElementById("btn-parse-csv").addEventListener("click", async () => {
+  const loadFile = document.getElementById("file-load").files[0];
+  const pvFile = document.getElementById("file-pv").files[0];
+  const pricesFile = document.getElementById("file-prices").files[0];
+  const status = document.getElementById("csv-status");
+
+  if (!loadFile || !pvFile || !pricesFile) {
+    status.textContent = "Upload alle 3 CSV-bestanden.";
+    status.className = "status error";
+    return;
+  }
+
+  status.textContent = "Verwerken...";
+  status.className = "status";
+
+  try {
+    const [loadText, pvText, priceText] = await Promise.all([
+      loadFile.text(), pvFile.text(), pricesFile.text()
+    ]);
+
+    const res = await fetch(API_BASE + "/parse_csv", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        load_file: loadText,
+        pv_file: pvText,
+        prices_file: priceText
+      })
+    });
+
+    const data = await res.json();
+    if (data.error) {
+      status.textContent = "CSV ongeldig.";
+      status.className = "status error";
+      return;
+    }
+
+    parsedData = data;
+    status.textContent = `CSV geladen (${data.load_kwh.length} rijen).`;
+    status.className = "status success";
+    document.getElementById("to-step-2").disabled = false;
+
+  } catch (e) {
+    status.textContent = "Fout: " + e.message;
+    status.className = "status error";
+  }
+});
+
+// ------------------------
+// BUTTONS STEP 0
+// ------------------------
+document.getElementById("to-step-0-next").addEventListener("click", () => {
+  const type = document.querySelector('input[name="calc-type"]:checked');
+  if (!type) return alert("Kies eerst een type.");
+
+  if (type.value === "snelle") {
+    activateStep(13);
+  } else {
+    activateStep(1);
+  }
+});
+
+// ------------------------
+// NAVIGATIE
+// ------------------------
+document.getElementById("to-step-2").addEventListener("click", ()=>activateStep(2));
+document.getElementById("back-to-1").addEventListener("click", ()=>activateStep(1));
+document.getElementById("to-step-3").addEventListener("click", ()=>activateStep(3));
+document.getElementById("back-to-2").addEventListener("click", ()=>activateStep(2));
+
+// ------------------------
+// START BEREKENING
+// ------------------------
+document.getElementById("btn-compute").addEventListener("click", async () => {
+  const status = document.getElementById("compute-status");
+
+  if (!parsedData.load_kwh) {
+    status.textContent = "CSV ontbreekt.";
+    status.className = "status error";
+    return;
+  }
+
+  const body = {
+    load_kwh: parsedData.load_kwh,
+    pv_kwh: parsedData.pv_kwh,
+    prices_dyn: parsedData.prices_dyn || [],
+
+    p_enkel_imp: parseFloat(p_enkel_imp.value || "0.29"),
+    p_enkel_exp: parseFloat(p_enkel_exp.value || "0.07"),
+
+    p_dag: parseFloat(p_dag.value || "0.31"),
+    p_nacht: parseFloat(p_nacht.value || "0.26"),
+    p_exp_dn: parseFloat(p_exp_dn.value || "0.07"),
+
+    p_export_dyn: parseFloat(p_export_dyn.value || "0.07"),
+
+    E: parseFloat(E.value || "0"),
+    P: parseFloat(P.value || "0"),
+    DoD: parseFloat(DoD.value || "0") / 100,
+    eta_rt: parseFloat(eta_rt.value || "0") / 100,
+
+    capex: parseFloat(capex.value || "0"),
+    opex_per_year: parseFloat(opex.value || "0"),
+    horizon_years: parseFloat(horizon.value || "0"),
+    interest_rate: parseFloat(interest.value || "0"),
+    Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
+
+    current_tariff: document.getElementById("tariff-type").value || "enkel"
+  };
+
+  status.textContent = "Berekenen...";
+  status.className = "status";
+
+  try {
+    const res = await fetch(API_BASE + "/compute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    if (!data || !("A1_current" in data)) {
+      status.textContent = "Serverfout — backend geeft geen A1 terug.";
+      status.className = "status error";
+      return;
+    }
+
+    // ------------------------
+    // HOOFDTEGELS
+    // ------------------------
+    document.getElementById("res-A1").textContent = fmtEuro(data.A1_current);
+    document.getElementById("res-B1").textContent = fmtEuro(data.B1_future_no_batt);
+    document.getElementById("res-C1").textContent = fmtEuro(data.C1_future_with_batt);
+
+    // ------------------------
+    // TARIEFTABEL (A1/B1/C1)
+    // ------------------------
+    const curr = body.current_tariff;
+
+    const tEnkel = document.getElementById("th-enkel");
+    const tDn    = document.getElementById("th-dn");
+    const tDyn   = document.getElementById("th-dyn");
+
+    [tEnkel, tDn, tDyn].forEach(th => th.classList.remove("highlight"));
+
+    if      (curr === "enkel")     tEnkel.classList.add("highlight");
+    else if (curr === "dag_nacht") tDn.classList.add("highlight");
+    else if (curr === "dynamisch") tDyn.classList.add("highlight");
+
+    // A1 per tarief
+    document.getElementById("A1-enkel").textContent = fmtEuro(data.A1_per_tariff.enkel);
+    document.getElementById("A1-dn").textContent    = fmtEuro(data.A1_per_tariff.dag_nacht);
+    document.getElementById("A1-dyn").textContent   = fmtEuro(data.A1_per_tariff.dynamisch);
+
+    // B1
+    document.getElementById("B1-enkel").textContent = fmtEuro(data.S2_enkel.total_cost);
+    document.getElementById("B1-dn").textContent    = fmtEuro(data.S2_dn.total_cost);
+    document.getElementById("B1-dyn").textContent   = fmtEuro(data.S2_dyn.total_cost);
+
+    // C1
+    document.getElementById("C1-enkel").textContent = fmtEuro(data.S3_enkel.total_cost);
+    document.getElementById("C1-dn").textContent    = fmtEuro(data.S3_dn.total_cost);
+    document.getElementById("C1-dyn").textContent   = fmtEuro(data.S3_dyn.total_cost);
+
+    // ------------------------
+    // ENERGIE-INZICHTEN
+    // ------------------------
+    document.getElementById("B1-imp-enkel").textContent = data.S2_enkel.import.toFixed(1);
+    document.getElementById("B1-imp-dn").textContent    = data.S2_dn.import.toFixed(1);
+    document.getElementById("B1-imp-dyn").textContent   = data.S2_dyn.import.toFixed(1);
+
+    document.getElementById("B1-exp-enkel").textContent = data.S2_enkel.export.toFixed(1);
+    document.getElementById("B1-exp-dn").textContent    = data.S2_dn.export.toFixed(1);
+    document.getElementById("B1-exp-dyn").textContent   = data.S2_dyn.export.toFixed(1);
+
+    document.getElementById("C1-imp-enkel").textContent = data.S3_enkel.import.toFixed(1);
+    document.getElementById("C1-imp-dn").textContent    = data.S3_dn.import.toFixed(1);
+    document.getElementById("C1-imp-dyn").textContent   = data.S3_dyn.import.toFixed(1);
+
+    document.getElementById("C1-exp-enkel").textContent = data.S3_enkel.export.toFixed(1);
+    document.getElementById("C1-exp-dn").textContent    = data.S3_dn.export.toFixed(1);
+    document.getElementById("C1-exp-dyn").textContent   = data.S3_dyn.export.toFixed(1);
+
+    activateStep(4);
+    status.textContent = "Berekening afgerond.";
+    status.className = "status success";
+
+  } catch (err) {
+    status.textContent = "Fout: " + err.message;
+    status.className = "status error";
+  }
+});
+
+// ------------------------------
+// DEFAULT WAARDEN
+// ------------------------------
+window.addEventListener("DOMContentLoaded", () => {
+  activateStep(0);
+
+  p_enkel_imp.value = "0.29";
+  p_enkel_exp.value = "0.07";
+  p_dag.value = "0.31";
+  p_nacht.value = "0.26";
+  p_exp_dn.value = "0.07";
+  p_export_dyn.value = "0.07";
+});
+
+// ------------------------------
+// PDF GENERATOR
+// ------------------------------
+document.getElementById("btn-download-pdf").addEventListener("click", () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+  let y = 40;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.text("Thuisbatterij Adviesrapport", 40, y);
+  y += 30;
+
+  const addSection = (title, id) => {
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(title, 40, y);
+    y += 20;
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+
+    const t = document.getElementById(id).innerText.trim();
+    const lines = doc.splitTextToSize(t, 520);
+    doc.text(lines, 40, y);
+
+    y += lines.length * 14 + 20;
+  };
+
+  addSection("1. Berekeningsmethode", "adv-method");
+  addSection("2. Aannames", "adv-assumptions");
+  addSection("3. Financiële Analyse", "adv-financial");
+  addSection("4. Energie-inzichten", "adv-energy");
+  addSection("5. Beperkingen", "adv-limits");
+  addSection("6. Conclusie", "adv-conclusion");
+
+  const chart = document.getElementById("chart");
+  if (chart) {
+    const img = chart.toDataURL("image/png");
+    doc.addImage(img, "PNG", 40, y, 520, 220);
+  }
+
+  doc.save("Thuisbatterij-advies.pdf");
+});
+</script>
+</body>
+</html>
