@@ -569,7 +569,8 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     interest: parseFloat(interest.value || "0"),
     cycles: parseFloat(cycles.value || "0"),
 
-    Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0")
+    Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
+    current_tariff: document.getElementById("tariff-type").value || "enkel"
   };
 
   status.textContent = "Berekenen...";
