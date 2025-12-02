@@ -458,6 +458,9 @@ const API_BASE = "https://batteryengine-server.onrender.com";
 
 let parsedData = { load_kwh:null, pv_kwh:null, prices_dyn:null };
 
+// ------------------------
+// STEP NAVIGATIE
+// ------------------------
 function activateStep(n) {
   for (let i = 0; i <= 14; i++) {
     const pill = document.getElementById("step-pill-" + i);
@@ -472,3 +475,218 @@ function fmtEuro(v) {
   if (v === null || isNaN(v)) return "–";
   return "€ " + v.toFixed(2).replace(".", ",");
 }
+
+// ------------------------
+// CSV VERWERKING
+// ------------------------
+document.getElementById("btn-parse-csv").addEventListener("click", async () => {
+  const loadFile = document.getElementById("file-load").files[0];
+  const pvFile = document.getElementById("file-pv").files[0];
+  const pricesFile = document.getElementById("file-prices").files[0];
+  const status = document.getElementById("csv-status");
+
+  if (!loadFile || !pvFile || !pricesFile) {
+    status.textContent = "Upload alle 3 CSV-bestanden.";
+    status.className = "status error";
+    return;
+  }
+
+  status.textContent = "Verwerken...";
+  status.className = "status";
+
+  try {
+    const [loadText, pvText, pricesText] = await Promise.all([
+      loadFile.text(), pvFile.text(), pricesFile.text()
+    ]);
+
+    const res = await fetch(API_BASE + "/parse_csv", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        load_file: loadText,
+        pv_file: pvText,
+        prices_file: pricesText
+      })
+    });
+
+    const data = await res.json();
+    if (data.error) {
+      status.textContent = "CSV ongeldig.";
+      status.className = "status error";
+      return;
+    }
+
+    parsedData = data;
+    status.textContent = `CSV geladen (${data.load_kwh.length} records).`;
+    status.className = "status success";
+    document.getElementById("to-step-2").disabled = false;
+
+  } catch (err) {
+    status.textContent = "Fout: " + err.message;
+    status.className = "status error";
+  }
+});
+
+// ------------------------
+// STEP KNOPPEN
+// ------------------------
+document.getElementById("to-step-0-next").addEventListener("click", () => {
+  const type = document.querySelector('input[name="calc-type"]:checked');
+  if (!type) return alert("Kies een berekeningstype.");
+
+  if (type.value === "snelle") activateStep(13);
+  else activateStep(1);
+});
+
+document.getElementById("to-step-2").addEventListener("click", ()=>activateStep(2));
+document.getElementById("back-to-1").addEventListener("click", ()=>activateStep(1));
+document.getElementById("to-step-3").addEventListener("click", ()=>activateStep(3));
+document.getElementById("back-to-2").addEventListener("click", ()=>activateStep(2));
+
+// ------------------------
+// BEREKENING (A1/B1/C1)
+// ------------------------
+document.getElementById("btn-compute").addEventListener("click", async () => {
+  const status = document.getElementById("compute-status");
+
+  if (!parsedData.load_kwh) {
+    status.textContent = "CSV ontbreekt.";
+    status.className = "status error";
+    return;
+  }
+
+  const body = {
+    load_kwh: parsedData.load_kwh,
+    pv_kwh: parsedData.pv_kwh,
+    prices_dyn: parsedData.prices_dyn || [],
+
+    p_enkel_imp: parseFloat(p_enkel_imp.value || "0.29"),
+    p_enkel_exp: parseFloat(p_enkel_exp.value || "0.07"),
+    p_dag: parseFloat(p_dag.value || "0.31"),
+    p_nacht: parseFloat(p_nacht.value || "0.26"),
+    p_exp_dn: parseFloat(p_exp_dn.value || "0.07"),
+    p_export_dyn: parseFloat(p_export_dyn.value || "0.07"),
+
+    E: parseFloat(E.value || "0"),
+    P: parseFloat(P.value || "0"),
+    DoD: parseFloat(DoD.value || "0") / 100,
+    eta_rt: parseFloat(eta_rt.value || "0") / 100,
+
+    Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
+
+    current_tariff: document.getElementById("tariff-type").value || "enkel"
+  };
+
+  status.textContent = "Berekenen...";
+  status.className = "status";
+
+  try {
+    const res = await fetch(API_BASE + "/compute", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    if (!data || !("A1_current" in data)) {
+      status.textContent = "Serverfout — onvolledig antwoord.";
+      status.className = "status error";
+      return;
+    }
+
+    // ------------------------
+    // TEGELS
+    // ------------------------
+    res-A1.textContent = fmtEuro(data.A1_current);
+    res-B1.textContent = fmtEuro(data.B1_future_no_batt);
+    res-C1.textContent = fmtEuro(data.C1_future_with_batt);
+
+    // ------------------------
+    // TABEL — A1 PER TARIJF
+    // ------------------------
+    A1-enkel.textContent = fmtEuro(data.A1_per_tariff.enkel);
+    A1-dn.textContent    = fmtEuro(data.A1_per_tariff["dag_nacht"]);
+    A1-dyn.textContent   = fmtEuro(data.A1_per_tariff.dynamisch);
+
+    // Highlight huidig tarief
+    const ct = body.current_tariff;
+    ["enkel","dn","dyn"].forEach(id=>{
+      document.getElementById("A1-"+id).classList.remove("highlight");
+      document.getElementById("B1-"+id).classList.remove("highlight");
+      document.getElementById("C1-"+id).classList.remove("highlight");
+    });
+    if (ct==="enkel")  { A1-enkel.classList.add("highlight"); B1-enkel.classList.add("highlight"); C1-enkel.classList.add("highlight"); }
+    if (ct==="dag_nacht") { A1-dn.classList.add("highlight"); B1-dn.classList.add("highlight"); C1-dn.classList.add("highlight"); }
+    if (ct==="dynamisch") { A1-dyn.classList.add("highlight"); B1-dyn.classList.add("highlight"); C1-dyn.classList.add("highlight"); }
+
+    // ------------------------
+    // TABEL B1 EN C1 (KOSTEN)
+    // ------------------------
+    B1-enkel.textContent = fmtEuro(data.S2_enkel.total_cost);
+    B1-dn.textContent    = fmtEuro(data.S2_dn.total_cost);
+    B1-dyn.textContent   = fmtEuro(data.S2_dyn.total_cost);
+
+    C1-enkel.textContent = fmtEuro(data.S3_enkel.total_cost);
+    C1-dn.textContent    = fmtEuro(data.S3_dn.total_cost);
+    C1-dyn.textContent   = fmtEuro(data.S3_dyn.total_cost);
+
+    // ------------------------
+    // ENERGIE-INZICHTEN
+    // ------------------------
+    B1-imp-enkel.textContent = data.S2_enkel.import.toFixed(1);
+    B1-imp-dn.textContent    = data.S2_dn.import.toFixed(1);
+    B1-imp-dyn.textContent   = data.S2_dyn.import.toFixed(1);
+
+    B1-exp-enkel.textContent = data.S2_enkel.export.toFixed(1);
+    B1-exp-dn.textContent    = data.S2_dn.export.toFixed(1);
+    B1-exp-dyn.textContent   = data.S2_dyn.export.toFixed(1);
+
+    C1-imp-enkel.textContent = data.S3_enkel.import.toFixed(1);
+    C1-imp-dn.textContent    = data.S3_dn.import.toFixed(1);
+    C1-imp-dyn.textContent   = data.S3_dyn.import.toFixed(1);
+
+    C1-exp-enkel.textContent = data.S3_enkel.export.toFixed(1);
+    C1-exp-dn.textContent    = data.S3_dn.export.toFixed(1);
+    C1-exp-dyn.textContent   = data.S3_dyn.export.toFixed(1);
+
+    // ------------------------
+    // GRAFIEK
+    // ------------------------
+    const ctx = document.getElementById("chart").getContext("2d");
+    if (window.costChart) window.costChart.destroy();
+
+    window.costChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["A1", "B1", "C1"],
+        datasets: [{
+          label: "Jaarlijkse kosten (€)",
+          data: [data.A1_current, data.B1_future_no_batt, data.C1_future_with_batt]
+        }]
+      }
+    });
+
+    activateStep(4);
+    status.textContent = "Klaar.";
+    status.className = "status success";
+
+  } catch (err) {
+    status.textContent = "Fout: " + err.message;
+    status.className = "status error";
+  }
+});
+
+// ------------------------
+// DEFAULTS
+// ------------------------
+window.addEventListener("DOMContentLoaded", () => {
+  activateStep(0);
+  p_enkel_imp.value="0.29";
+  p_enkel_exp.value="0.07";
+  p_dag.value="0.31";
+  p_nacht.value="0.26";
+  p_exp_dn.value="0.07";
+  p_export_dyn.value="0.07";
+});
+</script>
