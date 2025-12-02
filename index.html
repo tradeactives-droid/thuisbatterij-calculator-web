@@ -226,6 +226,424 @@
   </div>
 </div>
 
+// ----------------------------------------
+// PDF GENERATOR — DEEL 1 (HEADER + INTRO)
+// ----------------------------------------
+function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+  let y = 50;
+  const left = 40;
+  const maxWidth = 520;
+
+  // -----------------------
+  // TITELBLOK
+  // -----------------------
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.text("Thuisbatterij Adviesrapport", left, y);
+  y += 35;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  const now = new Date().toLocaleDateString("nl-NL");
+  doc.text(`Datum: ${now}`, left, y);
+  y += 25;
+
+  // -----------------------
+  // INLEIDING
+  // -----------------------
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("1. Inleiding", left, y); 
+  y += 20;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  const intro =
+    "Dit rapport toont een volledige financiële en energetische analyse " +
+    "van uw woning met en zonder thuisbatterij, onder drie tariefstructuren: " +
+    "Enkel tarief, Dag/Nacht tarief en Dynamisch tarief. " +
+    "Alle berekeningen zijn uitgevoerd op basis van uw eigen upload (CSV-data).";
+  let lines = doc.splitTextToSize(intro, maxWidth);
+  doc.text(lines, left, y);
+  y += lines.length * 14 + 20;
+
+  // -----------------------
+  // 2. Tarievenoverzicht
+  // -----------------------
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("2. Tarievenoverzicht", left, y);
+  y += 20;
+
+  // TARIEXTABEL
+  function pdfTable(rows) {
+    const cellH = 20;
+
+    rows.forEach((row, r) => {
+      let x = left;
+      row.forEach((text, c) => {
+        doc.setFont("helvetica", r === 0 ? "bold" : "normal");
+        doc.rect(x, y, 150, cellH);
+        doc.text(String(text), x + 10, y + 14);
+        x += 150;
+      });
+      y += cellH;
+    });
+    y += 15;
+  }
+
+  const tariffTable = [
+    ["Tarief", "Importprijs", "Exportprijs"],
+    [
+      "Enkel",
+      document.getElementById("p_enkel_imp").value + " €/kWh",
+      document.getElementById("p_enkel_exp").value + " €/kWh"
+    ],
+    [
+      "Dag/Nacht",
+      document.getElementById("p_dag").value + " / " +
+      document.getElementById("p_nacht").value + " €/kWh",
+      document.getElementById("p_exp_dn").value + " €/kWh"
+    ],
+    [
+      "Dynamisch",
+      "CSV (uurprijzen)",
+      document.getElementById("p_export_dyn").value + " €/kWh"
+    ]
+  ];
+
+  pdfTable(tariffTable);
+
+  // -----------------------
+  // 3. Kostenmatrix (A1/B1/C1)
+  // -----------------------
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("3. Jaarlijkse kostenmatrix", left, y);
+  y += 20;
+
+  const A1 = document.getElementById("res-A1").textContent;
+  const B1 = document.getElementById("res-B1").textContent;
+  const C1 = document.getElementById("res-C1").textContent;
+
+  const costTable = [
+    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
+    [
+      "A1 – Huidige situatie",
+      document.getElementById("A1-enkel").textContent,
+      document.getElementById("A1-dn").textContent,
+      document.getElementById("A1-dyn").textContent
+    ],
+    [
+      "B1 – Toekomst zonder batterij",
+      document.getElementById("B1-enkel").textContent,
+      document.getElementById("B1-dn").textContent,
+      document.getElementById("B1-dyn").textContent
+    ],
+    [
+      "C1 – Toekomst met batterij",
+      document.getElementById("C1-enkel").textContent,
+      document.getElementById("C1-dn").textContent,
+      document.getElementById("C1-dyn").textContent
+    ]
+  ];
+
+  pdfTable(costTable);
+
+  // -----------------------
+  // EINDE DEEL 1
+  // -----------------------
+  return { doc, y, left, maxWidth };
+}
+
+  // -------------------------------------------------------
+// PDF – DEEL 2
+// Secties 3 t/m 5 + helpers
+// -------------------------------------------------------
+
+// 3. KOSTENMATRIX (A1/B1/C1 × Enkel/DN/Dyn)
+function pdf_addCostMatrix(doc, data, startY) {
+  let y = startY;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("3. Kostenmatrix", 40, y);
+  y += 20;
+
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+
+  const rows = [
+    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
+    ["A1 (huidig)", 
+      euro(data.A1_per_tariff.enkel),
+      euro(data.A1_per_tariff.dag_nacht),
+      euro(data.A1_per_tariff.dynamisch)
+    ],
+    ["B1 (zonder batterij)",
+      euro(data.S2_enkel.total_cost),
+      euro(data.S2_dn.total_cost),
+      euro(data.S2_dyn.total_cost)
+    ],
+    ["C1 (met batterij)",
+      euro(data.S3_enkel.total_cost),
+      euro(data.S3_dn.total_cost),
+      euro(data.S3_dyn.total_cost)
+    ]
+  ];
+
+  y = pdf_drawTable(doc, rows, 40, y);
+  return y + 20;
+}
+
+// 4. IMPORT/EXPORT – per tarief
+function pdf_addEnergyTables(doc, data, startY) {
+  let y = startY;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("4. Energie-inzichten per tarief", 40, y);
+  y += 20;
+
+  const rowsImp = [
+    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
+    ["B1 (zonder batterij)",
+      data.S2_enkel.import.toFixed(1),
+      data.S2_dn.import.toFixed(1),
+      data.S2_dyn.import.toFixed(1)
+    ],
+    ["C1 (met batterij)",
+      data.S3_enkel.import.toFixed(1),
+      data.S3_dn.import.toFixed(1),
+      data.S3_dyn.import.toFixed(1)
+    ]
+  ];
+
+  doc.setFontSize(12);
+  doc.text("Import (kWh)", 40, y);
+  y += 14;
+  y = pdf_drawTable(doc, rowsImp, 40, y);
+
+  const rowsExp = [
+    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
+    ["B1 (zonder batterij)",
+      data.S2_enkel.export.toFixed(1),
+      data.S2_dn.export.toFixed(1),
+      data.S2_dyn.export.toFixed(1)
+    ],
+    ["C1 (met batterij)",
+      data.S3_enkel.export.toFixed(1),
+      data.S3_dn.export.toFixed(1),
+      data.S3_dyn.export.toFixed(1)
+    ]
+  ];
+
+  y += 20;
+  doc.text("Export (kWh)", 40, y);
+  y += 14;
+  y = pdf_drawTable(doc, rowsExp, 40, y);
+
+  return y + 20;
+}
+
+// 5. BATTERIJSTATEN
+function pdf_addBatteryStats(doc, stats, startY) {
+  let y = startY;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("5. Batterijprestaties", 40, y);
+  y += 20;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+
+  const rows = [
+    ["Parameter", "Waarde"],
+    ["Aantal cycli/jaar", stats.cycles_per_year],
+    ["Laadverlies (%)", (stats.loss_charge * 100).toFixed(1)],
+    ["Ontlaadverlies (%)", (stats.loss_discharge * 100).toFixed(1)],
+    ["Totale round-trip efficiëntie (%)", (stats.efficiency_rt * 100).toFixed(1)],
+    ["Autonomie (uur)", stats.autonomy_hours.toFixed(1)]
+  ];
+
+  y = pdf_drawTable(doc, rows, 40, y);
+
+  return y + 20;
+}
+
+// ----------------------------
+// HELPER – Tabel tekenen
+// ----------------------------
+function pdf_drawTable(doc, rows, x, startY) {
+  let y = startY;
+  const colWidths = [150, 120, 120, 120];
+  const rowHeight = 18;
+
+  doc.setDrawColor(180);
+  doc.setLineWidth(0.5);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+
+  // Header
+  doc.setFont("helvetica", "bold");
+  for (let i = 0; i < rows[0].length; i++) {
+    doc.text(rows[0][i], x + colWidths.slice(0, i).reduce((a,b)=>a+b,0) + 4, y);
+  }
+  y += rowHeight;
+  doc.setFont("helvetica", "normal");
+
+  // Rows
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+
+    let colX = x;
+    for (let c = 0; c < row.length; c++) {
+      doc.text(String(row[c]), colX + 4, y);
+      colX += colWidths[c];
+    }
+
+    y += rowHeight;
+  }
+
+  // Border box
+  const totalWidth = colWidths.reduce((a,b)=>a+b,0);
+  const totalHeight = rows.length * rowHeight;
+  doc.rect(x, startY - rowHeight, totalWidth, totalHeight);
+
+  return y;
+}
+
+// ----------------------------
+// HELPER – Euro formatter
+// ----------------------------
+function euro(v) {
+  if (v === null || isNaN(v)) return "–";
+  return "€ " + v.toFixed(2).replace(".", ",");
+}
+
+ <!-- =============================================== -->
+<!--                 PDF EXPORT (deel 3)             -->
+<!-- =============================================== -->
+
+function pdfAddCostMatrix(doc, data) {
+  doc.addPage();
+  const X = 40;
+  let y = 60;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text("Kostenmatrix", X, y);
+  y += 25;
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("Scenario", X, y);
+  doc.text("Enkel", X+180, y);
+  doc.text("Dag/Nacht", X+300, y);
+  doc.text("Dynamisch", X+430, y);
+  y += 14;
+
+  doc.setFont("helvetica","normal");
+
+  const row = (label, e, dn, d) => {
+    doc.text(label, X, y);
+    doc.text(fmtEuro(e), X+180, y);
+    doc.text(fmtEuro(dn), X+300, y);
+    doc.text(fmtEuro(d), X+430, y);
+    y += 14;
+  };
+
+  row("A1 – Huidige situatie",
+      data.A1_per_tariff.enkel,
+      data.A1_per_tariff.dag_nacht,
+      data.A1_per_tariff.dynamisch);
+
+  row("B1 – Zonder batterij",
+      data.S2_enkel.total_cost,
+      data.S2_dn.total_cost,
+      data.S2_dyn.total_cost);
+
+  row("C1 – Met batterij",
+      data.S3_enkel.total_cost,
+      data.S3_dn.total_cost,
+      data.S3_dyn.total_cost);
+
+  y += 30;
+}
+
+function pdfAddBatteryStats(doc, data) {
+  doc.addPage();
+  const X = 40;
+  let y = 60;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(16);
+  doc.text("Batterijstaten & Energieflow", X, y);
+  y += 25;
+
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "normal");
+
+  const s3 = data.S3_enkel; // Enkel als referentie
+  const lines = [
+    `Totale import mét batterij: ${s3.import.toFixed(1)} kWh`,
+    `Totale export mét batterij: ${s3.export.toFixed(1)} kWh`,
+    `Battery E-vermogen: ${data.input?.E ?? '-'} kWh`,
+    `Battery P-vermogen: ${data.input?.P ?? '-'} kW`,
+    `Battery DoD: ${(data.input?.DoD*100).toFixed(0) ?? '-'}%`,
+    `Battery round-trip efficiëntie: ${(data.input?.eta_rt*100).toFixed(0) ?? '-'}%`
+  ];
+
+  lines.forEach(line => {
+    doc.text(line, X, y);
+    y += 16;
+  });
+
+  y += 20;
+}
+
+function pdfAddChart(doc) {
+  const chart = document.getElementById("chart");
+  if (!chart) return;
+  try {
+    const img = chart.toDataURL("image/png");
+    doc.addPage();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Grafiek – Jaarlijkse kosten", 40, 60);
+    doc.addImage(img, "PNG", 40, 90, 520, 230);
+  } catch(e) {}
+}
+
+// =====================================================
+//  PDF EXPORT KNOP
+// =====================================================
+document.getElementById("btn-download-pdf").addEventListener("click", () => {
+  if (!window.computedResult) {
+    alert("Voer eerst een berekening uit.");
+    return;
+  }
+
+  const data = window.computedResult;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+  pdfHeader(doc);
+  pdfIntroText(doc);
+  pdfAddTariffMatrix(doc, data);
+  pdfAddEnergyTables(doc, data);
+  pdfAddCostMatrix(doc, data);
+  pdfAddBatteryStats(doc, data);
+  pdfAddChart(doc);
+
+  doc.save("Thuisbatterij-adviesrapport.pdf");
+});
+
+</script>   
+  
 <script>
 const API_BASE = "https://batteryengine-server.onrender.com";
 let parsedData = {};
