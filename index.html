@@ -129,6 +129,7 @@
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: #e5e7eb; color: #111827; }
     .btn-ghost { background: transparent; color: var(--muted); }
+
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .footer-buttons {
@@ -160,12 +161,15 @@
     .result-tile .label { color: var(--muted); font-size: 0.7rem; margin-bottom: 2px; }
     .result-tile .value { font-weight: 600; font-size: 0.9rem; }
 
+    /* Tabellen */
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.8rem; }
+
     th, td {
       border: 1px solid var(--border);
       padding: 6px 8px;
       text-align: right;
     }
+
     th:first-child, td:first-child { text-align: left; }
     th { background: #f3f4f6; }
 
@@ -176,6 +180,7 @@
 
     #chart {
       margin-top: 12px;
+      color: var(--muted);
       background: #f9fafb;
     }
 
@@ -185,250 +190,320 @@
       align-items: center !important;
       gap: 10px !important;
       justify-content: flex-start !important;
+      margin-left: 0 !important;
       width: fit-content !important;
     }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 </head>
 
 <body>
 <div class="page">
 
-<header>
-  <div class="title">Thuisbatterij Besparingscalculator</div>
-  <div class="subtitle">Nauwkeurige berekening op basis van uw eigen CSV-data.</div>
-</header>
+  <header>
+    <div class="title">Thuisbatterij Besparingscalculator</div>
+    <div class="subtitle">Nauwkeurige berekening op basis van uw eigen CSV-data.</div>
+  </header>
 
-<div class="stepper">
-  <div class="step active" id="step-pill-0"><div class="badge">0</div> Start</div>
-  <div class="step" id="step-pill-1"><div class="badge">1</div> CSV & Tarief</div>
-  <div class="step" id="step-pill-2"><div class="badge">2</div> Batterij & Financiën</div>
-  <div class="step" id="step-pill-3"><div class="badge">3</div> Tarieven</div>
-  <div class="step" id="step-pill-4"><div class="badge">4</div> Resultaat</div>
-</div>
-
-<div class="layout">
-  <div class="card" id="wizard-container">
-
-    <!-- STEP 0 -->
-    <div id="step-0">
-      <h2>Stap 0 · Kies uw berekeningstype</h2>
-
-      <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
-        <label><input type="radio" name="calc-type" value="snelle"> <span>Snelle berekening</span></label>
-        <label><input type="radio" name="calc-type" value="nauwkeurige"> <span>Nauwkeurige berekening (CSV)</span></label>
-      </div>
-
-      <div class="footer-buttons">
-        <button class="btn-ghost" disabled>Vorige</button>
-        <button class="btn-primary" id="to-step-0-next">Volgende</button>
-      </div>
-    </div>
-
-    <!-- STEP 1 -->
-    <div id="step-1" style="display:none;">
-      <h2>Stap 1 · Tarief & CSV-bestanden</h2>
-
-      <div class="field">
-        <label>Huidig tarief (A1)</label>
-        <select id="tariff-type">
-          <option value="">— Kies tarief —</option>
-          <option value="enkel">Enkel</option>
-          <option value="dag_nacht">Dag/Nacht</option>
-          <option value="dynamisch">Dynamisch</option>
-        </select>
-      </div>
-
-      <div class="field"><label>load.csv</label><input type="file" id="file-load" accept=".csv" /></div>
-      <div class="field"><label>pv.csv</label><input type="file" id="file-pv" accept=".csv" /></div>
-      <div class="field"><label>prices.csv (dynamisch)</label><input type="file" id="file-prices" accept=".csv" /></div>
-
-      <div id="csv-status" class="status">Nog geen bestanden verwerkt.</div>
-
-      <div class="footer-buttons">
-        <button class="btn-secondary" disabled>Vorige</button>
-        <div>
-          <button class="btn-secondary" id="btn-parse-csv">CSV verwerken</button>
-          <button class="btn-primary" id="to-step-2" disabled>Volgende</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 2 -->
-    <div id="step-2" style="display:none;">
-      <h2>Stap 2 · Batterij & financiële parameters</h2>
-
-      <div class="row">
-        <div class="field"><label>E (kWh)</label><input type="number" id="E"></div>
-        <div class="field"><label>P (kW)</label><input type="number" id="P"></div>
-      </div>
-
-      <div class="row">
-        <div class="field"><label>DoD (%)</label><input type="number" id="DoD"></div>
-        <div class="field"><label>η_rt (%)</label><input type="number" id="eta_rt"></div>
-      </div>
-
-      <div class="row">
-        <div class="field"><label>Cycli/jaar</label><input type="number" id="cycles"></div>
-      </div>
-
-      <div class="row">
-        <div class="field"><label>CAPEX (€)</label><input type="number" id="capex"></div>
-        <div class="field"><label>OPEX/jaar (€)</label><input type="number" id="opex"></div>
-      </div>
-
-      <div class="row">
-        <div class="field"><label>Horizon (jaren)</label><input type="number" id="horizon"></div>
-        <div class="field"><label>Rente (%)</label><input type="number" id="interest"></div>
-      </div>
-
-      <div class="field"><label>Vastrecht (€/jaar)</label><input type="number" id="fixed-cost"></div>
-
-      <div class="footer-buttons">
-        <button class="btn-secondary" id="back-to-1">Vorige</button>
-        <button class="btn-primary" id="to-step-3">Volgende</button>
-      </div>
-    </div>
-
-    <!-- STEP 3 -->
-    <div id="step-3" style="display:none;">
-      <h2>Stap 3 · Tarieven</h2>
-
-      <p>Standaardwaarden:</p>
-      <ul style="font-size:0.8rem;color:var(--muted);">
-        <li>Enkel: €0,29 import — €0,07 export</li>
-        <li>Dag/Nacht: €0,31 dag — €0,26 nacht — €0,07 export</li>
-        <li>Dynamisch: import via CSV — export €0,07</li>
-      </ul>
-
-      <h3>Enkel tarief</h3>
-      <div class="row">
-        <div class="field"><label>Import</label><input id="p_enkel_imp"></div>
-        <div class="field"><label>Export</label><input id="p_enkel_exp"></div>
-      </div>
-
-      <h3>Dag/Nacht</h3>
-      <div class="row">
-        <div class="field"><label>Dag</label><input id="p_dag"></div>
-        <div class="field"><label>Nacht</label><input id="p_nacht"></div>
-        <div class="field"><label>Export</label><input id="p_exp_dn"></div>
-      </div>
-
-      <h3>Dynamisch</h3>
-      <div class="field"><label>Export dynamisch</label><input id="p_export_dyn"></div>
-
-      <div id="compute-status" class="status"></div>
-
-      <div class="footer-buttons">
-        <button class="btn-secondary" id="back-to-2">Vorige</button>
-        <button class="btn-primary" id="btn-compute">Bereken</button>
-      </div>
-    </div>
-
-    <!-- STEP 4 -->
-    <div id="step-4" style="display:none;">
-      <h2>Resultaten</h2>
-
-      <div class="results-summary" style="margin-bottom:20px;">
-        <div class="result-tile">
-          <div class="label">Huidige situatie (met saldering)</div>
-          <div class="value" id="res-A1">–</div>
-        </div>
-        <div class="result-tile" style="background:#fee2e2;">
-          <div class="label">Toekomst zonder saldering</div>
-          <div class="value" id="res-B1">–</div>
-        </div>
-        <div class="result-tile" style="background:#dcfce7;">
-          <div class="label">Toekomst met batterij</div>
-          <div class="value" id="res-C1">–</div>
-        </div>
-      </div>
-
-      <h3>Conclusies & Tariefvergelijking</h3>
-
-      <table>
-        <tr>
-          <th>Scenario</th>
-          <th id="th-enkel">Enkel</th>
-          <th id="th-dn">Dag/Nacht</th>
-          <th id="th-dyn">Dynamisch</th>
-        </tr>
-
-        <tr>
-          <td><b>Huidige situatie (A1)</b></td>
-          <td id="A1-enkel">–</td>
-          <td id="A1-dn">–</td>
-          <td id="A1-dyn">–</td>
-        </tr>
-
-        <tr>
-          <td><b>Toekomst zonder batterij (B1)</b></td>
-          <td id="B1-enkel">–</td>
-          <td id="B1-dn">–</td>
-          <td id="B1-dyn">–</td>
-        </tr>
-
-        <tr>
-          <td><b>Toekomst met batterij (C1)</b></td>
-          <td id="C1-enkel">–</td>
-          <td id="C1-dn">–</td>
-          <td id="C1-dyn">–</td>
-        </tr>
-      </table>
-
-      <br><br>
-
-      <h3>Energie-inzichten per tarief</h3>
-
-      <table>
-        <tr>
-          <th>Scenario</th>
-          <th>Enkel</th>
-          <th>Dag/Nacht</th>
-          <th>Dynamisch</th>
-        </tr>
-
-        <tr>
-          <td><b>Zonder batterij (B1) – Import</b></td>
-          <td id="B1-imp-enkel">–</td>
-          <td id="B1-imp-dn">–</td>
-          <td id="B1-imp-dyn">–</td>
-        </tr>
-
-        <tr>
-          <td><b>Zonder batterij (B1) – Export</b></td>
-          <td id="B1-exp-enkel">–</td>
-          <td id="B1-exp-dn">–</td>
-          <td id="B1-exp-dyn">–</td>
-        </tr>
-
-        <tr>
-          <td><b>Met batterij (C1) – Import</b></td>
-          <td id="C1-imp-enkel">–</td>
-          <td id="C1-imp-dn">–</td>
-          <td id="C1-imp-dyn">–</td>
-        </tr>
-
-        <tr>
-          <td><b>Met batterij (C1) – Export</b></td>
-          <td id="C1-exp-enkel">–</td>
-          <td id="C1-exp-dn">–</td>
-          <td id="C1-exp-dyn">–</td>
-        </tr>
-      </table>
-
-    </div> <!-- end step 4 -->
-  </div> <!-- end wizard card -->
-
-  <div class="card">
-    <h2>Resultaten</h2>
-    <canvas id="chart" height="140"></canvas>
+  <div class="stepper">
+    <div class="step active" id="step-pill-0"><div class="badge">0</div> Start</div>
+    <div class="step" id="step-pill-1"><div class="badge">1</div> CSV & Tarief</div>
+    <div class="step" id="step-pill-2"><div class="badge">2</div> Batterij & Financiën</div>
+    <div class="step" id="step-pill-3"><div class="badge">3</div> Tarieven</div>
+    <div class="step" id="step-pill-4"><div class="badge">4</div> Resultaat</div>
   </div>
 
-</div>
+  <div class="layout">
+    <div class="card" id="wizard-container">
+
+      <!-- STEP 0 -->
+      <div id="step-0">
+        <h2>Stap 0 · Kies uw berekeningstype</h2>
+
+        <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+          <label><input type="radio" name="calc-type" value="snelle"><span>Snelle berekening</span></label>
+          <label><input type="radio" name="calc-type" value="nauwkeurige"><span>Nauwkeurige berekening (CSV)</span></label>
+        </div>
+
+        <div class="footer-buttons">
+          <button class="btn-ghost" disabled>Vorige</button>
+          <button class="btn-primary" id="to-step-0-next">Volgende</button>
+        </div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div id="step-1" style="display:none;">
+        <h2>Stap 1 · Tarief & CSV-bestanden</h2>
+
+        <div class="field">
+          <label>Huidig tarief (A1)</label>
+          <select id="tariff-type">
+            <option value="">— Kies tarief —</option>
+            <option value="enkel">Enkel</option>
+            <option value="dag_nacht">Dag/Nacht</option>
+            <option value="dynamisch">Dynamisch</option>
+          </select>
+        </div>
+
+        <div class="field"><label>load.csv</label><input type="file" id="file-load" accept=".csv" /></div>
+        <div class="field"><label>pv.csv</label><input type="file" id="file-pv" accept=".csv" /></div>
+        <div class="field"><label>prices.csv (dynamisch)</label><input type="file" id="file-prices" accept=".csv" /></div>
+
+        <div id="csv-status" class="status">Nog geen bestanden verwerkt.</div>
+
+        <div class="footer-buttons">
+          <button class="btn-secondary" disabled>Vorige</button>
+          <div>
+            <button class="btn-secondary" id="btn-parse-csv">CSV verwerken</button>
+            <button class="btn-primary" id="to-step-2" disabled>Volgende</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step-2" style="display:none;">
+        <h2>Stap 2 · Batterij & financiële parameters</h2>
+
+        <div class="row">
+          <div class="field"><label>E (kWh)</label><input type="number" id="E"></div>
+          <div class="field"><label>P (kW)</label><input type="number" id="P"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>DoD (%)</label><input type="number" id="DoD"></div>
+          <div class="field"><label>η_rt (%)</label><input type="number" id="eta_rt"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>Cycli/jaar</label><input type="number" id="cycles"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>CAPEX (€)</label><input type="number" id="capex"></div>
+          <div class="field"><label>OPEX/jaar (€)</label><input type="number" id="opex"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>Horizon (jaren)</label><input type="number" id="horizon"></div>
+          <
+
+  <!-- STEP 0 -->
+      <div id="step-0">
+        <h2>Stap 0 · Kies uw berekeningstype</h2>
+
+        <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+          <label><input type="radio" name="calc-type" value="snelle"><span>Snelle berekening</span></label>
+          <label><input type="radio" name="calc-type" value="nauwkeurige"><span>Nauwkeurige berekening (CSV)</span></label>
+        </div>
+
+        <div class="footer-buttons">
+          <button class="btn-ghost" disabled>Vorige</button>
+          <button class="btn-primary" id="to-step-0-next">Volgende</button>
+        </div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div id="step-1" style="display:none;">
+        <h2>Stap 1 · Tarief & CSV-bestanden</h2>
+
+        <div class="field">
+          <label>Huidig tarief (A1)</label>
+          <select id="tariff-type">
+            <option value="">— Kies tarief —</option>
+            <option value="enkel">Enkel</option>
+            <option value="dag_nacht">Dag/Nacht</option>
+            <option value="dynamisch">Dynamisch</option>
+          </select>
+        </div>
+
+        <div class="field"><label>load.csv</label><input type="file" id="file-load" accept=".csv" /></div>
+        <div class="field"><label>pv.csv</label><input type="file" id="file-pv" accept=".csv" /></div>
+        <div class="field"><label>prices.csv (dynamisch)</label><input type="file" id="file-prices" accept=".csv" /></div>
+
+        <div id="csv-status" class="status">Nog geen bestanden verwerkt.</div>
+
+        <div class="footer-buttons">
+          <button class="btn-secondary" disabled>Vorige</button>
+          <div>
+            <button class="btn-secondary" id="btn-parse-csv">CSV verwerken</button>
+            <button class="btn-primary" id="to-step-2" disabled>Volgende</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step-2" style="display:none;">
+        <h2>Stap 2 · Batterij & financiële parameters</h2>
+
+        <div class="row">
+          <div class="field"><label>E (kWh)</label><input type="number" id="E"></div>
+          <div class="field"><label>P (kW)</label><input type="number" id="P"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>DoD (%)</label><input type="number" id="DoD"></div>
+          <div class="field"><label>η_rt (%)</label><input type="number" id="eta_rt"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>Cycli/jaar</label><input type="number" id="cycles"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>CAPEX (€)</label><input type="number" id="capex"></div>
+          <div class="field"><label>OPEX/jaar (€)</label><input type="number" id="opex"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>Horizon (jaren)</label><input type="number" id="horizon"></div>
+          <div class="field"><label>Rente (%)</label><input type="number" id="interest"></div>
+        </div>
+
+        <div class="field"><label>Vastrecht (€/jaar)</label><input type="number" id="fixed-cost"></div>
+
+        <div class="footer-buttons">
+          <button class="btn-secondary" id="back-to-1">Vorige</button>
+          <button class="btn-primary" id="to-step-3">Volgende</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div id="step-3" style="display:none;">
+        <h2>Stap 3 · Tarieven</h2>
+
+        <p>Standaardwaarden:</p>
+        <ul style="font-size:0.8rem;color:var(--muted);">
+          <li>Enkel: €0,29 import — €0,07 export</li>
+          <li>Dag/Nacht: €0,31 dag — €0,26 nacht — €0,07 export</li>
+          <li>Dynamisch: import via CSV — export €0,07</li>
+        </ul>
+
+        <h3>Enkel tarief</h3>
+        <div class="row">
+          <div class="field"><label>Import</label><input id="p_enkel_imp"></div>
+          <div class="field"><label>Export</label><input id="p_enkel_exp"></div>
+        </div>
+
+        <h3>Dag/Nacht</h3>
+        <div class="row">
+          <div class="field"><label>Dag</label><input id="p_dag"></div>
+          <div class="field"><label>Nacht</label><input id="p_nacht"></div>
+          <div class="field"><label>Export</label><input id="p_exp_dn"></div>
+        </div>
+
+        <h3>Dynamisch</h3>
+        <div class="field"><label>Export dynamisch</label><input id="p_export_dyn"></div>
+
+        <div id="compute-status" class="status"></div>
+
+        <div class="footer-buttons">
+          <button class="btn-secondary" id="back-to-2">Vorige</button>
+          <button class="btn-primary" id="btn-compute">Bereken</button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div id="step-4" style="display:none;">
+        <h2>Resultaten</h2>
+
+        <div class="results-summary" style="margin-bottom:20px;">
+          <div class="result-tile">
+            <div class="label">Huidige situatie (met saldering)</div>
+            <div class="value" id="res-A1">–</div>
+          </div>
+          <div class="result-tile" style="background:#fee2e2;">
+            <div class="label">Toekomst zonder saldering</div>
+            <div class="value" id="res-B1">–</div>
+          </div>
+          <div class="result-tile" style="background:#dcfce7;">
+            <div class="label">Toekomst met batterij</div>
+            <div class="value" id="res-C1">–</div>
+          </div>
+        </div>
+
+        <h3>Conclusies & Tariefvergelijking</h3>
+
+        <table>
+          <tr>
+            <th>Scenario</th>
+            <th id="th-enkel">Enkel</th>
+            <th id="th-dn">Dag/Nacht</th>
+            <th id="th-dyn">Dynamisch</th>
+          </tr>
+
+          <tr>
+            <td><b>Huidige situatie (A1)</b></td>
+            <td id="A1-enkel">–</td>
+            <td id="A1-dn">–</td>
+            <td id="A1-dyn">–</td>
+          </tr>
+
+          <tr>
+            <td><b>Toekomst zonder batterij (B1)</b></td>
+            <td id="B1-enkel">–</td>
+            <td id="B1-dn">–</td>
+            <td id="B1-dyn">–</td>
+          </tr>
+
+          <tr>
+            <td><b>Toekomst met batterij (C1)</b></td>
+            <td id="C1-enkel">–</td>
+            <td id="C1-dn">–</td>
+            <td id="C1-dyn">–</td>
+          </tr>
+        </table>
+
+        <br><br>
+
+        <h3>Energie-inzichten per tarief</h3>
+
+        <table>
+          <tr>
+            <th>Scenario</th>
+            <th>Enkel</th>
+            <th>Dag/Nacht</th>
+            <th>Dynamisch</th>
+          </tr>
+
+          <tr>
+            <td><b>Zonder batterij (B1) – Import</b></td>
+            <td id="B1-imp-enkel">–</td>
+            <td id="B1-imp-dn">–</td>
+            <td id="B1-imp-dyn">–</td>
+          </tr>
+
+          <tr>
+            <td><b>Zonder batterij (B1) – Export</b></td>
+            <td id="B1-exp-enkel">–</td>
+            <td id="B1-exp-dn">–</td>
+            <td id="B1-exp-dyn">–</td>
+          </tr>
+
+          <tr>
+            <td><b>Met batterij (C1) – Import</b></td>
+            <td id="C1-imp-enkel">–</td>
+            <td id="C1-imp-dn">–</td>
+            <td id="C1-imp-dyn">–</td>
+          </tr>
+
+          <tr>
+            <td><b>Met batterij (C1) – Export</b></td>
+            <td id="C1-exp-enkel">–</td>
+            <td id="C1-exp-dn">–</td>
+            <td id="C1-exp-dyn">–</td>
+          </tr>
+        </table>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Resultaten</h2>
+      <canvas id="chart" height="140"></canvas>
+    </div>
+  </div>
 
 <div id="advice-card" class="card" style="margin-top: 26px; padding: 26px; display:none;">
   <h2>Uitleg & Verantwoording</h2>
@@ -440,9 +515,11 @@
   <div id="adv-limits"></div>
   <div id="adv-conclusion"></div>
 
-  <button id="btn-download-pdf" class="btn-primary" style="margin-top:20px; display:none;">
-    📄 Download PDF
-  </button>
+<button id="btn-download-pdf" class="btn-primary" 
+        style="margin-top:20px; display:none;">
+  📄 Download PDF
+</button>
+  
 </div>
 
 <script>
@@ -450,10 +527,14 @@ const API_BASE = "https://batteryengine-server.onrender.com";
 
 let parsedData = { load_kwh:null, pv_kwh:null, prices_dyn:null };
 
+// ------------------------
+// STEP NAVIGATIE
+// ------------------------
 function activateStep(n) {
-  for (let i = 0; i <= 6; i++) {
+  for (let i = 0; i <= 14; i++) {
     const pill = document.getElementById("step-pill-" + i);
     if (pill) pill.classList.toggle("active", i === n);
+
     const block = document.getElementById("step-" + i);
     if (block) block.style.display = i === n ? "block" : "none";
   }
@@ -464,9 +545,9 @@ function fmtEuro(v) {
   return "€ " + v.toFixed(2).replace(".", ",");
 }
 
-//
+// ------------------------
 // CSV VERWERKING
-//
+// ------------------------
 document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   const loadFile = document.getElementById("file-load").files[0];
   const pvFile = document.getElementById("file-pv").files[0];
@@ -483,50 +564,47 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   status.className = "status";
 
   try {
-    const [loadTxt, pvTxt, prTxt] = await Promise.all([
+    const [loadText, pvText, pricesText] = await Promise.all([
       loadFile.text(), pvFile.text(), pricesFile.text()
     ]);
 
-    const resp = await fetch(API_BASE + "/parse_csv", {
+    const res = await fetch(API_BASE + "/parse_csv", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
-        load_file: loadTxt,
-        pv_file: pvTxt,
-        prices_file: prTxt
+        load_file: loadText,
+        pv_file: pvText,
+        prices_file: pricesText
       })
     });
 
-    const data = await resp.json();
-
-    if (!data || data.error) {
+    const data = await res.json();
+    if (data.error) {
       status.textContent = "CSV ongeldig.";
       status.className = "status error";
       return;
     }
 
     parsedData = data;
-    status.textContent = `CSV geladen (${data.load_kwh.length} regels).`;
+    status.textContent = `CSV geladen (${data.load_kwh.length} records).`;
     status.className = "status success";
     document.getElementById("to-step-2").disabled = false;
 
-  } catch(e) {
-    status.textContent = "Fout: " + e.message;
+  } catch (err) {
+    status.textContent = "Fout: " + err.message;
     status.className = "status error";
   }
 });
 
-//
-// NAVIGATIE
-//
+// ------------------------
+// STEP KNOPPEN
+// ------------------------
 document.getElementById("to-step-0-next").addEventListener("click", () => {
-  const type = document.querySelector("input[name='calc-type']:checked");
+  const type = document.querySelector('input[name="calc-type"]:checked');
   if (!type) return alert("Kies een berekeningstype.");
-  if (type.value === "snelle") {
-    alert("Snelle berekening nog niet beschikbaar.");
-  } else {
-    activateStep(1);
-  }
+
+  if (type.value === "snelle") activateStep(13);
+  else activateStep(1);
 });
 
 document.getElementById("to-step-2").addEventListener("click", ()=>activateStep(2));
@@ -534,25 +612,29 @@ document.getElementById("back-to-1").addEventListener("click", ()=>activateStep(
 document.getElementById("to-step-3").addEventListener("click", ()=>activateStep(3));
 document.getElementById("back-to-2").addEventListener("click", ()=>activateStep(2));
 
-//
-// BEREKENING
-//
+// ------------------------
+// START BEREKENING (A1/B1/C1)
+// ------------------------
 document.getElementById("btn-compute").addEventListener("click", async () => {
   const status = document.getElementById("compute-status");
 
-  const current_tariff = document.getElementById("tariff-type").value || "enkel";
+  if (!parsedData.load_kwh) {
+    status.textContent = "CSV ontbreekt.";
+    status.className = "status error";
+    return;
+  }
 
   const body = {
     load_kwh: parsedData.load_kwh,
     pv_kwh: parsedData.pv_kwh,
-    prices_dyn: parsedData.prices_dyn,
+    prices_dyn: parsedData.prices_dyn || [],
 
     p_enkel_imp: parseFloat(p_enkel_imp.value || "0.29"),
     p_enkel_exp: parseFloat(p_enkel_exp.value || "0.07"),
-
     p_dag: parseFloat(p_dag.value || "0.31"),
     p_nacht: parseFloat(p_nacht.value || "0.26"),
     p_exp_dn: parseFloat(p_exp_dn.value || "0.07"),
+    p_export_dyn: parseFloat(p_export_dyn.value || "0.07"),
 
     E: parseFloat(E.value || "0"),
     P: parseFloat(P.value || "0"),
@@ -561,41 +643,43 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
 
-    current_tariff
+    current_tariff: document.getElementById("tariff-type").value || "enkel"
   };
 
   status.textContent = "Berekenen...";
   status.className = "status";
 
   try {
-    const resp = await fetch(API_BASE + "/compute", {
+    const res = await fetch(API_BASE + "/compute", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify(body)
     });
 
-    const data = await resp.json();
-
+    const data = await res.json();
     if (!data || !("A1_current" in data)) {
-      status.textContent = "Serverfout — geen A1_current.";
+      status.textContent = "Serverfout — onvolledig antwoord.";
       status.className = "status error";
       return;
     }
 
-    //
+    // ------------------------
     // TEGELS
-    //
+    // ------------------------
     document.getElementById("res-A1").textContent = fmtEuro(data.A1_current);
     document.getElementById("res-B1").textContent = fmtEuro(data.B1_future_no_batt);
     document.getElementById("res-C1").textContent = fmtEuro(data.C1_future_with_batt);
 
-    //
-    // TARIEVEN TABELLEN
-    //
+    // ------------------------
+    // TABEL — A1 PER TARIJF
+    // ------------------------
     document.getElementById("A1-enkel").textContent = fmtEuro(data.A1_per_tariff.enkel);
-    document.getElementById("A1-dn").textContent    = fmtEuro(data.A1_per_tariff["dag_nacht"]);
+    document.getElementById("A1-dn").textContent    = fmtEuro(data.A1_per_tariff.dag_nacht);
     document.getElementById("A1-dyn").textContent   = fmtEuro(data.A1_per_tariff.dynamisch);
 
+    // ------------------------
+    // B1/C1 (KOSTEN)
+    // ------------------------
     document.getElementById("B1-enkel").textContent = fmtEuro(data.S2_enkel.total_cost);
     document.getElementById("B1-dn").textContent    = fmtEuro(data.S2_dn.total_cost);
     document.getElementById("B1-dyn").textContent   = fmtEuro(data.S2_dyn.total_cost);
@@ -604,9 +688,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("C1-dn").textContent    = fmtEuro(data.S3_dn.total_cost);
     document.getElementById("C1-dyn").textContent   = fmtEuro(data.S3_dyn.total_cost);
 
-    //
-    // ENERGIE
-    //
+    // ------------------------
+    // ENERGIE-INZICHTEN
+    // ------------------------
     document.getElementById("B1-imp-enkel").textContent = data.S2_enkel.import.toFixed(1);
     document.getElementById("B1-imp-dn").textContent    = data.S2_dn.import.toFixed(1);
     document.getElementById("B1-imp-dyn").textContent   = data.S2_dyn.import.toFixed(1);
@@ -623,23 +707,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("C1-exp-dn").textContent    = data.S3_dn.export.toFixed(1);
     document.getElementById("C1-exp-dyn").textContent   = data.S3_dyn.export.toFixed(1);
 
-    //
-    // TARIJF HIGHLIGHT
-    //
-    ["th-enkel", "th-dn", "th-dyn"].forEach(id => {
-      document.getElementById(id).classList.remove("highlight");
-    });
-
-    if (current_tariff === "enkel")
-      document.getElementById("th-enkel").classList.add("highlight");
-    if (current_tariff === "dag_nacht")
-      document.getElementById("th-dn").classList.add("highlight");
-    if (current_tariff === "dynamisch")
-      document.getElementById("th-dyn").classList.add("highlight");
-
-    //
-    // GRAPH
-    //
+    // ------------------------
+    // GRAFIEK
+    // ------------------------
     const ctx = document.getElementById("chart").getContext("2d");
     if (window.costChart) window.costChart.destroy();
 
@@ -649,11 +719,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
         labels: ["A1", "B1", "C1"],
         datasets: [{
           label: "Jaarlijkse kosten (€)",
-          data: [
-            data.A1_current,
-            data.B1_future_no_batt,
-            data.C1_future_with_batt
-          ]
+          data: [data.A1_current, data.B1_future_no_batt, data.C1_future_with_batt]
         }]
       }
     });
@@ -662,29 +728,24 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     status.textContent = "Klaar.";
     status.className = "status success";
 
-  } catch(e) {
-    status.textContent = "Fout: " + e.message;
+  } catch (err) {
+    status.textContent = "Fout: " + err.message;
     status.className = "status error";
   }
 });
 
-//
+// ------------------------
 // DEFAULTS
-//
+// ------------------------
 window.addEventListener("DOMContentLoaded", () => {
   activateStep(0);
-
-  p_enkel_imp.value = "0.29";
-  p_enkel_exp.value = "0.07";
-
-  p_dag.value = "0.31";
-  p_nacht.value = "0.26";
-  p_exp_dn.value = "0.07";
-
-  p_export_dyn.value = "0.07";
+  p_enkel_imp.value="0.29";
+  p_enkel_exp.value="0.07";
+  p_dag.value="0.31";
+  p_nacht.value="0.26";
+  p_exp_dn.value="0.07";
+  p_export_dyn.value="0.07";
 });
-
 </script>
-
 </body>
 </html>
