@@ -640,6 +640,35 @@ function pdfExport(data) {
 }
 </script>
 
+<!-- ======================================= -->
+<!--       STEPPER PILLS CLICKABLE           -->
+<!-- ======================================= -->
+<script>
+document.querySelectorAll(".stepper .step").forEach((pill, index) => {
+  pill.style.cursor = "pointer";
+
+  pill.addEventListener("click", () => {
+
+    // Niet vooruit klikken zonder CSV-data
+    if (index > 1 && (!parsedData || !parsedData.load_kwh)) {
+      alert("Voltooi eerst stap 1 (CSV verwerken).");
+      return;
+    }
+
+    // Niet naar stap 3/4 zonder batterijdata
+    if (index > 2) {
+      const E = document.getElementById("E").value;
+      if (!E) {
+        alert("Vul eerst de batterijgegevens in bij stap 2.");
+        return;
+      }
+    }
+
+    activateStep(index);
+  });
+});
+</script>  
+  
 <!-- ========================================================= -->
 <!-- =============   HOOFDLOGICA / APP     =================== -->
 <!-- ========================================================= -->
