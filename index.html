@@ -845,13 +845,20 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
      // NIEUW: BESPARING, PAYBACK, ROI
     document.getElementById("res-savings").textContent = fmtEuro(data.besparing_per_jaar);
 
-    if (data.payback_years) {
-      document.getElementById("res-payback").textContent = data.payback_years.toFixed(1) + " jaar";
-    } else {
-      document.getElementById("res-payback").textContent = "–";
-    }
+    if (data.payback_years !== null && data.payback_years !== undefined) {
+  document.getElementById("res-payback").textContent =
+    data.payback_years.toFixed(1) + " jaar";
+} else {
+  document.getElementById("res-payback").textContent = "–";
+}
 
-    document.getElementById("res-roi").textContent = data.roi_percent.toFixed(1) + " %";
+// ROI
+if (data.roi_percent !== null && data.roi_percent !== undefined) {
+  document.getElementById("res-roi").textContent =
+    data.roi_percent.toFixed(1) + " %";
+} else {
+  document.getElementById("res-roi").textContent = "–";
+}
 
     /* TARIFF MATRIX */
     document.getElementById("A1-enkel").textContent = fmtEuro(data.A1_per_tariff.enkel);
