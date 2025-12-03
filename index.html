@@ -810,12 +810,13 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
     eta_rt: parseFloat(document.getElementById("eta_rt").value || "0") / 100,
 
-    Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
-    current_tariff: document.getElementById("tariff-type").value
+    // LET OP: kleine letter v
+    vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
 
     // NIEUW: investering batterij
     battery_cost: parseFloat(document.getElementById("battery-cost").value || "0"),
 
+    // huidig tarief (enkel / dag_nacht / dynamisch)
     current_tariff: document.getElementById("tariff-type").value || "enkel"
   };
 
