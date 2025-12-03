@@ -938,6 +938,12 @@ if (data.roi_percent !== null && data.roi_percent !== undefined) {
       }
     });
 
+   if (!parsedData.prices_dyn || parsedData.prices_dyn.length === 0) {
+    document.getElementById("compute-status").textContent =
+      "Dynamische tarieven zijn gesimuleerd (fallback op historische APX-data).";
+    document.getElementById("compute-status").className = "status success";
+}
+    
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
     activateStep(4);
