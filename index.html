@@ -798,6 +798,11 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     Vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
     current_tariff: document.getElementById("tariff-type").value
+
+    // NIEUW: investering batterij
+    battery_cost: parseFloat(document.getElementById("battery-cost").value || "0"),
+
+    current_tariff: document.getElementById("tariff-type").value || "enkel"
   };
 
   try {
