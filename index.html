@@ -906,8 +906,13 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("res-savings").textContent = fmtEuro(data.besparing_per_jaar);
 
     if (data.payback_years !== null && data.payback_years !== undefined) {
-  document.getElementById("res-payback").textContent =
-    data.payback_years.toFixed(1) + " jaar";
+  const pb = Number(data.payback_years);
+  if (isFinite(pb)) {
+    document.getElementById("res-payback").textContent =
+      pb.toFixed(1) + " jaar";
+  } else {
+    document.getElementById("res-payback").textContent = "–";
+  }
 } else {
   document.getElementById("res-payback").textContent = "–";
 }
