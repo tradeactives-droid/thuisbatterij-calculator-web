@@ -837,6 +837,16 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     return;
   }
 
+    // --- VEILIGE PARSE VAN DE BATTERIJ-INVESTERING ---
+  const batteryCostRaw = document.getElementById("battery-cost").value;
+  const batteryCost    = parseFloat(batteryCostRaw);
+
+  if (!batteryCostRaw || isNaN(batteryCost) || batteryCost <= 0) {
+    status.textContent = "Voer een geldige batterij-investering in (stap 2).";
+    status.className   = "status error";
+    return;
+  }
+
   const body = {
     load_kwh: parsedData.load_kwh,
     pv_kwh: parsedData.pv_kwh,
@@ -859,19 +869,11 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     // LET OP: kleine letter v
     vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
 
-    // --- VEILIGE PARSE VAN DE BATTERIJKOST ---
-let batteryCostRaw = document.getElementById("battery-cost").value;
-let batteryCost = parseFloat(batteryCostRaw);
-
-// Als het veld leeg is → dit is fout → toon error → stop
-if (!batteryCostRaw || isNaN(batteryCost) || batteryCost <= 0) {
-    status.textContent = "Voer een geldige batterij-investering in (stap 2).";
-    status.className = "status error";
-    return;
-}
-
-    // NIEUW: degradatie per jaar (van % naar fractie)
+    // INVESTERING BATTERIJ (nu veilig geparsed)
     battery_cost: batteryCost,
+
+    // DEGRADATIE PER JAAR (van % naar fractie)
+    battery_degradation: parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
 
     // huidig tarief (enkel / dag_nacht / dynamisch)
     current_tariff: document.getElementById("tariff-type").value || "enkel"
