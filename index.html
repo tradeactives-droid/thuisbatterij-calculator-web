@@ -871,7 +871,7 @@ if (!batteryCostRaw || isNaN(batteryCost) || batteryCost <= 0) {
 }
 
     // NIEUW: degradatie per jaar (van % naar fractie)
-    battery_degradation: parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
+    battery_cost: batteryCost,
 
     // huidig tarief (enkel / dag_nacht / dynamisch)
     current_tariff: document.getElementById("tariff-type").value || "enkel"
