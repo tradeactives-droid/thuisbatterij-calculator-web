@@ -917,25 +917,29 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
      // NIEUW: BESPARING, PAYBACK, ROI
     document.getElementById("res-savings").textContent = fmtEuro(data.besparing_per_jaar);
 
+    // TERUGVERDIENTIJD
     if (data.payback_years !== null && data.payback_years !== undefined) {
-  const pb = Number(data.payback_years);
-  if (isFinite(pb)) {
-    document.getElementById("res-payback").textContent =
-      pb.toFixed(1) + " jaar";
-  } else {
-    document.getElementById("res-payback").textContent = "–";
-  }
-} else {
-  document.getElementById("res-payback").textContent = "–";
-}
+      const pb = Number(data.payback_years);
+      if (isFinite(pb)) {
+        document.getElementById("res-payback").textContent = pb.toFixed(1) + " jaar";
+      } else {
+        document.getElementById("res-payback").textContent = "–";
+      }
+    } else if (data.roi_percent > 0) {
+      // Wel positieve ROI, maar binnen 15 jaar nog niet volledig terugverdiend
+      document.getElementById("res-payback").textContent = "> 15 jaar";
+    } else {
+      // ROI <= 0 → geen terugverdientijd in de simulatie
+      document.getElementById("res-payback").textContent = "geen terugverdientijd";
+    }
 
-// ROI
-if (data.roi_percent !== null && data.roi_percent !== undefined) {
-  document.getElementById("res-roi").textContent =
-    data.roi_percent.toFixed(1) + " %";
-} else {
-  document.getElementById("res-roi").textContent = "–";
-}
+    // ROI
+    if (data.roi_percent !== null && data.roi_percent !== undefined) {
+      document.getElementById("res-roi").textContent =
+        data.roi_percent.toFixed(1) + " %";
+    } else {
+      document.getElementById("res-roi").textContent = "–";
+    }
 
     /* TARIFF MATRIX */
     document.getElementById("A1-enkel").textContent = fmtEuro(data.A1_per_tariff.enkel);
