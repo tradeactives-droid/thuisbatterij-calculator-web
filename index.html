@@ -870,6 +870,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   };
 
   try {
+    console.log("Body dat naar server gaat =", body);
     const res = await fetch(API_BASE + "/compute", {
       method: "POST",
       headers: { "Content-Type":"application/json" },
