@@ -827,6 +827,7 @@ document.getElementById("back-to-2").addEventListener("click", () => activateSte
 /* ----------------------------- */
 document.getElementById("btn-compute").addEventListener("click", async () => {
   const status = document.getElementById("compute-status");
+  console.log("Battery-cost (UI) =", document.getElementById("battery-cost").value);
   status.textContent = "Berekenen…";
   status.className = "status";
 
