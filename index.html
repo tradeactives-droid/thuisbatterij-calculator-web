@@ -855,6 +855,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     // NIEUW: investering batterij
     battery_cost: parseFloat(document.getElementById("battery-cost").value || "0"),
 
+    // NIEUW: degradatie per jaar (van % naar fractie)
+    battery_degradation: parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
+
     // huidig tarief (enkel / dag_nacht / dynamisch)
     current_tariff: document.getElementById("tariff-type").value || "enkel"
   };
