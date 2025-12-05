@@ -963,6 +963,16 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       document.getElementById("res-roi").textContent = "–";
     }
 
+    // --- PEAK SHAVING RESULTATEN ---
+    document.getElementById("res-peak-no").textContent =
+      data.peak_no_battery_kw.toFixed(2) + " kW";
+
+    document.getElementById("res-peak-yes").textContent =
+      data.peak_with_battery_kw.toFixed(2) + " kW";
+
+    document.getElementById("res-peak-saving").textContent =
+      fmtEuro(data.peak_saving_year_euro);
+
     /* TARIFF MATRIX */
     document.getElementById("A1-enkel").textContent = fmtEuro(data.A1_per_tariff.enkel);
     document.getElementById("A1-dn").textContent    = fmtEuro(data.A1_per_tariff.dag_nacht);
