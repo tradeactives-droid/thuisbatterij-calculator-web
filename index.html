@@ -875,6 +875,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     // DEGRADATIE PER JAAR (van % naar fractie)
     battery_degradation: parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
 
+    capacity_tariff_kw: parseFloat(document.getElementById("capacity-tariff").value || "0"),
+    peak_shaving_enabled: true,
+
     // huidig tarief (enkel / dag_nacht / dynamisch)
     current_tariff: document.getElementById("tariff-type").value || "enkel"
   };
