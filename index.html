@@ -750,24 +750,26 @@ document.getElementById("country").addEventListener("change", updateCountryUI);
 function updateCountryUI() {
   const country = document.getElementById("country").value;
 
-  // Velden die verborgen moeten worden bij NL
+  // --------- STAP 2 veld (capaciteitstarief) ---------
   const capacityField = document.getElementById("capacity-tariff").parentElement;
 
-  // Result tiles bij NL verbergen
+  // --------- Result tiles (stap 4) ---------
   const tilePeakNo  = document.getElementById("res-peak-no").parentElement;
   const tilePeakYes = document.getElementById("res-peak-yes").parentElement;
   const tilePeakSav = document.getElementById("res-peak-saving").parentElement;
 
   if (country === "NL") {
-    // Velden verbergen
+
+    // Stap 2 velden
     capacityField.style.display = "none";
 
-    // Resultaten verbergen
+    // Stap 4 peak results
     tilePeakNo.style.display  = "none";
     tilePeakYes.style.display = "none";
     tilePeakSav.style.display = "none";
-  }
-  else {
+
+  } else {
+
     // BE → alles tonen
     capacityField.style.display = "block";
 
