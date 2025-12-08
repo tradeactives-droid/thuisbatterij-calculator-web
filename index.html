@@ -891,39 +891,42 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   }
 
   const body = {
-    load_kwh: parsedData.load_kwh,
-    pv_kwh: parsedData.pv_kwh,
-    prices_dyn: parsedData.prices_dyn || [],
+  load_kwh: parsedData.load_kwh,
+  pv_kwh: parsedData.pv_kwh,
+  prices_dyn: parsedData.prices_dyn || [],
 
-    p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
-    p_enkel_exp: parseFloat(document.getElementById("p_enkel_exp").value || "0.07"),
+  p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
+  p_enkel_exp: parseFloat(document.getElementById("p_enkel_exp").value || "0.07"),
 
-    p_dag: parseFloat(document.getElementById("p_dag").value || "0.31"),
-    p_nacht: parseFloat(document.getElementById("p_nacht").value || "0.26"),
-    p_exp_dn: parseFloat(document.getElementById("p_exp_dn").value || "0.07"),
+  p_dag: parseFloat(document.getElementById("p_dag").value || "0.31"),
+  p_nacht: parseFloat(document.getElementById("p_nacht").value || "0.26"),
+  p_exp_dn: parseFloat(document.getElementById("p_exp_dn").value || "0.07"),
 
-    p_export_dyn: parseFloat(document.getElementById("p_export_dyn").value || "0.07"),
+  p_export_dyn: parseFloat(document.getElementById("p_export_dyn").value || "0.07"),
 
-    E: parseFloat(document.getElementById("E").value || "0"),
-    P: parseFloat(document.getElementById("P").value || "0"),
-    DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
-    eta_rt: parseFloat(document.getElementById("eta_rt").value || "0") / 100,
+  E: parseFloat(document.getElementById("E").value || "0"),
+  P: parseFloat(document.getElementById("P").value || "0"),
+  DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
+  eta_rt: parseFloat(document.getElementById("eta_rt").value || "0") / 100,
 
-    // LET OP: kleine letter v
-    vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
+  // LET OP: kleine letter v
+  vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
 
-    // INVESTERING BATTERIJ (nu veilig geparsed)
-    battery_cost: batteryCost,
+  // INVESTERING BATTERIJ (geparsed)
+  battery_cost: batteryCost,
 
-    // DEGRADATIE PER JAAR (van % naar fractie)
-    battery_degradation: parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
+  // DEGRADATIE (van % naar fractie)
+  battery_degradation: parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
 
-    capacity_tariff_kw: parseFloat(document.getElementById("capacity-tariff").value || "0"),
-    peak_shaving_enabled: true,
+  capacity_tariff_kw: parseFloat(document.getElementById("capacity-tariff").value || "0"),
+  peak_shaving_enabled: true,
 
-    // huidig tarief (enkel / dag_nacht / dynamisch)
-    current_tariff: document.getElementById("tariff-type").value || "enkel"
-  };
+  // LAND → NL of BE
+  country: document.getElementById("country").value || "NL",
+
+  // huidig tarief (enkel / dag_nacht / dynamisch)
+  current_tariff: document.getElementById("tariff-type").value || "enkel"
+};
 
   try {
     console.log("Body dat naar server gaat =", body);
