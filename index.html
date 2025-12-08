@@ -804,7 +804,13 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
     const data = await res.json();
 
     if (!data || data.error) {
-      status.textContent = "Fout bij verwerken van CSV (controleer formaat).";
+      if (data && data.error === "NOT_ENOUGH_DATA_FOR_FLUVIUS") {
+        status.textContent =
+          "Uw CSV bevat te weinig datapunten. Gebruik een jaarprofiel (minimaal ±30.000 kwartierwaarden).";
+      } else {
+        status.textContent =
+          "Fout bij verwerken van CSV (controleer formaat en scheidingstekens).";
+      }
       status.className = "status error";
       return;
     }
