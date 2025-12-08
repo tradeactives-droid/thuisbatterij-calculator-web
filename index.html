@@ -859,10 +859,18 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   }
 
     // --- VEILIGE PARSE VAN DE BATTERIJ-INVESTERING ---
-  const batteryCostRaw = document.getElementById("battery-cost").value;
-  const batteryCost    = parseFloat(batteryCostRaw);
+  const batteryCostRaw = document.getElementById("battery-cost").value || "";
 
-  if (!batteryCostRaw || isNaN(batteryCost) || batteryCost <= 0) {
+  // € / $ / spaties weg + komma → punt
+  const cleanedBatteryCost = batteryCostRaw
+    .replace("€", "")
+    .replace("$", "")
+    .replace(",", ".")
+    .replace(/\s+/g, "");
+
+  const batteryCost = parseFloat(cleanedBatteryCost);
+
+  if (!cleanedBatteryCost || isNaN(batteryCost) || batteryCost <= 0) {
     status.textContent = "Voer een geldige batterij-investering in (stap 2).";
     status.className   = "status error";
     return;
@@ -871,7 +879,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   const body = {
     load_kwh: parsedData.load_kwh,
     pv_kwh: parsedData.pv_kwh,
-    prices_dyn: parsedData.prices_dyn,
+    prices_dyn: parsedData.prices_dyn || [],
 
     p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
     p_enkel_exp: parseFloat(document.getElementById("p_enkel_exp").value || "0.07"),
