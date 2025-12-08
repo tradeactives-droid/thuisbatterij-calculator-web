@@ -747,7 +747,6 @@ function updatePricesVisibility() {
 document.getElementById("tariff-type").addEventListener("change", updatePricesVisibility);
 document.getElementById("country").addEventListener("change", updateCountryUI);
 
-<script>
 function updateCountryUI() {
   const country = document.getElementById("country").value;
 
@@ -764,16 +763,14 @@ function updateCountryUI() {
     tilePeakSav.style.display = "none";
   } else {
     capacityField.style.display = "block";
+    
     tilePeakNo.style.display  = "block";
     tilePeakYes.style.display = "block";
     tilePeakSav.style.display = "block";
   }
 }
-</script>
 
-<script>
 document.getElementById("country").addEventListener("change", updateCountryUI);
-</script>
 
 /* ----------------------------- */
 /*       WIZARD STAPPEN          */
