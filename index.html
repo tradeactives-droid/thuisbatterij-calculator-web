@@ -745,6 +745,7 @@ function updatePricesVisibility() {
 }
 
 document.getElementById("tariff-type").addEventListener("change", updatePricesVisibility);
+document.getElementById("country").addEventListener("change", updateCountryUI);
 
 function updateCountryUI() {
   const country = document.getElementById("country").value;
