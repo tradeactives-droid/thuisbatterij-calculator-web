@@ -784,6 +784,23 @@ function pdfBatteryStats(doc, data) {
   pdfDrawTable(doc, 40, 100, rows, [260, 260]);
 }
 
+function pdfAdviceSection(doc, adviceText) {
+  // Geen advies? Dan geen extra pagina.
+  if (!adviceText || adviceText.trim() === "") return;
+
+  doc.addPage();
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(16);
+  doc.text("6. Persoonlijk advies", 40, 60);
+
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(11);
+
+  // Lange tekst netjes afbreken
+  const lines = doc.splitTextToSize(adviceText, 520);
+  doc.text(lines, 40, 90);
+}
+
 function pdfExport(data) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit:"pt", format:"a4" });
