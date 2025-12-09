@@ -812,6 +812,20 @@ function pdfExport(data) {
   pdfEnergyTables(doc, data);
   pdfBatteryStats(doc, data);
 
+  // ✅ Adviestekst ophalen: eerst uit textarea, dan uit computedAdvice
+  const adviceFromBox =
+    document.getElementById("advice-text")
+      ? document.getElementById("advice-text").value
+      : "";
+
+  const adviceText =
+    (adviceFromBox && adviceFromBox.trim() !== "")
+      ? adviceFromBox
+      : (window.computedAdvice || "");
+
+  // ✅ Nieuwe adviespagina toevoegen (alleen als er tekst is)
+  pdfAdviceSection(doc, adviceText);
+
   doc.save("Thuisbatterij-adviesrapport.pdf");
 }
 </script>
