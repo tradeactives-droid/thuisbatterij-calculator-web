@@ -557,6 +557,37 @@
   <button class="btn-primary" id="btn-download-pdf" style="display:none;">
     📄 Download PDF
   </button>
+
+  <!-- ✅ Nieuwe knop naar stap 5 -->
+  <button class="btn-secondary" id="to-step-5" style="margin-left:8px;">
+    Persoonlijk advies bekijken
+  </button>
+</div>
+
+<!-- ======================= -->
+<!--    STEP 5 · ADVIES      -->
+<!-- ======================= -->
+<div id="step-5" style="display:none;">
+  <h2>Stap 5 · Persoonlijk advies</h2>
+
+  <p class="status" id="advice-status">
+    Klik op “Genereer advies” om een tekstueel advies te maken op basis van uw gegevens.
+  </p>
+
+  <!-- Groot tekstvak met het advies -->
+  <div class="field">
+    <label>Adviesrapport</label>
+    <textarea id="advice-text" rows="14" style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); font-size:0.9rem;"></textarea>
+  </div>
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button class="btn-secondary" id="back-to-4">Terug naar resultaten</button>
+    <button class="btn-primary" id="btn-generate-advice">Genereer advies</button>
+  </div>
+
+  <p class="status" style="margin-top:10px; font-size:0.8rem; color:var(--muted);">
+    Tip: u kunt deze tekst rechtstreeks kopiëren naar een offerte of rapport.
+  </p>
 </div>
 
 </div> <!-- wizard end -->
