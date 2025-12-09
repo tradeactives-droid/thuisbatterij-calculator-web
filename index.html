@@ -814,13 +814,19 @@ document.querySelectorAll(".stepper .step").forEach((pill, index) => {
       return;
     }
 
-    // Niet naar stap 3/4 zonder batterijdata
+    // Niet naar stap 3/4/5 zonder batterijdata
     if (index > 2) {
       const E = document.getElementById("E").value;
       if (!E) {
         alert("Vul eerst de batterijgegevens in bij stap 2.");
         return;
       }
+    }
+
+    // Niet naar stap 5 zonder berekening (computedResult)
+    if (index === 5 && !window.computedResult) {
+      alert("Voer eerst een berekening uit bij stap 4.");
+      return;
     }
 
     activateStep(index);
