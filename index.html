@@ -1160,7 +1160,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     // Fallback-detectie: als het current_tariff dynamisch is,
     // maar we hadden geen prices_dyn uit de CSV → APX-fallback gebruikt.
     const dynNote = document.getElementById("dyn-fallback-note");
-    const currentTariff = document.getElementById("tariff-type").value;
+    const currentTariff = document.getElementById("tariff-type").value || "enkel";
 
     if (currentTariff === "dynamisch" &&
         (!parsedData.prices_dyn || parsedData.prices_dyn.length === 0)) {
@@ -1173,6 +1173,13 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("res-A1").textContent = fmtEuro(data.A1_current);
     document.getElementById("res-B1").textContent = fmtEuro(data.B1_future_no_batt);
     document.getElementById("res-C1").textContent = fmtEuro(data.C1_future_with_batt);
+
+    // ✅ Toon bij B1 en C1 welk tarief is gebruikt (huidig tarief)
+    const tLabel = getTariffLabel(currentTariff);
+    const elB1Label = document.getElementById("res-B1-tariff-label");
+    const elC1Label = document.getElementById("res-C1-tariff-label");
+    if (elB1Label) elB1Label.textContent = "Huidig tarief: " + tLabel;
+    if (elC1Label) elC1Label.textContent = "Huidig tarief: " + tLabel;
 
      // NIEUW: BESPARING, PAYBACK, ROI
     document.getElementById("res-savings").textContent = fmtEuro(data.besparing_per_jaar);
