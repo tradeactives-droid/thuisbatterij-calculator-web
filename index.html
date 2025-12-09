@@ -287,41 +287,99 @@
 <div id="step-2" style="display:none;">
   <h2>Stap 2 · Batterij</h2>
 
+  <!-- OPSLAGCAPACITEIT -->
   <div class="field">
-    <label>Capaciteit E (kWh)</label>
+    <label>
+      Opslagcapaciteit | E (kWh)
+      <span class="info-icon"
+            data-tooltip="De totale hoeveelheid energie die de batterij kan opslaan. 1 kWh = ongeveer 1 uur lang 1000 watt. Een hogere capaciteit betekent meer opslag voor later gebruik.">
+        ℹ
+      </span>
+    </label>
     <input id="E" type="number" min="0" step="0.1">
   </div>
+
+  <!-- VERMOGEN -->
   <div class="field">
-    <label>Vermogen P (kW)</label>
+    <label>
+      Laad/ontlaadvermogen | P (kW)
+      <span class="info-icon"
+            data-tooltip="Het maximale vermogen waarmee de batterij kan laden of ontladen. Een hoger vermogen betekent sneller reageren. Voor België is dit belangrijk voor peak-shaving.">
+        ℹ
+      </span>
+    </label>
     <input id="P" type="number" min="0" step="0.1">
   </div>
+
+  <!-- DOD -->
   <div class="field">
-    <label>Depth of Discharge DoD (%)</label>
+    <label>
+      Diepte van Ontlading | DoD (%)
+      <span class="info-icon"
+            data-tooltip="Het percentage van de batterijcapaciteit dat je veilig kunt gebruiken. Bij 90% DoD kun je 90% van de totale capaciteit benutten.">
+        ℹ
+      </span>
+    </label>
     <input id="DoD" type="number" min="0" max="100">
   </div>
+
+  <!-- ROUND TRIP EFFICIENCY -->
   <div class="field">
-    <label>Round-trip efficiëntie η_rt (%)</label>
+    <label>
+      Round-Trip Efficiëntie | η_rt (%)
+      <span class="info-icon"
+            data-tooltip="Geeft aan hoeveel energie overblijft na laden én ontladen. Bij 90% efficiëntie levert 1 kWh laden ongeveer 0.9 kWh bruikbaar vermogen op.">
+        ℹ
+      </span>
+    </label>
     <input id="eta_rt" type="number" min="0" max="100">
   </div>
+
+  <!-- VASTRECHT -->
   <div class="field">
-    <label>Vastrecht (€/jaar)</label>
+    <label>
+      Vastrecht (€/jaar)
+      <span class="info-icon"
+            data-tooltip="Het vaste bedrag dat de energieleverancier jaarlijks rekent voor je aansluiting. Dit verandert niet door de batterij, maar telt wel mee in de totale kosten.">
+        ℹ
+      </span>
+    </label>
     <input id="fixed-cost" type="number" min="0" step="0.01">
   </div>
 
+  <!-- CAPACITEITSTARIEF — WORDT BIJ NL AUTOMATISCH VERBORGEN VIA updateCountryUI() -->
   <div class="field">
-  <label>Capaciteitstarief (€/kW/jaar)</label>
-  <input id="capacity-tariff" type="number" min="0" step="0.1" value="0">
+    <label>
+      Capaciteitstarief (€/kW/jaar)
+      <span class="info-icon"
+            data-tooltip="Alleen België (Fluvius). Kosten per kW maandpiek. Een batterij kan pieken verlagen en zo besparen op dit tarief.">
+        ℹ
+      </span>
+    </label>
+    <input id="capacity-tariff" type="number" min="0" step="0.1" value="0">
   </div>
 
-  <!-- NIEUW: INVESTERING BATTERIJ -->
+  <!-- INVESTERING -->
   <div class="field">
-    <label>Investering batterij (€)</label>
+    <label>
+      Investering Batterij (€)
+      <span class="info-icon"
+            data-tooltip="De totale aankoopprijs inclusief installatie en omvormer. Dit wordt gebruikt om de terugverdientijd te berekenen.">
+        ℹ
+      </span>
+    </label>
     <input id="battery-cost" type="number" min="0" step="1">
   </div>
 
-  <!-- NIEUW: DEGRADATIE BATTERIJ -->
+  <!-- DEGRADATIE -->
   <div class="field">
-    <label>Degradatie per jaar (%)</label>
+    <label>
+      Degradatie per Jaar (%)
+      <span class="info-icon"
+            data-tooltip="Het jaarlijkse capaciteitsverlies van de batterij. Bij 2% degradatie daalt 10 kWh naar ongeveer 9 kWh bruikbaar vermogen na 5 jaar.">
+        ℹ
+      </span>
+    </label>
     <input id="battery-degradation" type="number" min="0" max="10" step="0.1" value="2">
   </div>
 
