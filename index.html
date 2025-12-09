@@ -166,6 +166,31 @@
     }
 
     #chart { margin-top:20px; }
+
+    /* ===== TOOLTIP STYLING ===== */
+.info-icon {
+  cursor: help;
+  margin-left: 6px;
+  color: #3b82f6;
+  font-weight: bold;
+  position: relative;
+}
+
+.info-icon:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 20px;
+  left: 0;
+  background: #1f2937;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  width: 260px;
+  z-index: 999;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+    
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
