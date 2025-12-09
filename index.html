@@ -1215,6 +1215,169 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   }
 });
 
+/* ----------------------------- */
+/*   ADVIES GENEREREN (STEP 5)  */
+/* ----------------------------- */
+function buildAdviceText(data) {
+  const country = (document.getElementById("country")?.value || "NL").toUpperCase();
+
+  const E   = parseFloat(document.getElementById("E").value || "0");
+  const P   = parseFloat(document.getElementById("P").value || "0");
+  const DoD = parseFloat(document.getElementById("DoD").value || "0");
+  const eta = parseFloat(document.getElementById("eta_rt").value || "0");
+  const capTariff = parseFloat(document.getElementById("capacity-tariff").value || "0");
+  const battCost  = parseFloat(document.getElementById("battery-cost").value || "0");
+  const degr      = parseFloat(document.getElementById("battery-degradation").value || "0");
+  const tariffType = document.getElementById("tariff-type").value || "enkel";
+
+  const A1   = data.A1_current;
+  const B1   = data.B1_future_no_batt;
+  const C1   = data.C1_future_with_batt;
+  const save = data.besparing_per_jaar;
+  const roi  = data.roi_percent;
+  const pb   = data.payback_years;
+
+  // Jaarverbruik uit CSV (als beschikbaar)
+  let annualLoad = 0;
+  if (parsedData && Array.isArray(parsedData.load_kwh)) {
+    annualLoad = parsedData.load_kwh.reduce((a, b) => a + b, 0);
+  }
+
+  let lines = [];
+
+  // 1. Samenvatting
+  lines.push("1. Samenvatting");
+  lines.push(
+    `Uw huidige jaarlijkse kosten (scenario A1) bedragen ongeveer € ${A1.toFixed(2)}. ` +
+    `In de toekomstige situatie zonder batterij (B1) komt dit uit op circa € ${B1.toFixed(2)}, ` +
+    `terwijl met de gekozen thuisbatterij (C1) de kosten dalen naar ongeveer € ${C1.toFixed(2)} per jaar.`
+  );
+
+  if (save > 0) {
+    lines.push(
+      `De geschatte jaarlijkse besparing door de batterij bedraagt ongeveer € ${save.toFixed(2)}.`
+    );
+  } else {
+    lines.push(
+      `Op basis van de ingevoerde gegevens lijkt de batterij momenteel geen directe jaarlijkse besparing op te leveren.`
+    );
+  }
+
+  // 2. Financiële analyse
+  lines.push("");
+  lines.push("2. Financiële analyse");
+  lines.push(
+    `De totale investering in de batterij bedraagt circa € ${battCost.toFixed(0)}.`
+  );
+
+  if (pb && isFinite(pb)) {
+    lines.push(
+      `Op basis van de simulatie wordt de investering naar verwachting in ongeveer ${pb.toFixed(1)} jaar terugverdiend.`
+    );
+  } else if (roi > 0) {
+    lines.push(
+      `Binnen de beschouwde periode wordt de investering niet volledig terugverdiend, maar de ROI blijft positief (${roi.toFixed(1)}%).`
+    );
+  } else {
+    lines.push(
+      `De huidige combinatie van stroomprijzen, verbruik en batterijgrootte leidt niet tot een sluitende businesscase binnen de simulatiehorizon.`
+    );
+  }
+
+  if (roi > 0) {
+    lines.push(
+      `De geschatte Return on Investment (ROI) over de levensduur van de batterij bedraagt ongeveer ${roi.toFixed(1)}%.`
+    );
+  }
+
+  // 3. Technische beoordeling
+  lines.push("");
+  lines.push("3. Technische beoordeling");
+  lines.push(
+    `De gekozen batterij heeft een opslagcapaciteit (E) van ${E.toFixed(1)} kWh en een laad/ontlaadvermogen (P) van ${P.toFixed(1)} kW. `
+    + `De diepte van ontlading (DoD) is ingesteld op ${DoD.toFixed(0)}% en de round-trip efficiëntie op ${eta.toFixed(0)}%.`
+  );
+
+  if (annualLoad > 0) {
+    lines.push(
+      `Op basis van de aangeleverde meetdata bedraagt uw jaarlijkse elektriciteitsverbruik ongeveer ${annualLoad.toFixed(0)} kWh. `
+      + `Daarmee vertegenwoordigt de batterij circa ${(100 * E / annualLoad).toFixed(1)}% van uw jaarverbruik per volledige lading.`
+    );
+  }
+
+  // 4. Specifiek advies per land
+  lines.push("");
+  lines.push("4. Land-specifiek advies");
+
+  if (country === "BE") {
+    lines.push(
+      "U heeft aangegeven dat de installatie zich in België bevindt. In België speelt het capaciteitstarief een belangrijke rol " +
+      "in de totale energiekost. De batterij wordt in deze simulatie ingezet voor peak-shaving: het verlagen van maandelijkse piekvermogens."
+    );
+
+    lines.push(
+      `Met een capaciteitstarief van ongeveer € ${capTariff.toFixed(2)} per kW per jaar kan het verlagen van uw maandpieken ` +
+      "een significante bijdrage leveren aan de totale besparing."
+    );
+  } else {
+    lines.push(
+      "U heeft aangegeven dat de installatie zich in Nederland bevindt. In Nederland is er op dit moment geen officieel capaciteitstarief " +
+      "voor particuliere aansluitingen, waardoor de financiële waarde van de batterij vooral wordt bepaald door:"
+    );
+    lines.push(
+      "- het verhogen van het eigen verbruik van uw zonnepanelen;\n" +
+      "- het vermijden van teruglevering tegen lagere vergoeding;\n" +
+      "- en eventuele dynamische energiecontracten waarbij u slim kunt laden bij lage prijzen."
+    );
+  }
+
+  // 5. Aanbevolen vervolgstappen
+  lines.push("");
+  lines.push("5. Aanbevolen vervolgstappen");
+
+  if (save > 0 && pb && pb < 10) {
+    lines.push(
+      "De berekende besparing en terugverdientijd zijn aantrekkelijk. Het verdient aanbeveling om offertes op te vragen voor " +
+      "een batterij in deze orde van grootte en de resultaten te vergelijken met de werkelijke conditities van uw energieleverancier."
+    );
+  } else if (save > 0) {
+    lines.push(
+      "De batterij levert een besparing op, maar de terugverdientijd is relatief lang. Mogelijk is een kleinere batterijcapaciteit of een " +
+      "andere configuratie (bijv. ander vermogen of ander tarief) financieel gunstiger."
+    );
+  } else {
+    lines.push(
+      "Op basis van de huidige parameters lijkt een thuisbatterij financieel minder interessant. U kunt overwegen om de parameters opnieuw te " +
+      "doorlopen (batterijgrootte, investering, tarieven) of te wachten op gewijzigde marktcondities (bijvoorbeeld hogere terugleverboetes of " +
+      "grotere prijsverschillen op dynamische contracten)."
+    );
+  }
+
+  lines.push("");
+  lines.push(
+    "Dit advies is gebaseerd op de door u aangeleverde meetdata en parameters. In de praktijk kunnen contractvoorwaarden, netwerkkosten en " +
+    "toekomstige wetswijzigingen de resultaten beïnvloeden."
+  );
+
+  return lines.join("\n\n");
+}
+
+// Klik op “Genereer advies”
+document.getElementById("btn-generate-advice").addEventListener("click", () => {
+  const statusEl = document.getElementById("advice-status");
+  const textEl   = document.getElementById("advice-text");
+
+  if (!window.computedResult) {
+    alert("Voer eerst een berekening uit (stap 3 en 4).");
+    return;
+  }
+
+  statusEl.textContent = "Advies wordt opgebouwd op basis van uw berekende scenario’s…";
+  const txt = buildAdviceText(window.computedResult);
+  textEl.value = txt;
+  statusEl.textContent = "Advies gegenereerd. U kunt deze tekst nu kopiëren of aanpassen.";
+});
+
 /* PDF EXPORT */
 document.getElementById("btn-download-pdf").addEventListener("click", () => {
   if (!window.computedResult) {
