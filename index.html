@@ -880,6 +880,19 @@ const API_BASE = "https://batteryengine-server.onrender.com";
 let parsedData = {};
 let costChart = null;
 
+function getTariffLabel(code) {
+  switch (code) {
+    case "enkel":
+      return "Enkel tarief";
+    case "dag_nacht":
+      return "Dag/Nacht tarief";
+    case "dynamisch":
+      return "Dynamisch tarief";
+    default:
+      return code;
+  }
+}
+  
 /* ----------------------------- */
 /*       TARIEF DYNAMISCHE LOGICA */
 /* ----------------------------- */
