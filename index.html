@@ -890,7 +890,7 @@ document.getElementById("country").addEventListener("change", updateCountryUI);
 /*       WIZARD STAPPEN          */
 /* ----------------------------- */
 function activateStep(n) {
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 6; i++) {
     const pill = document.getElementById("step-pill-" + i);
     const step = document.getElementById("step-" + i);
     if (pill) pill.classList.toggle("active", i === n);
