@@ -1384,8 +1384,15 @@ document.getElementById("btn-generate-advice").addEventListener("click", () => {
   }
 
   statusEl.textContent = "Advies wordt opgebouwd op basis van uw berekende scenario’s…";
+
   const txt = buildAdviceText(window.computedResult);
+
+  // ✅ bewaar advies ook in een globale variabele
+  window.computedAdvice = txt;
+
+  // Toon in de textarea
   textEl.value = txt;
+
   statusEl.textContent = "Advies gegenereerd. U kunt deze tekst nu kopiëren of aanpassen.";
 });
 
