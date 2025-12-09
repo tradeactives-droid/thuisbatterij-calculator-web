@@ -962,7 +962,12 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
       return;
     }
 
-    parsedData = data;
+    // Globaal maken zodat adviesmodule het kan lezen
+    window.parsedData = data;
+
+// Lokale alias zodat bestaande code blijft werken
+    parsedData = window.parsedData;
+    
     status.textContent = "CSV verwerkt ✔ (" + data.load_kwh.length + " records)";
     status.className = "status success";
     document.getElementById("to-step-2").disabled = false;
