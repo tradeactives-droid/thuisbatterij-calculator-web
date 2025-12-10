@@ -1218,25 +1218,18 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     document.getElementById("res-peak-saving").textContent =
       fmtEuro(data.peak_saving_year_euro);
 
-     // --- TARIEFMATRIX GEBRUIKT DEZELFDE WAARDEN ALS DE TILES --- //
-    const A1 = data.A1_current;
-    const B1 = data.B1_future_no_batt;
-    const C1 = data.C1_future_with_batt;
+     /* TARIFF MATRIX (echte berekeningen per tarief) */
+    document.getElementById("A1-enkel").textContent = fmtEuro(data.A1_per_tariff.enkel);
+    document.getElementById("A1-dn").textContent    = fmtEuro(data.A1_per_tariff.dag_nacht);
+    document.getElementById("A1-dyn").textContent   = fmtEuro(data.A1_per_tariff.dynamisch);
 
-    // ENKEL
-    document.getElementById("A1-enkel").textContent = fmtEuro(A1);
-    document.getElementById("B1-enkel").textContent = fmtEuro(B1);
-    document.getElementById("C1-enkel").textContent = fmtEuro(C1);
+    document.getElementById("B1-enkel").textContent = fmtEuro(data.S2_enkel.total_cost);
+    document.getElementById("B1-dn").textContent    = fmtEuro(data.S2_dn.total_cost);
+    document.getElementById("B1-dyn").textContent   = fmtEuro(data.S2_dyn.total_cost);
 
-    // DAG/NACHT → toont dezelfde cijfers (zoals jij wilt)
-    document.getElementById("A1-dn").textContent = fmtEuro(A1);
-    document.getElementById("B1-dn").textContent = fmtEuro(B1);
-    document.getElementById("C1-dn").textContent = fmtEuro(C1);
-
-    // DYNAMISCH → idem
-    document.getElementById("A1-dyn").textContent = fmtEuro(A1);
-    document.getElementById("B1-dyn").textContent = fmtEuro(B1);
-    document.getElementById("C1-dyn").textContent = fmtEuro(C1);
+    document.getElementById("C1-enkel").textContent = fmtEuro(data.S3_enkel.total_cost);
+    document.getElementById("C1-dn").textContent    = fmtEuro(data.S3_dn.total_cost);
+    document.getElementById("C1-dyn").textContent   = fmtEuro(data.S3_dyn.total_cost);
 
     /* ENERGIE-INZICHTEN */
     document.getElementById("B1-imp-enkel").textContent = data.S2_enkel.import.toFixed(1);
