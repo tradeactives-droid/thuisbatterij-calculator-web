@@ -1146,6 +1146,11 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   // 🔧 Omvormerkosten
   // UI = €/kW per maand
   // ===============================
+  
+  // 🔧 Omvormerkosten (veilig — voorkomt 422)
+  const inverterPower =
+    parseFloat(document.getElementById("P").value || "0");
+
   const inverterCostPerKwMonth =
     parseFloat(document.getElementById("tlv_per_kw_inverter").value || "0");
 
@@ -1175,13 +1180,14 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
 
     // 🔧 Omvormer
-    inverter_power_kw: parseFloat(document.getElementById("P").value || "0"),
+    inverter_power_kw: inverterPower,
 
-    // UI-waarde (€/kW per maand)
-    inverter_cost_per_kw_month: inverterCostPerKwMonth,
+    // Alleen kosten meesturen als P > 0
+    inverter_cost_per_kw_month:
+      inverterPower > 0 ? inverterCostPerKwMonth : 0,
 
-    // Backend (€/kW per jaar)
-    inverter_cost_per_kw: inverterCostPerKwMonth * 12,
+    inverter_cost_per_kw:
+      inverterPower > 0 ? inverterCostPerKwMonth * 12 : 0,
 
     // Batterij
     E: parseFloat(document.getElementById("E").value || "0"),
