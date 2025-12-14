@@ -1477,8 +1477,8 @@ document.getElementById("btn-download-pdf").addEventListener("click", () => {
     const yearlySaving = result.besparing_per_jaar || 0;
 
     // Kosten zonder batterij (B1) en met batterij (C1)
-    const costWithoutBatt = result.B1;
-    const costWithBatt    = result.C1;
+    const costWithoutBatt = result.B1.enkel.total_cost_eur;
+    const costWithBatt    = result.C1.enkel.total_cost_eur;
 
     let labels = [];
     let withoutBatt = [];
