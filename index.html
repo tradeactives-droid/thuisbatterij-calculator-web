@@ -361,10 +361,23 @@
     <input id="battery-cost" type="number" min="0" step="1">
   </div>
 
-  <!-- DEGRADATIE -->
+  <!-- LEVENSDUUR BATTERIJ -->
   <div class="field">
     <label>
-      Degradatie per Jaar (%)
+      Levensduur batterij (jaar)
+      <span class="info-icon"
+          data-tooltip="De periode waarover de batterij economisch wordt beoordeeld. Dit beïnvloedt de totale besparing, ROI en terugverdientijd.">
+        ℹ
+      </span>
+    </label>
+    <select id="battery-lifetime">
+      <option value="10">10 jaar</option>
+      <option value="15" selected>15 jaar</option>
+      <option value="20">20 jaar</option>
+      <option value="25">25 jaar</option>
+    </select>
+  </div>
+  
       <span class="info-icon"
             data-tooltip="Het jaarlijkse capaciteitsverlies van de batterij. Bij 2% degradatie daalt 10 kWh naar ongeveer 9 kWh bruikbaar vermogen na 5 jaar.">
         ℹ
