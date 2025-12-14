@@ -1224,7 +1224,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     const data = await res.json();
 
-    if (!data || !data.A1) {
+    if (!data || typeof data.A1_current === "undefined") {
       status.textContent = "Onvolledig antwoord van de server.";
       status.className = "status error";
       return;
