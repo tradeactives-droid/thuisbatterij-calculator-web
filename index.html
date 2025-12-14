@@ -1095,7 +1095,6 @@ document.getElementById("back-to-4").addEventListener("click", () => activateSte
 /* ----------------------------- */
 document.getElementById("btn-compute").addEventListener("click", async () => {
   const status = document.getElementById("compute-status");
-  console.log("Battery-cost (UI) =", document.getElementById("battery-cost").value);
   status.textContent = "Berekenen…";
   status.className = "status";
 
@@ -1105,96 +1104,97 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     return;
   }
 
-    // --- VEILIGE PARSE VAN DE BATTERIJ-INVESTERING ---
+  // ===============================
+  // Batterij-investering (veilig)
+  // ===============================
   const batteryCostRaw = document.getElementById("battery-cost").value || "";
-
-  // € / $ / spaties weg + komma → punt
   const cleanedBatteryCost = batteryCostRaw
     .replace("€", "")
-    .replace("$", "")
     .replace(",", ".")
     .replace(/\s+/g, "");
 
   const batteryCost = parseFloat(cleanedBatteryCost);
 
   if (!cleanedBatteryCost || isNaN(batteryCost) || batteryCost <= 0) {
-    status.textContent = "Voer een geldige batterij-investering in (stap 2).";
-    status.className   = "status error";
+    status.textContent = "Voer een geldige batterij-investering in.";
+    status.className = "status error";
     return;
   }
 
+  // ===============================
+  // 🔧 Omvormerkosten
+  // UI = €/kW per maand
+  // ===============================
+  const inverterCostPerKwMonth =
+    parseFloat(document.getElementById("tlv_per_kw_inverter").value || "0");
+
+  // ===============================
+  // REQUEST BODY
+  // ===============================
   const body = {
-  load_kwh: parsedData.load_kwh,
-  pv_kwh: parsedData.pv_kwh,
-  prices_dyn: parsedData.prices_dyn || [],
+    // Profielen
+    load_kwh: parsedData.load_kwh,
+    pv_kwh: parsedData.pv_kwh,
+    prices_dyn: parsedData.prices_dyn || [],
 
-  p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
-  p_enkel_exp: parseFloat(document.getElementById("p_enkel_exp").value || "0.07"),
+    // Tarieven
+    p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
+    p_enkel_exp: parseFloat(document.getElementById("p_enkel_exp").value || "0.07"),
 
-  p_dag: parseFloat(document.getElementById("p_dag").value || "0.31"),
-  p_nacht: parseFloat(document.getElementById("p_nacht").value || "0.26"),
-  p_exp_dn: parseFloat(document.getElementById("p_exp_dn").value || "0.07"),
+    p_dag: parseFloat(document.getElementById("p_dag").value || "0.31"),
+    p_nacht: parseFloat(document.getElementById("p_nacht").value || "0.26"),
+    p_exp_dn: parseFloat(document.getElementById("p_exp_dn").value || "0.07"),
 
-  p_export_dyn: parseFloat(document.getElementById("p_export_dyn").value || "0.07"),
+    p_export_dyn: parseFloat(document.getElementById("p_export_dyn").value || "0.07"),
 
-  // --- NIEUW: terugleverkosten correct mappen naar backend ---
-  feedin_monthly_cost: parseFloat(document.getElementById("tlv_monthly_fee").value || "0"),
+    // Terugleverkosten
+    feedin_monthly_cost: parseFloat(document.getElementById("tlv_monthly_fee").value || "0"),
+    feedin_cost_per_kwh: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
+    feedin_free_kwh: parseFloat(document.getElementById("tlv_free_kwh").value || "0"),
+    feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
 
-  // let op: backend heeft feedin_cost_per_kwh, niet tlv_per_kwh
-  feedin_cost_per_kwh: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
+    // 🔧 Omvormer
+    inverter_power_kw: parseFloat(document.getElementById("P").value || "0"),
 
-  feedin_free_kwh: parseFloat(document.getElementById("tlv_free_kwh").value || "0"),
+    // UI-waarde (€/kW per maand)
+    inverter_cost_per_kw_month: inverterCostPerKwMonth,
 
-  // price after free = hetzelfde als tlv_per_kwh (jouw UI is per kWh boven staffel)
-  feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
+    // Backend (€/kW per jaar)
+    inverter_cost_per_kw: inverterCostPerKwMonth * 12,
 
+    // Batterij
+    E: parseFloat(document.getElementById("E").value || "0"),
+    P: parseFloat(document.getElementById("P").value || "0"),
+    DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
+    eta_rt: parseFloat(document.getElementById("eta_rt").value || "0") / 100,
 
-const body = {
-  feedin_free_kwh: parseFloat(document.getElementById("tlv_free_kwh").value || "0"),
+    // Vastrecht (€/jaar)
+    vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
 
-  // price after free = hetzelfde als tlv_per_kwh
-  feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
+    // Investering & degradatie
+    battery_cost: batteryCost,
+    battery_degradation:
+      parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
 
-  // --- Omvormerkosten ---
-  inverter_power_kw: parseFloat(document.getElementById("P").value || "0"),
-  inverter_cost_per_kw_month: inverterCostPerKwMonth,   // UI
-  inverter_cost_per_kw: inverterCostPerKwMonth * 12,    // backend
+    // Capaciteitstarief (BE)
+    capacity_tariff_kw:
+      parseFloat(document.getElementById("capacity-tariff").value || "0"),
 
-  E: parseFloat(document.getElementById("E").value || "0"),
-  P: parseFloat(document.getElementById("P").value || "0"),
-  DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
-  eta_rt: parseFloat(document.getElementById("eta_rt").value || "0") / 100,
-
-  vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
-};
-
-  // INVESTERING BATTERIJ (geparsed)
-  battery_cost: batteryCost,
-
-  // DEGRADATIE (van % naar fractie)
-  battery_degradation: parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
-
-  capacity_tariff_kw: parseFloat(document.getElementById("capacity-tariff").value || "0"),
-  peak_shaving_enabled: true,
-
-  // LAND → NL of BE
-  country: document.getElementById("country").value || "NL",
-
-  // huidig tarief (enkel / dag_nacht / dynamisch)
-  current_tariff: document.getElementById("tariff-type").value || "enkel"
-};
+    // Context
+    country: document.getElementById("country").value || "NL",
+    current_tariff: document.getElementById("tariff-type").value || "enkel"
+  };
 
   try {
-    console.log("Body dat naar server gaat =", body);
-    const res = await fetch(API_BASE + "/compute", {
+    const res = await fetch(API_BASE + "/compute_v3", {
       method: "POST",
-      headers: { "Content-Type":"application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
 
     const data = await res.json();
 
-    if (!data || !data.A1_per_tariff) {
+    if (!data || !data.A1) {
       status.textContent = "Onvolledig antwoord van de server.";
       status.className = "status error";
       return;
@@ -1202,126 +1202,9 @@ const body = {
 
     window.computedResult = data;
 
-    // Fallback-detectie: als het current_tariff dynamisch is,
-    // maar we hadden geen prices_dyn uit de CSV → APX-fallback gebruikt.
-    const dynNote = document.getElementById("dyn-fallback-note");
-    const currentTariff = document.getElementById("tariff-type").value || "enkel";
-
-    if (currentTariff === "dynamisch" &&
-        (!parsedData.prices_dyn || parsedData.prices_dyn.length === 0)) {
-      dynNote.style.display = "block";
-    } else {
-      dynNote.style.display = "none";
-    }
-    
-    /* RESUMMARY TILES */
-    document.getElementById("res-A1").textContent = fmtEuro(data.A1_current);
-    document.getElementById("res-B1").textContent = fmtEuro(data.B1_future_no_batt);
-    document.getElementById("res-C1").textContent = fmtEuro(data.C1_future_with_batt);
-
-    // ✅ Toon bij B1 en C1 welk tarief is gebruikt (huidig tarief)
-    const tLabel = getTariffLabel(currentTariff);
-    const elB1Label = document.getElementById("res-B1-tariff-label");
-    const elC1Label = document.getElementById("res-C1-tariff-label");
-    if (elB1Label) elB1Label.textContent = "Huidig tarief: " + tLabel;
-    if (elC1Label) elC1Label.textContent = "Huidig tarief: " + tLabel;
-
-     // NIEUW: BESPARING, PAYBACK, ROI
-    document.getElementById("res-savings").textContent = fmtEuro(data.besparing_per_jaar);
-
-    // TERUGVERDIENTIJD
-    if (data.payback_years !== null && data.payback_years !== undefined) {
-      const pb = Number(data.payback_years);
-      if (isFinite(pb)) {
-        document.getElementById("res-payback").textContent = pb.toFixed(1) + " jaar";
-      } else {
-        document.getElementById("res-payback").textContent = "–";
-      }
-    } else if (data.roi_percent > 0) {
-      // Wel positieve ROI, maar binnen 15 jaar nog niet volledig terugverdiend
-      document.getElementById("res-payback").textContent = "> 15 jaar";
-    } else {
-      // ROI <= 0 → geen terugverdientijd in de simulatie
-      document.getElementById("res-payback").textContent = "geen terugverdientijd";
-    }
-
-    // ROI
-    if (data.roi_percent !== null && data.roi_percent !== undefined) {
-      document.getElementById("res-roi").textContent =
-        data.roi_percent.toFixed(1) + " %";
-    } else {
-      document.getElementById("res-roi").textContent = "–";
-    }
-
-    // --- PEAK SHAVING RESULTATEN ---
-    document.getElementById("res-peak-no").textContent =
-      data.peak_no_battery_kw.toFixed(2) + " kW";
-
-    document.getElementById("res-peak-yes").textContent =
-      data.peak_with_battery_kw.toFixed(2) + " kW";
-
-    document.getElementById("res-peak-saving").textContent =
-      fmtEuro(data.peak_saving_year_euro);
-
-     /* TARIFF MATRIX (echte berekeningen per tarief) */
-    document.getElementById("A1-enkel").textContent = fmtEuro(data.A1_per_tariff.enkel);
-    document.getElementById("A1-dn").textContent    = fmtEuro(data.A1_per_tariff.dag_nacht);
-    document.getElementById("A1-dyn").textContent   = fmtEuro(data.A1_per_tariff.dynamisch);
-
-    document.getElementById("B1-enkel").textContent = fmtEuro(data.S2_enkel.total_cost);
-    document.getElementById("B1-dn").textContent    = fmtEuro(data.S2_dn.total_cost);
-    document.getElementById("B1-dyn").textContent   = fmtEuro(data.S2_dyn.total_cost);
-
-    document.getElementById("C1-enkel").textContent = fmtEuro(data.S3_enkel.total_cost);
-    document.getElementById("C1-dn").textContent    = fmtEuro(data.S3_dn.total_cost);
-    document.getElementById("C1-dyn").textContent   = fmtEuro(data.S3_dyn.total_cost);
-
-    /* ENERGIE-INZICHTEN */
-    document.getElementById("B1-imp-enkel").textContent = data.S2_enkel.import.toFixed(1);
-    document.getElementById("B1-imp-dn").textContent    = data.S2_dn.import.toFixed(1);
-    document.getElementById("B1-imp-dyn").textContent   = data.S2_dyn.import.toFixed(1);
-
-    document.getElementById("B1-exp-enkel").textContent = data.S2_enkel.export.toFixed(1);
-    document.getElementById("B1-exp-dn").textContent    = data.S2_dn.export.toFixed(1);
-    document.getElementById("B1-exp-dyn").textContent   = data.S2_dyn.export.toFixed(1);
-
-    document.getElementById("C1-imp-enkel").textContent = data.S3_enkel.import.toFixed(1);
-    document.getElementById("C1-imp-dn").textContent    = data.S3_dn.import.toFixed(1);
-    document.getElementById("C1-imp-dyn").textContent   = data.S3_dyn.import.toFixed(1);
-
-    document.getElementById("C1-exp-enkel").textContent = data.S3_enkel.export.toFixed(1);
-    document.getElementById("C1-exp-dn").textContent    = data.S3_dn.export.toFixed(1);
-    document.getElementById("C1-exp-dyn").textContent   = data.S3_dyn.export.toFixed(1);
-
-    /* CHART */
-    const ctx = document.getElementById("chart").getContext("2d");
-    if (costChart) costChart.destroy();
-
-    costChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: ["Huidige situatie", "Zonder batterij", "Met batterij"],
-        datasets: [{
-          label: "Jaarlijkse kosten (€)",
-          data: [
-            data.A1_current,
-            data.B1_future_no_batt,
-            data.C1_future_with_batt
-          ]
-        }]
-      }
-    });
-
-   if (!parsedData.prices_dyn || parsedData.prices_dyn.length === 0) {
-    document.getElementById("compute-status").textContent =
-      "Dynamische tarieven zijn gesimuleerd (fallback op historische APX-data).";
-    document.getElementById("compute-status").className = "status success";
-}
-    
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
     activateStep(4);
-    document.getElementById("btn-download-pdf").style.display = "inline-block";
 
   } catch (err) {
     status.textContent = "Fout: " + err.message;
