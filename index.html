@@ -1198,7 +1198,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     battery_cost: batteryCost,
     battery_degradation:
       parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
-
+    battery_lifetime_years:
+      parseInt(document.getElementById("battery-lifetime").value || "15"),
+    
     battery_lifetime_years:
       parseInt(document.getElementById("battery-lifetime").value || "15"),
 
