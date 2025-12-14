@@ -1151,23 +1151,26 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   // --- Omvormerkosten ---
   // UI = €/kW per maand
   const inverterCostPerKwMonth =
-    parseFloat(document.getElementById("tlv_per_kw_inverter").value || "0");
+  parseFloat(document.getElementById("tlv_per_kw_inverter").value || "0");
 
+const body = {
+  feedin_free_kwh: parseFloat(document.getElementById("tlv_free_kwh").value || "0"),
+
+  // price after free = hetzelfde als tlv_per_kwh
+  feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
+
+  // --- Omvormerkosten ---
   inverter_power_kw: parseFloat(document.getElementById("P").value || "0"),
+  inverter_cost_per_kw_month: inverterCostPerKwMonth,   // UI
+  inverter_cost_per_kw: inverterCostPerKwMonth * 12,    // backend
 
-  // Nieuw, expliciet per maand
-  inverter_cost_per_kw_month: inverterCostPerKwMonth,
-
-  // Legacy / backend-compatibel: per jaar
-  inverter_cost_per_kw: inverterCostPerKwMonth * 12,
-  
   E: parseFloat(document.getElementById("E").value || "0"),
   P: parseFloat(document.getElementById("P").value || "0"),
   DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
   eta_rt: parseFloat(document.getElementById("eta_rt").value || "0") / 100,
 
-  // LET OP: kleine letter v
   vastrecht: parseFloat(document.getElementById("fixed-cost").value || "0"),
+};
 
   // INVESTERING BATTERIJ (geparsed)
   battery_cost: batteryCost,
