@@ -1149,11 +1149,18 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
 
   // --- Omvormerkosten ---
+  // UI = €/kW per maand
+  const inverterCostPerKwMonth =
+    parseFloat(document.getElementById("tlv_per_kw_inverter").value || "0");
+
   inverter_power_kw: parseFloat(document.getElementById("P").value || "0"),
 
-  // Jouw UI geeft €/kW *per maand*, backend wil per jaar → dus ×12
-  inverter_cost_per_kw: parseFloat(document.getElementById("tlv_per_kw_inverter").value || "0") * 12,
+  // Nieuw, expliciet per maand
+  inverter_cost_per_kw_month: inverterCostPerKwMonth,
 
+  // Legacy / backend-compatibel: per jaar
+  inverter_cost_per_kw: inverterCostPerKwMonth * 12,
+  
   E: parseFloat(document.getElementById("E").value || "0"),
   P: parseFloat(document.getElementById("P").value || "0"),
   DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
