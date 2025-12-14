@@ -1234,6 +1234,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
     activateStep(4);
+    fillResults(data);
     updateCostChart(data);
 
   } catch (err) {
