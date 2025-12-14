@@ -1226,9 +1226,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 // ✅ Controleer op juiste backend-velden
 if (
   !data ||
-  typeof data.A1_current !== "number" ||
-  typeof data.B1_future_no_batt !== "number" ||
-  typeof data.C1_future_with_batt !== "number"
+  typeof data.A1 !== "number" ||
+  typeof data.B1 !== "number" ||
+  typeof data.C1 !== "number"
 ) {
   console.error("Backend response:", data);
   status.textContent = "Onvolledig antwoord van de server.";
