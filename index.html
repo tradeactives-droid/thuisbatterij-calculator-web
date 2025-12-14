@@ -1148,10 +1148,6 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   // price after free = hetzelfde als tlv_per_kwh (jouw UI is per kWh boven staffel)
   feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
 
-  // --- Omvormerkosten ---
-  // UI = €/kW per maand
-  const inverterCostPerKwMonth =
-  parseFloat(document.getElementById("tlv_per_kw_inverter").value || "0");
 
 const body = {
   feedin_free_kwh: parseFloat(document.getElementById("tlv_free_kwh").value || "0"),
