@@ -1302,9 +1302,9 @@ function buildAdviceText(data) {
   // 1. Samenvatting
   lines.push("1. Samenvatting");
   lines.push(
-    `Uw huidige jaarlijkse kosten (scenario A1) bedragen ongeveer € ${A1.toFixed(2)}. ` +
-    `In de toekomstige situatie zonder batterij (B1) komt dit uit op circa € ${B1.toFixed(2)}, ` +
-    `terwijl met de gekozen thuisbatterij (C1) de kosten dalen naar ongeveer € ${C1.toFixed(2)} per jaar.`
+    `Uw huidige jaarlijkse kosten (scenario A1) bedragen ongeveer € ${Number(A1).toFixed(2)}. ` +
+    `In de toekomstige situatie zonder batterij (B1) komt dit uit op circa € ${Number(B1).toFixed(2)}, ` +
+    `terwijl met de gekozen thuisbatterij (C1) de kosten dalen naar ongeveer € ${Number(C1).toFixed(2)} per jaar.`
   );
 
   if (save > 0) {
