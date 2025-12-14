@@ -1242,6 +1242,33 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   }
 });
 
+  <script>
+  function fillResults(data) {
+    // KPI's bovenin
+    document.getElementById("res-A1").textContent =
+      fmtEuro(data.A1_current);
+
+    document.getElementById("res-B1").textContent =
+      fmtEuro(data.B1_future_no_batt);
+
+    document.getElementById("res-C1").textContent =
+      fmtEuro(data.C1_future_with_batt);
+
+    document.getElementById("res-savings").textContent =
+      fmtEuro(data.besparing_per_jaar);
+
+    document.getElementById("res-payback").textContent =
+      (data.payback_years && isFinite(data.payback_years))
+        ? data.payback_years.toFixed(1) + " jaar"
+        : "–";
+
+    document.getElementById("res-roi").textContent =
+      (data.roi_percent && isFinite(data.roi_percent))
+        ? data.roi_percent.toFixed(1) + " %"
+        : "–";
+  }
+  </script>
+  
 /* ----------------------------- */
 /*   ADVIES GENEREREN (STEP 5)  */
 /* ----------------------------- */
