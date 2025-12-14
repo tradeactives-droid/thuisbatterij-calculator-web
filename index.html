@@ -1223,12 +1223,12 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     const data = await res.json();
 
-// ✅ Controleer op juiste backend-velden
 if (
   !data ||
-  typeof data.A1 !== "number" ||
-  typeof data.B1 !== "number" ||
-  typeof data.C1 !== "number"
+  typeof data.A1?.total_cost_eur !== "number" ||
+  typeof data.B1?.enkel?.total_cost_eur !== "number" ||
+  typeof data.C1?.enkel?.total_cost_eur !== "number" ||
+  typeof data.roi?.yearly_saving_eur !== "number"
 ) {
   console.error("Backend response:", data);
   status.textContent = "Onvolledig antwoord van de server.";
