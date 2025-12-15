@@ -1245,7 +1245,6 @@ if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
 });
 
   function fillResults(data) {
-    // Jaarlijkse kosten
     const A1 = data.A1.total_cost_eur;
     const B1 = data.B1.enkel.total_cost_eur;
     const C1 = data.C1.enkel.total_cost_eur;
@@ -1254,17 +1253,14 @@ if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
     document.getElementById("res-B1").textContent = fmtEuro(B1);
     document.getElementById("res-C1").textContent = fmtEuro(C1);
 
-    // Besparing per jaar
     document.getElementById("res-savings").textContent =
       fmtEuro(data.roi.yearly_saving_eur);
 
-    // Terugverdientijd
     document.getElementById("res-payback").textContent =
       (data.roi.payback_years && isFinite(data.roi.payback_years))
         ? data.roi.payback_years.toFixed(1) + " jaar"
         : "–";
 
-    // ROI
     document.getElementById("res-roi").textContent =
       (data.roi.roi_percent && isFinite(data.roi.roi_percent))
         ? data.roi.roi_percent.toFixed(1) + " %"
