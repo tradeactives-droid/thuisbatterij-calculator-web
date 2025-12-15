@@ -1223,15 +1223,9 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     const data = await res.json();
 
-if (
-  !data ||
-  typeof data.A1?.total_cost_eur !== "number" ||
-  typeof data.B1?.enkel?.total_cost_eur !== "number" ||
-  typeof data.C1?.enkel?.total_cost_eur !== "number" ||
-  typeof data.roi?.yearly_saving_eur !== "number"
-) {
+if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
   console.error("Backend response:", data);
-  status.textContent = "Onvolledig antwoord van de server.";
+  status.textContent = "Ongeldig antwoord van de server.";
   status.className = "status error";
   return;
 }
