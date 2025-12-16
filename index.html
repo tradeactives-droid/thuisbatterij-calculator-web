@@ -995,6 +995,24 @@ function updateCountryUI() {
 
 document.getElementById("country").addEventListener("change", updateCountryUI);
 
+function applyTariffDefaultsIfEmpty() {
+  const defaults = {
+    p_enkel_imp: "0.29",
+    p_enkel_exp: "0.07",
+    p_dag: "0.31",
+    p_nacht: "0.26",
+    p_exp_dn: "0.07",
+    p_export_dyn: "0.07"
+  };
+
+  Object.entries(defaults).forEach(([id, value]) => {
+    const el = document.getElementById(id);
+    if (el && (el.value === "" || el.value === null)) {
+      el.value = value;
+    }
+  });
+}
+  
 /* ----------------------------- */
 /*       WIZARD STAPPEN          */
 /* ----------------------------- */
