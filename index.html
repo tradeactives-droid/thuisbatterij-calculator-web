@@ -1124,7 +1124,10 @@ document.getElementById("to-step-0-next").addEventListener("click", () => {
 
 document.getElementById("to-step-2").addEventListener("click", () => activateStep(2));
 document.getElementById("back-to-1").addEventListener("click", () => activateStep(1));
-document.getElementById("to-step-3").addEventListener("click", () => activateStep(3));
+document.getElementById("to-step-3").addEventListener("click", () => {
+  activateStep(3);
+  applyTariffDefaultsIfEmpty();
+});
 document.getElementById("back-to-2").addEventListener("click", () => activateStep(2));
 
 // ✅ Nieuw: navigatie voor stap 5 (advies)
