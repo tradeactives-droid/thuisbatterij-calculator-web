@@ -1054,12 +1054,7 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   return;
 }
 
-  if (tarief === "dynamisch" && !pricesFile) {
-    status.textContent = "Prices.csv is verplicht bij dynamisch tarief.";
-    status.className = "status error";
-    return;
-  }
-
+  
   status.textContent = "Verwerken…";
   status.className = "status";
 
