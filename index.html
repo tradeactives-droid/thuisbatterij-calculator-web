@@ -1246,6 +1246,7 @@ if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
     status.className = "status success";
     activateStep(4);
     fillResults(data);
+    updateCountryUI(); 
     updateCostChart(data);
 
   } catch (err) {
