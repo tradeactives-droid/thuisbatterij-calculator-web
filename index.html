@@ -1047,11 +1047,12 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
   const tarief     = document.getElementById("tariff-type").value;
 
   // ---- VALIDATIE ----
-  if (!loadFile || !pvFile) {
-    status.textContent = "Load.csv en pv.csv zijn verplicht.";
+  if (!loadFile || !pvFile || !pricesFile) {
+    status.textContent =
+      "Load.csv, pv.csv en prices.csv zijn verplicht voor deze berekening.";
     status.className = "status error";
-    return;
-  }
+  return;
+}
 
   if (tarief === "dynamisch" && !pricesFile) {
     status.textContent = "Prices.csv is verplicht bij dynamisch tarief.";
