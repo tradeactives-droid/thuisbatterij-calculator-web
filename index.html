@@ -1317,8 +1317,10 @@ if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
         ? data.roi.roi_percent.toFixed(1) + " %"
         : "–";
     // =========================
-    // TARIEFMATRIX — A1 (met saldering)
+    // TARIEFMATRIX — JAARLIJKSE KOSTEN
     // =========================
+
+    // A1 — huidige situatie (met saldering)
     document.getElementById("A1-enkel").textContent =
       fmtEuro(data.A1_per_tariff?.enkel?.total_cost_eur);
 
@@ -1328,9 +1330,8 @@ if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
     document.getElementById("A1-dyn").textContent =
       fmtEuro(data.A1_per_tariff?.dynamisch?.total_cost_eur);
 
-    // =========================
-    // TARIEFMATRIX — B1 (zonder batterij)
-    // =========================
+
+    // B1 — toekomst zonder batterij
     document.getElementById("B1-enkel").textContent =
       fmtEuro(data.B1?.enkel?.total_cost_eur);
 
@@ -1340,9 +1341,8 @@ if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
     document.getElementById("B1-dyn").textContent =
       fmtEuro(data.B1?.dynamisch?.total_cost_eur);
 
-    // =========================
-    // TARIEFMATRIX — C1 (met batterij)
-    // =========================
+
+    // C1 — toekomst met batterij
     document.getElementById("C1-enkel").textContent =
       fmtEuro(data.C1?.enkel?.total_cost_eur);
 
