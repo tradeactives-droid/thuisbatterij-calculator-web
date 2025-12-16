@@ -920,6 +920,10 @@ document.querySelectorAll(".stepper .step").forEach((pill, index) => {
     }
 
     activateStep(index);
+
+    if (index === 3) {
+      applyTariffDefaultsIfEmpty();
+    }
   });
 });
 </script>  
