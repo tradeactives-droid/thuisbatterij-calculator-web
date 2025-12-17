@@ -1411,6 +1411,51 @@ if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
 
     document.getElementById("C1-dyn").textContent =
       fmtEuro(data.C1?.dynamisch?.total_cost_eur);
+
+    // =========================
+    // ENERGIE-INZICHTEN (kWh)
+    // =========================
+
+    const fmtKwh = (v) =>
+      (isFinite(v) ? v.toFixed(0) + " kWh" : "–");
+
+    // --- B1 ---
+    document.getElementById("B1-imp-enkel").textContent =
+      fmtKwh(data.B1?.enkel?.import_kwh);
+
+    document.getElementById("B1-exp-enkel").textContent =
+      fmtKwh(data.B1?.enkel?.export_kwh);
+
+    document.getElementById("B1-imp-dn").textContent =
+      fmtKwh(data.B1?.dag_nacht?.import_kwh);
+
+    document.getElementById("B1-exp-dn").textContent =
+      fmtKwh(data.B1?.dag_nacht?.export_kwh);
+
+    document.getElementById("B1-imp-dyn").textContent =
+      fmtKwh(data.B1?.dynamisch?.import_kwh);
+
+    document.getElementById("B1-exp-dyn").textContent =
+      fmtKwh(data.B1?.dynamisch?.export_kwh);
+
+    // --- C1 ---
+    document.getElementById("C1-imp-enkel").textContent =
+      fmtKwh(data.C1?.enkel?.import_kwh);
+
+    document.getElementById("C1-exp-enkel").textContent =
+      fmtKwh(data.C1?.enkel?.export_kwh);
+
+    document.getElementById("C1-imp-dn").textContent =
+      fmtKwh(data.C1?.dag_nacht?.import_kwh);
+
+    document.getElementById("C1-exp-dn").textContent =
+      fmtKwh(data.C1?.dag_nacht?.export_kwh);
+
+    document.getElementById("C1-imp-dyn").textContent =
+      fmtKwh(data.C1?.dynamisch?.import_kwh);
+
+    document.getElementById("C1-exp-dyn").textContent =
+      fmtKwh(data.C1?.dynamisch?.export_kwh);
     
   }
 
