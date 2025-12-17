@@ -135,11 +135,16 @@
     th { background:#f1f5f9; font-weight:600; }
     td.highlight { background:var(--highlight); font-weight:700; }
 
-    .results-summary {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:12px;
-      margin-bottom:16px;
+    @media (max-width: 900px) {
+      .results-summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .results-summary {
+        grid-template-columns: 1fr;
+      }
     }
     .result-tile {
       border-radius:12px;
