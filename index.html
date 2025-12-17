@@ -182,6 +182,21 @@
   font-size: 13px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
+
+    /* =============================== */
+    /* RESULTATEN LAYOUT FIX           */
+    /* =============================== */
+
+    .results-container {
+      max-width: 760px;   /* <<< dit forceert 3 tiles per rij */
+      margin: 0 auto;     /* centreert het blok */
+    }
+
+    @media (max-width: 900px) {
+      .results-container {
+        max-width: 100%;
+      }
+    }
     
   </style>
 
