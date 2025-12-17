@@ -1153,7 +1153,15 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
     
     status.textContent = "CSV verwerkt ✔ (" + data.load_kwh.length + " records)";
     status.className = "status success";
-    document.getElementById("to-step-2").disabled = false;
+
+    const nextBtn = document.getElementById("to-step-2");
+    nextBtn.disabled = false;
+
+    // 🔶 VISUELE ACTIVERING "VOLGENDE"
+    nextBtn.style.backgroundColor = "#ff6600";
+    nextBtn.style.color = "#ffffff";
+    nextBtn.style.cursor = "pointer";
+    nextBtn.style.border = "none";
 
   } catch (err) {
     status.textContent = "Fout: " + err.message;
