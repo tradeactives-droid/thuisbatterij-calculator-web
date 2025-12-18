@@ -1374,15 +1374,24 @@ if (
     // === ROI & Payback (PER TARIEF!) ===
     const roi = data.roi_per_tariff[tariff];
 
-    document.getElementById("res-payback").textContent =
-      roi && roi.payback_years !== null
-        ? roi.payback_years.toFixed(1) + " jaar"
-        : "–";
+    const paybackEl = document.getElementById("res-payback");
+    const roiEl = document.getElementById("res-roi");
 
-    document.getElementById("res-roi").textContent =
-      roi && isFinite(roi.roi_percent)
-        ? roi.roi_percent.toFixed(1) + " %"
-        : "–";
+    // Default styling resetten
+    paybackEl.style.color = "";
+    roiEl.style.color = "";
+
+    // ❗ Geen rendabele businesscase
+    if (!roi || roi.yearly_saving_eur <= 0 || roi.payback_years === null) {
+      paybackEl.textContent = "Niet rendabel";
+      roiEl.textContent = "0.0 %";
+
+      paybackEl.style.color = "#dc2626"; // rood
+      roiEl.style.color = "#dc2626";     // rood
+    } else {
+      paybackEl.textContent = roi.payback_years.toFixed(1) + " jaar";
+      roiEl.textContent = roi.roi_percent.toFixed(1) + " %";
+    }
     
     // =========================
     // TARIEFMATRIX — JAARLIJKSE KOSTEN
