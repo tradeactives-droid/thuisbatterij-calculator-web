@@ -1835,39 +1835,58 @@ window.addEventListener("DOMContentLoaded", () => {
 const SUPABASE_URL = "https://sjnfzyvuhizpkzixadtb.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_D1fd6N5sEZXV4gegmwEAOw_lnd6v7ZR";
 
+// ❗ andere naam dan 'supabase' om conflicts te voorkomen
 const sb = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
+// JUISTE containers
 const loginContainer = document.getElementById("login-container");
-const wizardContainer = document.getElementById("wizard-container");
+const appView = document.getElementById("app-view");
 const loginStatus = document.getElementById("login-status");
 
-// Check login bij laden
-supabase.auth.getSession().then(({ data }) => {
+// ============================
+// CHECK LOGIN BIJ PAGINALAAD
+// ============================
+sb.auth.getSession().then(({ data }) => {
   if (data.session) {
     loginContainer.style.display = "none";
-    wizardContainer.style.display = "block";
+    appView.style.display = "block";
   } else {
     loginContainer.style.display = "block";
-    wizardContainer.style.display = "none";
+    appView.style.display = "none";
   }
 });
 
-// Login handler
+// ============================
+// LOGIN HANDLER
+// ============================
 document.getElementById("btn-login").addEventListener("click", async () => {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
 
   loginStatus.textContent = "Inloggen…";
+  loginStatus.className = "status";
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { error } = await sb.auth.signInWithPassword({
     email,
     password
   });
 
   if (error) {
+    loginStatus.textContent = error.message;
+    loginStatus.className = "status error";
+    return;
+  }
+
+  loginStatus.textContent = "Ingelogd ✔";
+  loginStatus.className = "status success";
+
+  loginContainer.style.display = "none";
+  appView.style.display = "block";
+});
+</script>
     loginStatus.textContent = error.message;
     loginStatus.className = "status error";
     return;
