@@ -1191,15 +1191,6 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
 /*      NAVIGATIE                */
 /* ----------------------------- */
 document.getElementById("to-step-0-next").addEventListener("click", () => {
-  const choice = document.querySelector('input[name="calc-type"]:checked');
-  if (!choice) {
-    alert("Selecteer eerst een berekeningstype.");
-    return;
-  }
-  if (choice.value === "snelle") {
-    alert("Snelle berekening komt later beschikbaar. Gebruik nu de nauwkeurige CSV-berekening.");
-    return;
-  }
   activateStep(1);
 });
 
