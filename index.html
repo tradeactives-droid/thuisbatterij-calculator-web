@@ -1356,6 +1356,11 @@ if (
   console.error("Backend response:", data);
   status.textContent = "Ongeldig antwoord van de server.";
   status.className = "status error";
+
+  // UI herstellen
+  btn.disabled = false;
+  btn.textContent = "Berekenen";
+
   return;
 }
 
