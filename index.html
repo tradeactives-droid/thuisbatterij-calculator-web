@@ -1220,8 +1220,13 @@ document.getElementById("back-to-4").addEventListener("click", () => activateSte
 /*      COMPUTE                 */
 /* ----------------------------- */
 document.getElementById("btn-compute").addEventListener("click", async () => {
+  const btn = document.getElementById("btn-compute");
   const status = document.getElementById("compute-status");
-  status.textContent = "Berekenen…";
+
+  // UI feedback: start berekening
+  btn.disabled = true;
+  btn.textContent = "⏳ Bezig met berekenen...";
+  status.textContent = "Berekening wordt uitgevoerd, dit kan enkele seconden duren…";
   status.className = "status";
 
 
