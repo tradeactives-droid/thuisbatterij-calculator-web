@@ -1255,6 +1255,11 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   if (!cleanedBatteryCost || isNaN(batteryCost) || batteryCost <= 0) {
     status.textContent = "Voer een geldige batterij-investering in.";
     status.className = "status error";
+
+    // UI herstellen
+    btn.disabled = false;
+    btn.textContent = "Berekenen";
+
     return;
   }
 
