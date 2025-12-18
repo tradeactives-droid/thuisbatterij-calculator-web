@@ -1487,9 +1487,14 @@ function buildAdviceText(data) {
   const B1 = data.B1.enkel.total_cost_eur;
   const C1 = data.C1.enkel.total_cost_eur;
 
-  const save = data.roi.yearly_saving_eur;
-  const roi  = data.roi.roi_percent;
-  const pb   = data.roi.payback_years;
+  // 🔑 huidig gekozen tarief
+  const tariff = document.getElementById("tariff-type").value || "enkel";
+
+  const roiObj = data.roi_per_tariff?.[tariff] || {};
+
+  const save = roiObj.yearly_saving_eur ?? 0;
+  const roi  = roiObj.roi_percent ?? 0;
+  const pb   = roiObj.payback_years ?? null;
 
   // Jaarverbruik uit CSV (als beschikbaar)
   let annualLoad = 0;
