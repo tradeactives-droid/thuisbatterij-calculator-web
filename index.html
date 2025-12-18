@@ -1659,11 +1659,24 @@ document.getElementById("btn-download-pdf").addEventListener("click", () => {
     const investment =
       parseFloat(document.getElementById("battery-cost").value || "0");
 
-    const yearlySaving = result.roi.yearly_saving_eur;
+    // 🔑 huidig gekozen tarief
+    const tariff = document.getElementById("tariff-type").value || "enkel";
 
-    // Kosten zonder batterij (B1) en met batterij (C1)
-    const costWithoutBatt = result.B1.enkel.total_cost_eur;
-    const costWithBatt    = result.C1.enkel.total_cost_eur;
+    // ROI per tarief
+    const roi = result.roi_per_tariff[tariff];
+
+    // Jaarlijkse besparing (veilig)
+    const yearlySaving =
+      roi && isFinite(roi.yearly_saving_eur)
+      ? roi.yearly_saving_eur
+      : 0;
+
+    // Kosten zonder batterij (B1) en met batterij (C1) — PER TARIEF
+    const costWithoutBatt =
+      result.B1?.[tariff]?.total_cost_eur ?? 0;
+
+    const costWithBatt =
+      result.C1?.[tariff]?.total_cost_eur ?? 0;
 
     let labels = [];
     let withoutBatt = [];
