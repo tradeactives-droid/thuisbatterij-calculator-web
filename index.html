@@ -1216,6 +1216,14 @@ document.getElementById("to-step-4")
 
 document.getElementById("back-to-4").addEventListener("click", () => activateStep(4));
 
+document.getElementById("to-step-6")?.addEventListener("click", () => {
+  if (!window.computedResult) {
+    alert("Voer eerst een berekening uit.");
+    return;
+  }
+  activateStep(6);
+});
+
 /* ----------------------------- */
 /*      COMPUTE                 */
 /* ----------------------------- */
