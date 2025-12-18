@@ -1027,8 +1027,14 @@ function updatePricesVisibility() {
   }
 }
 
-document.getElementById("tariff-type").addEventListener("change", updatePricesVisibility);
-document.getElementById("country").addEventListener("change", updateCountryUI);
+// 🔁 HERRENDER RESULTATEN BIJ TARIEFWISSEL
+document.getElementById("tariff-type").addEventListener("change", () => {
+  // Alleen her-renderen als er al een berekening is
+  if (!window.computedResult) return;
+
+  fillResults(window.computedResult);
+  updateCostChart(window.computedResult);
+});
 
 function updateCountryUI() {
   const country = document.getElementById("country").value;
