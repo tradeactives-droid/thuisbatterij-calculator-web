@@ -1318,7 +1318,15 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     const data = await res.json();
 
-if (!data || !data.A1 || !data.B1 || !data.C1 || !data.roi) {
+if (
+  !data ||
+  !data.A1_per_tariff ||
+  !data.B1 ||
+  !data.C1 ||
+  !data.B1_monthly ||
+  !data.C1_monthly ||
+  !data.roi_per_tariff
+) {
   console.error("Backend response:", data);
   status.textContent = "Ongeldig antwoord van de server.";
   status.className = "status error";
