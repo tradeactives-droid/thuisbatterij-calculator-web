@@ -1498,9 +1498,20 @@ function buildAdviceText(data) {
   const degr      = parseFloat(document.getElementById("battery-degradation").value || "0");
   const tariffType = document.getElementById("tariff-type").value || "enkel";
 
-  const A1 = data.A1.total_cost_eur;
-  const B1 = data.B1.enkel.total_cost_eur;
-  const C1 = data.C1.enkel.total_cost_eur;
+  // 🔑 huidig gekozen tarief (leidend!)
+  const tariff = document.getElementById("tariff-type").value || "enkel";
+
+  // Kosten per scenario — PER TARIEF
+  const A1 = data.A1_per_tariff?.[tariff]?.total_cost_eur ?? 0;
+  const B1 = data.B1?.[tariff]?.total_cost_eur ?? 0;
+  const C1 = data.C1?.[tariff]?.total_cost_eur ?? 0;
+
+  // ROI-object per tarief
+  const roiObj = data.roi_per_tariff?.[tariff] || {};
+
+  const save = roiObj.yearly_saving_eur ?? 0;
+  const roi  = roiObj.roi_percent ?? 0;
+  const pb   = roiObj.payback_years ?? null;
 
   // 🔑 huidig gekozen tarief
   const tariff = document.getElementById("tariff-type").value || "enkel";
