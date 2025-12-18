@@ -1380,6 +1380,10 @@ if (
   } catch (err) {
     status.textContent = "Fout: " + err.message;
     status.className = "status error";
+
+    // UI herstellen
+    btn.disabled = false;
+    btn.textContent = "Berekenen";
   }
 });
 
