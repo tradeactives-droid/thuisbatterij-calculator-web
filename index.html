@@ -1207,17 +1207,12 @@ document.getElementById("to-step-3").addEventListener("click", () => {
   applyTariffDefaultsIfEmpty();
 });
 document.getElementById("back-to-2").addEventListener("click", () => activateStep(2));
+document.getElementById("back-to-3")
+  ?.addEventListener("click", () => activateStep(3));
 document.getElementById("to-step-4").addEventListener("click", () => {
   activateStep(4);
-});
-
-// ✅ Nieuw: navigatie voor stap 5 (advies)
-document.getElementById("to-step-5").addEventListener("click", () => {
-  if (!window.computedResult) {
-    alert("Voer eerst een berekening uit bij stap 4.");
-    return;
-  }
-  activateStep(5);
+document.getElementById("to-step-5")
+  ?.addEventListener("click", () => activateStep(5));
 });
 
 document.getElementById("back-to-4").addEventListener("click", () => activateStep(4));
