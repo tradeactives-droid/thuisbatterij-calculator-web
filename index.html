@@ -1349,17 +1349,11 @@ if (
 });
 
   function fillResults(data) {
-    // 🔑 huidig gekozen tarief uit stap 1
+    // 🔑 huidig gekozen tarief
     const tariff = document.getElementById("tariff-type").value || "enkel";
-    const tariffs = ["enkel", "dag_nacht", "dynamisch"];
 
-    // A1 = huidige situatie MET saldering
-    const A1 = data.A1.total_cost_eur;
-
-    // B1 = zonder saldering, ZONDER batterij
+    const A1 = data.A1_per_tariff[tariff]?.total_cost_eur;
     const B1 = data.B1[tariff]?.total_cost_eur;
-
-    // C1 = zonder saldering, MET batterij
     const C1 = data.C1[tariff]?.total_cost_eur;
 
     // === Tiles ===
@@ -1367,23 +1361,23 @@ if (
     document.getElementById("res-B1").textContent = fmtEuro(B1);
     document.getElementById("res-C1").textContent = fmtEuro(C1);
 
-    // === Besparing per jaar (B1 → C1) ===
+    // === Besparing ===
     document.getElementById("res-savings").textContent =
-      (isFinite(B1) && isFinite(C1))
-        ? fmtEuro(B1 - C1)
-        : "–";
+      isFinite(B1) && isFinite(C1) ? fmtEuro(B1 - C1) : "–";
 
-    // === Terugverdientijd ===
+    // === ROI & Payback (PER TARIEF!) ===
+    const roi = data.roi_per_tariff[tariff];
+
     document.getElementById("res-payback").textContent =
-      isFinite(data.roi.payback_years)
-        ? data.roi.payback_years.toFixed(1) + " jaar"
+      roi && roi.payback_years !== null
+        ? roi.payback_years.toFixed(1) + " jaar"
         : "–";
 
-    // === ROI ===
     document.getElementById("res-roi").textContent =
-      isFinite(data.roi.roi_percent)
-        ? data.roi.roi_percent.toFixed(1) + " %"
+      roi && isFinite(roi.roi_percent)
+        ? roi.roi_percent.toFixed(1) + " %"
         : "–";
+    
     // =========================
     // TARIEFMATRIX — JAARLIJKSE KOSTEN
     // =========================
