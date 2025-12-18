@@ -1374,6 +1374,9 @@ if (
     updateCountryUI(); 
     updateCostChart(data);
 
+    btn.disabled = false;
+    btn.textContent = "Berekenen";
+
   } catch (err) {
     status.textContent = "Fout: " + err.message;
     status.className = "status error";
