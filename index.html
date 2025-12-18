@@ -1513,15 +1513,6 @@ function buildAdviceText(data) {
   const roi  = roiObj.roi_percent ?? 0;
   const pb   = roiObj.payback_years ?? null;
 
-  // 🔑 huidig gekozen tarief
-  const tariff = document.getElementById("tariff-type").value || "enkel";
-
-  const roiObj = data.roi_per_tariff?.[tariff] || {};
-
-  const save = roiObj.yearly_saving_eur ?? 0;
-  const roi  = roiObj.roi_percent ?? 0;
-  const pb   = roiObj.payback_years ?? null;
-
   // Jaarverbruik uit CSV (als beschikbaar)
   let annualLoad = 0;
   if (parsedData && Array.isArray(parsedData.load_kwh)) {
