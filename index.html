@@ -247,12 +247,38 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 <div class="page">
 
-<div class="content-container">
+  <!-- ======================= -->
+  <!--        LOGIN VIEW       -->
+  <!-- ======================= -->
+  <div id="login-view" style="display:none; max-width:420px; margin:80px auto;">
+    <div class="card">
+      <h2>Inloggen</h2>
+
+      <div class="field">
+        <label>E-mailadres</label>
+        <input type="email" id="login-email" placeholder="jij@bedrijf.nl">
+      </div>
+
+      <div class="field">
+        <label>Wachtwoord</label>
+        <input type="password" id="login-password" placeholder="••••••••">
+      </div>
+
+      <button class="btn-primary" id="btn-login" style="width:100%;">
+        Inloggen
+      </button>
+
+      <div id="login-status" class="status" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+<div class="content-container" id="app-view" style="display:none;">
 
   <header>
     <div class="title">Thuisbatterij Besparingscalculator</div>
@@ -1807,5 +1833,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
+const SUPABASE_URL = "https://sjnfzyvuhizpkzixadtb.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_D1fd6N5sEZXV4gegmwEAOw_lnd6v7ZR";
+
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+</script>
+  
 </body>
 </html>
