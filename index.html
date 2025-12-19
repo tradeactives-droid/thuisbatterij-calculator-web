@@ -283,6 +283,12 @@
 
 <div class="content-container" id="app-view" style="display:none;">
 
+<div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+  <button id="btn-logout" class="btn-secondary">
+    Uitloggen
+  </button>
+</div>
+
   <header>
     <div class="title">Thuisbatterij Besparingscalculator</div>
     <div class="subtitle">Nauwkeurige berekening met CSV-data en professioneel adviesrapport.</div>
@@ -1916,6 +1922,22 @@ document.getElementById("btn-signup").addEventListener("click", async () => {
   loginStatus.textContent = "Account aangemaakt. U kunt nu inloggen.";
   loginStatus.className = "status success";
 });
+
+// ============================
+// LOGOUT HANDLER
+// ============================
+document
+  .getElementById("btn-logout")
+  .addEventListener("click", async () => {
+
+    await sb.auth.signOut();
+
+    // Terug naar login scherm
+    appView.style.display = "none";
+    loginContainer.style.display = "block";
+
+  });
+  
 </script>
 </body>
 </html>
