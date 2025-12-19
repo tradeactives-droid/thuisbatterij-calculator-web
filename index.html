@@ -295,13 +295,18 @@
 
 <div class="content-container" id="app-view" style="display:none;">
 
-<span id="user-email" style="
-  font-size:0.85rem;
-  color:#475569;
-  margin-right:10px;
-"></span>
+<div id="user-bar" style="
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-bottom: 16px;
+">
+  <span id="user-email" style="
+    font-size:0.8rem;
+    color:#475569;
+  "></span>
 
-<div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
   <button id="btn-logout" class="btn-secondary">
     Uitloggen
   </button>
