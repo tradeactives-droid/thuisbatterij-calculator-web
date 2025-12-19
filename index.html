@@ -1871,6 +1871,25 @@ const sb = window.supabase.createClient(
 const loginContainer = document.getElementById("login-container");
 const appView = document.getElementById("app-view");
 const loginStatus = document.getElementById("login-status");
+  
+const emailInput = document.getElementById("login-email");
+const passwordInput = document.getElementById("login-password");
+const signupBtn = document.getElementById("btn-signup");
+
+function updateSignupButton() {
+  if (emailInput.value.trim() !== "" && passwordInput.value.trim() !== "") {
+    signupBtn.disabled = false;
+    signupBtn.style.opacity = "1";
+    signupBtn.style.cursor = "pointer";
+  } else {
+    signupBtn.disabled = true;
+    signupBtn.style.opacity = "0.5";
+    signupBtn.style.cursor = "not-allowed";
+  }
+}  
+
+emailInput.addEventListener("input", updateSignupButton);
+passwordInput.addEventListener("input", updateSignupButton);
 
 // ============================
 // CHECK LOGIN BIJ LADEN
