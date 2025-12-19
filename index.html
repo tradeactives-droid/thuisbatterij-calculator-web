@@ -1830,18 +1830,20 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
-  
 <script>
+/* ===============================
+   SUPABASE LOGIN GATE
+   =============================== */
+
 const SUPABASE_URL = "https://sjnfzyvuhizpkzixadtb.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_D1fd6N5sEZXV4gegmwEAOw_lnd6v7ZR";
 
-// ❗ andere naam dan 'supabase' om conflicts te voorkomen
 const sb = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
-// JUISTE containers
+// JUISTE containers (bestaan al in HTML)
 const loginContainer = document.getElementById("login-container");
 const appView = document.getElementById("app-view");
 const loginStatus = document.getElementById("login-status");
@@ -1850,7 +1852,7 @@ const loginStatus = document.getElementById("login-status");
 // CHECK LOGIN BIJ PAGINALAAD
 // ============================
 sb.auth.getSession().then(({ data }) => {
-  if (data.session) {
+  if (data && data.session) {
     loginContainer.style.display = "none";
     appView.style.display = "block";
   } else {
@@ -1862,43 +1864,23 @@ sb.auth.getSession().then(({ data }) => {
 // ============================
 // LOGIN HANDLER
 // ============================
-document.getElementById("btn-login").addEventListener("click", async () => {
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
+document
+  .getElementById("btn-login")
+  .addEventListener("click", async () => {
 
-  loginStatus.textContent = "Inloggen…";
-  loginStatus.className = "status";
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
 
-  const { error } = await sb.auth.signInWithPassword({
-    email,
-    password
-  });
+    loginStatus.textContent = "Inloggen…";
+    loginStatus.className = "status";
 
-  if (error) {
-    loginStatus.textContent = error.message;
-    loginStatus.className = "status error";
-    return;
-  }
+    const { error } = await sb.auth.signInWithPassword({
+      email,
+      password
+    });
 
-  loginStatus.textContent = "Ingelogd ✔";
-  loginStatus.className = "status success";
+    if (error) {
 
-  loginContainer.style.display = "none";
-  appView.style.display = "block";
-});
-</script>
-    loginStatus.textContent = error.message;
-    loginStatus.className = "status error";
-    return;
-  }
-
-  loginStatus.textContent = "Ingelogd ✔";
-  loginStatus.className = "status success";
-
-  loginContainer.style.display = "none";
-  wizardContainer.style.display = "block";
-  
-}); 
-</script>
+</script>  
 </body>
 </html>
