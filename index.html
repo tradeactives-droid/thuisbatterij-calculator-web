@@ -1902,8 +1902,16 @@ passwordInput.addEventListener("input", updateSignupButton);
 // ============================
 sb.auth.getSession().then(({ data }) => {
   if (data && data.session) {
+    const user = data.session.user;
+
     loginContainer.style.display = "none";
     appView.style.display = "block";
+
+    // 👤 toon e-mail
+    const emailEl = document.getElementById("user-email");
+    if (emailEl) {
+      emailEl.textContent = user.email;
+    }
   } else {
     loginContainer.style.display = "block";
     appView.style.display = "none";
