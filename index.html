@@ -1836,29 +1836,27 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 </script>
+  
 <script>
 /* ===============================
    SUPABASE LOGIN GATE
    =============================== */
 
-const SUPABASE_URL = "https://sjnfzyvuhizpkzixadtb.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_D1fd6N5sEZXV4gegmwEAOw_lnd6v7ZR";
+const SUPABASE_URL = "...";
+const SUPABASE_ANON_KEY = "...";
 
 const sb = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
-// JUISTE containers (bestaan al in HTML)
 const loginContainer = document.getElementById("login-container");
 const appView = document.getElementById("app-view");
 const loginStatus = document.getElementById("login-status");
 
-// ============================
-// CHECK LOGIN BIJ PAGINALAAD
-// ============================
+// CHECK LOGIN BIJ LADEN
 sb.auth.getSession().then(({ data }) => {
-  if (data && data.session) {
+  if (data?.session) {
     loginContainer.style.display = "none";
     appView.style.display = "block";
   } else {
@@ -1867,61 +1865,44 @@ sb.auth.getSession().then(({ data }) => {
   }
 });
 
-// ============================
-// LOGIN HANDLER
-// ============================
-document
-  .getElementById("btn-login")
-  .addEventListener("click", async () => {
+// LOGIN
+document.getElementById("btn-login").addEventListener("click", async () => {
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
 
-// ============================
-// SIGNUP HANDLER
-// ============================
-document
-  .getElementById("btn-signup")
-  .addEventListener("click", async () => {
+  loginStatus.textContent = "Inloggen…";
 
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
 
-    if (!email || !password) {
-      loginStatus.textContent = "Vul e-mail en wachtwoord in.";
-      loginStatus.className = "status error";
-      return;
-    }
+  if (error) {
+    loginStatus.textContent = error.message;
+    loginStatus.className = "status error";
+    return;
+  }
 
-    loginStatus.textContent = "Account aanmaken…";
-    loginStatus.className = "status";
-
-    const { error } = await sb.auth.signUp({
-      email,
-      password
-    });
-
-    if (error) {
-      loginStatus.textContent = error.message;
-      loginStatus.className = "status error";
-      return;
-    }
-
-    loginStatus.textContent =
-      "Account aangemaakt ✔ U kunt nu inloggen.";
-    loginStatus.className = "status success";
+  loginContainer.style.display = "none";
+  appView.style.display = "block";
 });
 
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value;
+// SIGNUP
+document.getElementById("btn-signup").addEventListener("click", async () => {
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
 
-    loginStatus.textContent = "Inloggen…";
-    loginStatus.className = "status";
+  loginStatus.textContent = "Account aanmaken…";
 
-    const { error } = await sb.auth.signInWithPassword({
-      email,
-      password
-    });
+  const { error } = await sb.auth.signUp({ email, password });
 
-    if (error) {
+  if (error) {
+    loginStatus.textContent = error.message;
+    loginStatus.className = "status error";
+    return;
+  }
 
-</script>  
+  loginStatus.textContent = "Account aangemaakt. U kunt nu inloggen.";
+  loginStatus.className = "status success";
+});
+</script>
+
 </body>
 </html>
