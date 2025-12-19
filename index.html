@@ -1874,6 +1874,41 @@ document
   .getElementById("btn-login")
   .addEventListener("click", async () => {
 
+// ============================
+// SIGNUP HANDLER
+// ============================
+document
+  .getElementById("btn-signup")
+  .addEventListener("click", async () => {
+
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+
+    if (!email || !password) {
+      loginStatus.textContent = "Vul e-mail en wachtwoord in.";
+      loginStatus.className = "status error";
+      return;
+    }
+
+    loginStatus.textContent = "Account aanmaken…";
+    loginStatus.className = "status";
+
+    const { error } = await sb.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      loginStatus.textContent = error.message;
+      loginStatus.className = "status error";
+      return;
+    }
+
+    loginStatus.textContent =
+      "Account aangemaakt ✔ U kunt nu inloggen.";
+    loginStatus.className = "status success";
+});
+
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
 
