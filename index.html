@@ -1843,27 +1843,47 @@ function buildAdviceText(data) {
   return lines.join("\n\n");
 }
 
-// Klik op “Genereer advies”
-document.getElementById("btn-generate-advice").addEventListener("click", () => {
+document.getElementById("btn-generate-advice").addEventListener("click", async () => {
   const statusEl = document.getElementById("advice-status");
   const textEl   = document.getElementById("advice-text");
 
   if (!window.computedResult) {
-    alert("Voer eerst een berekening uit (stap 3 en 4).");
+    alert("Voer eerst een berekening uit.");
     return;
   }
 
-  statusEl.textContent = "Advies wordt opgebouwd op basis van uw berekende scenario’s…";
+  statusEl.textContent = "Advies wordt gegenereerd op basis van uw gegevens…";
 
-  const txt = buildAdviceText(window.computedResult);
+  // 🧠 FEITENOBJECT (backend-leidend)
+  const context = buildAdviceContext(window.computedResult);
 
-  // ✅ bewaar advies ook in een globale variabele
-  window.computedAdvice = txt;
+  // ✏️ CONCEPTTEKST (frontend-draft)
+  const draftText = buildAdviceText(window.computedResult);
 
-  // Toon in de textarea
-  textEl.value = txt;
+  try {
+    const res = await fetch(API_BASE + "/generate_advice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        context: context,
+        draft_text: draftText
+      })
+    });
 
-  statusEl.textContent = "Advies gegenereerd. U kunt deze tekst nu kopiëren of aanpassen.";
+    const data = await res.json();
+
+    if (!data || data.error) {
+      statusEl.textContent = "Fout bij genereren van advies.";
+      return;
+    }
+
+    textEl.value = data.advice;
+    window.computedAdvice = data.advice;
+
+    statusEl.textContent = "Advies succesvol gegenereerd.";
+  } catch (err) {
+    statusEl.textContent = "Fout: " + err.message;
+  }
 });
 
 /* PDF EXPORT */
