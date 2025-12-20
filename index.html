@@ -1629,7 +1629,23 @@ function buildAdviceContext(data) {
 
     selected_tariff: tariff,
 
-    tariff_matrix: {},
+    tariff_matrix: {
+      enkel: {
+        current: data.A1_per_tariff?.enkel?.total_cost_eur ?? null,
+        without_battery: data.B1?.enkel?.total_cost_eur ?? null,
+        with_battery: data.C1?.enkel?.total_cost_eur ?? null
+      },
+      dag_nacht: {
+        current: data.A1_per_tariff?.dag_nacht?.total_cost_eur ?? null,
+        without_battery: data.B1?.dag_nacht?.total_cost_eur ?? null,
+        with_battery: data.C1?.dag_nacht?.total_cost_eur ?? null
+      },
+      dynamisch: {
+        current: data.A1_per_tariff?.dynamisch?.total_cost_eur ?? null,
+        without_battery: data.B1?.dynamisch?.total_cost_eur ?? null,
+        with_battery: data.C1?.dynamisch?.total_cost_eur ?? null
+      }
+    },
 
     roi_per_tariff: {}
   };
