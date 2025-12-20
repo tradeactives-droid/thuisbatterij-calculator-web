@@ -1650,6 +1650,43 @@ function buildAdviceContext(data) {
     roi_per_tariff: {}
   };
 }
+
+function buildAdviceContext(data) {
+  const tariff = document.getElementById("tariff-type").value || "enkel";
+
+  return {
+    country: document.getElementById("country").value || "NL",
+    current_tariff: tariff,
+
+    battery: {
+      E: parseFloat(document.getElementById("E").value || "0"),
+      P: parseFloat(document.getElementById("P").value || "0"),
+      DoD: parseFloat(document.getElementById("DoD").value || "0"),
+      eta_rt: parseFloat(document.getElementById("eta_rt").value || "0"),
+      investment_eur: parseFloat(document.getElementById("battery-cost").value || "0")
+    },
+
+    tariff_matrix: {
+      enkel: {
+        A1: data.A1_per_tariff.enkel.total_cost_eur,
+        B1: data.B1.enkel.total_cost_eur,
+        C1: data.C1.enkel.total_cost_eur
+      },
+      dag_nacht: {
+        A1: data.A1_per_tariff.dag_nacht.total_cost_eur,
+        B1: data.B1.dag_nacht.total_cost_eur,
+        C1: data.C1.dag_nacht.total_cost_eur
+      },
+      dynamisch: {
+        A1: data.A1_per_tariff.dynamisch.total_cost_eur,
+        B1: data.B1.dynamisch.total_cost_eur,
+        C1: data.C1.dynamisch.total_cost_eur
+      }
+    },
+
+    roi_per_tariff: data.roi_per_tariff
+  };
+}
   
 /* ----------------------------- */
 /*   ADVIES GENEREREN (STEP 5)  */
