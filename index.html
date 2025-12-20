@@ -319,32 +319,23 @@
 
 <div class="content-container" id="app-view" style="display:none;">
 
-<div id="user-bar" style="
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-  margin-bottom: 16px;
-">
-  <span id="user-email" style="
-    font-size:0.8rem;
-    color:#475569;
-  "></span>
-
-  <button id="btn-logout" class="btn-secondary">
-    Uitloggen
-  </button>
-</div>
-
-  <header class="app-header">
+<div class="top-header">
   <div class="brand">
-    <img src="/logo.png" alt="Logo" class="brand-logo">
+    <img src="/logo.png" alt="Eco Metric logo" class="brand-logo">
+
     <div>
       <div class="title">Eco Metric</div>
-      <div class="subtitle">Nauwkeurige berekening met CSV-data en professioneel adviesrapport.</div>
+      <div class="subtitle">
+        Nauwkeurige berekening met CSV-data en professioneel adviesrapport.
+      </div>
     </div>
   </div>
-</header>
+
+  <div class="user-actions">
+    <span id="user-email"></span>
+    <button id="btn-logout" class="btn-secondary">Uitloggen</button>
+  </div>
+</div>
 
   <div class="stepper">
     <div class="step active" id="step-pill-0"><div class="badge">0</div> Start</div>
