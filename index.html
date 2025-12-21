@@ -153,9 +153,17 @@
     justify-content:center;
     font-size:0.75rem;
     background:rgba(255,255,255,0.35);
+    transition: all 0.2s ease;
   }
 
-
+  /* ✓ badge bij voltooide stappen */
+  .step.completed .badge {
+    background:#2563eb;
+    color:white;
+    border-color:#2563eb;
+    font-weight:700;
+  }
+    
     .card {
       background:var(--card-bg);
       border-radius:16px;
