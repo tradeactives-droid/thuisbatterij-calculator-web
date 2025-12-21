@@ -356,6 +356,40 @@
       grid-template-columns: repeat(3, 1fr); /* 3 per rij op desktop */
       gap: 12px;
     }
+
+    /* =============================== */
+    /* SPACING TUSSEN RESULTAAT SECTIES */
+    /* =============================== */
+
+    /* Ruimte na de tiles */
+    .results-summary {
+      margin-bottom: 36px;
+    }
+
+    /* Tariefmatrix als sectie */
+    .table-card {
+      margin-bottom: 40px;
+    }
+
+    /* Grafiek-card extra ruimte eronder */
+    #chart {
+      margin-bottom: 0; /* canvas zelf niet */
+    }
+
+    #chart,
+    #chart + * {
+      margin-bottom: 0;
+    }
+
+    /* Grafiek-container (de card rondom de chart) */
+    .card:has(#chart) {
+      margin-bottom: 44px;
+    }
+
+    /* Energie-inzichten tabel */
+    .energy-table {
+      margin-bottom: 32px;
+    }
     
   </style>
 
@@ -779,7 +813,7 @@
   <h3>Tariefmatrix (jaarlijkse kosten)</h3>
 
   <div class="table-card">
-    <table>
+    <table class="table-card">
     <tr>
       <th>Scenario</th>
       <th>Enkel</th>
@@ -816,7 +850,7 @@
   <h3>Energie-inzichten (kWh)</h3>
 
   <div class="table-card">
-    <table>
+    <table class="table-card energy-table">
     <tr>
       <th></th>
       <th>Enkel</th>
