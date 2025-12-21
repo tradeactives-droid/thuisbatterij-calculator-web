@@ -94,26 +94,66 @@
     }
 
 
-    /* STEPPER */
-    .stepper { display:flex; gap:10px; margin:24px 0; flex-wrap:wrap; }
-    .step {
-      display:flex; align-items:center; gap:8px;
-      padding:7px 14px; border-radius:999px;
-      background:#fff; border:1px solid var(--border);
-      font-size:0.85rem; color:var(--muted);
-    }
-    .step.active {
-      background:var(--highlight);
-      border-color:var(--primary);
-      color:var(--primary-dark);
-      font-weight:600;
-    }
-    .badge {
-      width:22px; height:22px; border-radius:999px;
-      border:1px solid currentColor;
-      display:flex; align-items:center; justify-content:center;
-      font-size:0.8rem;
-    }
+  /* STEPPER */
+  .stepper {
+    display:flex;
+    gap:10px;
+    margin:24px 0;
+    flex-wrap:wrap;
+  }
+
+  /* 🔹 TOEKOMSTIG (default) */
+  .step {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 16px;
+    border-radius:999px;
+
+    background:#e6f1fb;              /* licht grijs-blauw */
+    border:1px solid #c7ddf5;
+    color:#1e3a8a;
+
+    font-size:0.85rem;
+    cursor:pointer;
+    transition: all 0.25s ease;
+  }
+
+  /* 🔵 ACTIEF */
+  .step.active {
+    background:#2563eb;
+    border-color:#2563eb;
+    color:white;
+    font-weight:600;
+    box-shadow:0 8px 20px rgba(37,99,235,0.35);
+    transform: translateY(-1px);
+  }
+
+  /* 🟦 VOLTOOID */
+  .step.completed {
+    background:#dbeafe;
+    border-color:#93c5fd;
+    color:#1d4ed8;
+  }
+
+  /* subtiele hover */
+  .step:not(.active):hover {
+    background:#cfe4ff;
+    transform: translateY(-1px);
+  }
+
+  /* badge */
+  .badge {
+    width:22px;
+    height:22px;
+    border-radius:999px;
+    border:1px solid currentColor;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.75rem;
+    background:rgba(255,255,255,0.35);
+  }
 
 
     .card {
