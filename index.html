@@ -1226,10 +1226,18 @@ function activateStep(n) {
   for (let i = 0; i < 7; i++) {
     const pill = document.getElementById("step-pill-" + i);
     const step = document.getElementById("step-" + i);
-    if (pill) pill.classList.toggle("active", i === n);
-    if (step) step.style.display = (i === n) ? "block" : "none";
+
+    if (pill) {
+      pill.classList.toggle("active", i === n);
+      pill.classList.toggle("completed", i < n);
+    }
+
+    if (step) {
+      step.style.display = (i === n) ? "block" : "none";
+    }
   }
 }
+
 
 function fmtEuro(x) {
   const v = Number(x);
