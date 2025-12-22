@@ -2320,30 +2320,82 @@ document.getElementById("btn-login").addEventListener("click", async () => {
 // ============================
 // SIGNUP
 // ============================
-document.getElementById("btn-signup").addEventListener("click", async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
+// ============================
+// SIGNUP (apart scherm)
+// ============================
+btnCreateAccount.addEventListener("click", async () => {
+  signupStatus.textContent = "";
+  signupStatus.className = "status";
 
-  loginStatus.textContent = "Account aanmaken…";
-  loginStatus.className = "status";
-
-  // 1️⃣ Signup
-  const { error: signUpError } = await sb.auth.signUp({
-    email,
-    password
-  });
-
-  if (signUpError) {
-    loginStatus.textContent = signUpError.message;
-    loginStatus.className = "status error";
+  if (!signupFullName.value.trim()) {
+    signupStatus.textContent = "Vul uw naam in.";
+    signupStatus.className = "status error";
     return;
   }
 
-  // 2️⃣ Automatisch inloggen
-  const { error: signInError } = await sb.auth.signInWithPassword({
-    email,
-    password
+  if (!signupEmail.value.trim()) {
+    signupStatus.textContent = "Vul uw e-mailadres in.";
+    signupStatus.className = "status error";
+    return;
+  }
+
+  if (signupPassword.value.length < 6) {
+    signupStatus.textContent = "Wachtwoord moet minimaal 6 tekens zijn.";
+    signupStatus.className = "status error";
+    return;
+  }
+
+  if (signupPassword.value !== signupPassword2.value) {
+    signupStatus.textContent = "Wachtwoorden komen niet overeen.";
+    signupStatus.className = "status error";
+    return;
+  }
+
+  signupStatus.textContent = "Account aanmaken…";
+
+  const { data, error } = await sb.auth.signUp({
+    email: signupEmail.value.trim(),
+    password: signupPassword.value
   });
+
+  if (error) {
+    signupStatus.textContent = error.message;
+    signupStatus.className = "status error";
+    return;
+  }
+
+  const userId = data?.user?.id;
+
+  if (userId) {
+    const { error: profileError } = await sb
+      .from("profiles")
+      .insert([{
+        id: userId,
+        full_name: signupFullName.value.trim(),
+        company_name: signupCompanyName.value.trim(),
+        address: signupAddress.value.trim(),
+        phone: signupPhone.value.trim()
+      }]);
+
+    if (profileError) {
+      signupStatus.textContent =
+        "Account aangemaakt, maar profiel opslaan mislukt.";
+      signupStatus.className = "status error";
+      return;
+    }
+  }
+
+  signupStatus.textContent = "Account aangemaakt ✔ U kunt nu inloggen.";
+  signupStatus.className = "status success";
+
+  document.getElementById("login-email").value = signupEmail.value.trim();
+  document.getElementById("login-password").value = "";
+
+  setTimeout(() => {
+    signupContainer.style.display = "none";
+    loginContainer.style.display = "block";
+  }, 800);
+});
 
   if (signInError) {
     loginStatus.textContent =
