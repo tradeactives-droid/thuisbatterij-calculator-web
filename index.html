@@ -258,7 +258,28 @@
       cursor:pointer;
     }
     .btn-primary { background:var(--primary); color:white; }
-    .btn-secondary { background:#e2e8f0; color:#1e293b; }
+    .btn-secondary {
+      background: #f8fafc;
+      color: #1e293b;
+
+      border: 1.5px solid #0f172a; /* zelfde stijl als pillen */
+      border-radius: 999px;
+
+      padding: 8px 14px;
+      font-size: 0.85rem;
+
+      cursor: pointer;
+
+      transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+    }
+    .btn-secondary:hover {
+      background: #e5e7eb;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transform: translateY(-1px);
+    }
     .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
 
     .status {
