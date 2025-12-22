@@ -458,27 +458,71 @@
       Inloggen
     </button>
 
-    <div id="login-status" class="status" style="margin-top:10px;"></div>
-
-    <hr style="margin:24px 0; border:none; border-top:1px solid #e2e8f0;">
-
-    <div style="margin-top:16px; margin-bottom:8px; font-size:0.85rem; color:#475569; text-align:center; line-height:1.4;">
-      <strong>Nog geen account?</strong><br>
-      Voer dan eerst je e-mailadres in, kies een wachtwoord en klik op
-      <strong>“Account aanmaken”</strong>.<br><br>
-      Daarna kan je inloggen.
-    </div>
-
     <button
       class="btn-secondary"
-      id="btn-signup"
-      style="width:100%; opacity:0.5; cursor:not-allowed;"
-      disabled
+      id="go-to-signup"
+      style="width:100%; margin-top:12px;"
     >
       Account aanmaken
     </button>
+
+    <div id="login-status" class="status" style="margin-top:10px;"></div>
+
   </div>
 </div>
+
+  <div id="signup-container" style="max-width:520px; margin:80px auto; display:none;">
+    <div class="card">
+      <h2>Account aanmaken</h2>
+
+      <div class="field">
+        <label>Naam</label>
+        <input type="text" id="signup-name">
+      </div>
+
+      <div class="field">
+        <label>Bedrijfsnaam</label>
+        <input type="text" id="signup-company">
+      </div>
+
+      <div class="field">
+        <label>Adres</label>
+        <input type="text" id="signup-address">
+      </div>
+
+      <div class="field">
+        <label>E-mailadres</label>
+        <input type="email" id="signup-email">
+      </div>
+
+      <div class="field">
+        <label>Telefoonnummer</label>
+        <input type="tel" id="signup-phone">
+      </div>
+
+      <div class="field">
+        <label>Wachtwoord</label>
+        <input type="password" id="signup-password">
+      </div>
+
+      <div class="field">
+        <label>Wachtwoord herhalen</label>
+        <input type="password" id="signup-password-confirm">
+      </div>
+
+      <button class="btn-primary" id="btn-signup-submit" style="width:100%;">
+        Account aanmaken
+      </button>
+
+      <div id="signup-status" class="status" style="margin-top:10px;"></div>
+
+      <hr style="margin:24px 0; border:none; border-top:1px solid #e2e8f0;">
+
+      <button class="btn-secondary" id="back-to-login" style="width:100%;">
+        Terug naar inloggen
+      </button>
+    </div>
+  </div>
 
 <div id="app-view" style="display:none;">
 
