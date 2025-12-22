@@ -1851,9 +1851,6 @@ function buildAdviceContext(data) {
   };
 }
 
-function buildAdviceContext(data) {
-  const tariff = document.getElementById("tariff-type").value || "enkel";
-
   return {
     country: document.getElementById("country").value || "NL",
     current_tariff: tariff,
