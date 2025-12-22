@@ -2383,23 +2383,6 @@ btnCreateAccount.addEventListener("click", async () => {
   }, 800);
 });
 
-  if (signInError) {
-    loginStatus.textContent =
-      "Account aangemaakt, maar automatisch inloggen mislukt. Log handmatig in.";
-    loginStatus.className = "status error";
-    return;
-  }
-
-  // 3️⃣ Succes 🎉
-  loginStatus.textContent = "Account aangemaakt ✔";
-  loginStatus.className = "status success";
-
-  setTimeout(() => {
-    loginContainer.style.display = "none";
-    appView.style.display = "block";
-  }, 800);
-});
-
 // ============================
 // LOGOUT HANDLER
 // ============================
