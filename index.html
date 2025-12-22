@@ -2302,8 +2302,17 @@ btnCreateAccount.addEventListener("click", async () => {
   signupStatus.textContent = "";
   signupStatus.className = "status";
 
-  if (!signupFullName.value.trim()) {
-    signupStatus.textContent = "Vul uw naam in.";
+  if (
+    !signupFullName.value.trim() ||
+    !signupCompanyName.value.trim() ||
+    !signupStreet.value.trim() ||
+    !signupHouseNumber.value.trim() ||
+    !signupPostcode.value.trim() ||
+    !signupCity.value.trim() ||
+    !signupEmail.value.trim() ||
+    !signupPhone.value.trim()
+  ) {
+    signupStatus.textContent = "Alle velden zijn verplicht.";
     signupStatus.className = "status error";
     return;
   }
