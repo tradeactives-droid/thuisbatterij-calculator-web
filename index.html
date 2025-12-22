@@ -2234,6 +2234,10 @@ const sb = window.supabase.createClient(
 const loginContainer = document.getElementById("login-container");
 const appView = document.getElementById("app-view");
 const loginStatus = document.getElementById("login-status");
+
+const signupContainer = document.getElementById("signup-container");
+const btnGoToSignup = document.getElementById("btn-go-signup");
+const btnBackToLogin = document.getElementById("btn-back-to-login");
   
 const emailInput = document.getElementById("login-email");
 const passwordInput = document.getElementById("login-password");
@@ -2274,6 +2278,22 @@ sb.auth.getSession().then(({ data }) => {
     appView.style.display = "none";
   }
 });
+
+  // ============================
+  // SCHERM WISSELEN
+  // ============================
+
+  // Naar signup scherm
+  btnGoToSignup.addEventListener("click", () => {
+    loginContainer.style.display = "none";
+    signupContainer.style.display = "block";
+  });
+
+  // Terug naar login scherm
+  btnBackToLogin.addEventListener("click", () => {
+    signupContainer.style.display = "none";
+    loginContainer.style.display = "block";
+  });
 
 // ============================
 // LOGIN
