@@ -2235,28 +2235,24 @@ const loginContainer = document.getElementById("login-container");
 const appView = document.getElementById("app-view");
 const loginStatus = document.getElementById("login-status");
 
+// ===== Signup scherm =====
 const signupContainer = document.getElementById("signup-container");
 const btnGoToSignup = document.getElementById("btn-go-signup");
 const btnBackToLogin = document.getElementById("btn-back-to-login");
-  
-const emailInput = document.getElementById("login-email");
-const passwordInput = document.getElementById("login-password");
-const signupBtn = document.getElementById("btn-signup");
 
-function updateSignupButton() {
-  if (emailInput.value.trim() !== "" && passwordInput.value.trim() !== "") {
-    signupBtn.disabled = false;
-    signupBtn.style.opacity = "1";
-    signupBtn.style.cursor = "pointer";
-  } else {
-    signupBtn.disabled = true;
-    signupBtn.style.opacity = "0.5";
-    signupBtn.style.cursor = "not-allowed";
-  }
-}  
+const signupStatus = document.getElementById("signup-status");
+const signupFullName = document.getElementById("signup-full-name");
+const signupCompanyName = document.getElementById("signup-company-name");
+const signupAddress = document.getElementById("signup-address");
+const signupPhone = document.getElementById("signup-phone");
+const signupEmail = document.getElementById("signup-email");
+const signupPassword = document.getElementById("signup-password");
+const signupPassword2 = document.getElementById("signup-password-2");
+const btnCreateAccount = document.getElementById("btn-create-account");
 
-emailInput.addEventListener("input", updateSignupButton);
-passwordInput.addEventListener("input", updateSignupButton);
+const signupContainer = document.getElementById("signup-container");
+const btnGoToSignup = document.getElementById("btn-go-signup");
+const btnBackToLogin = document.getElementById("btn-back-to-login");
 
 // ============================
 // CHECK LOGIN BIJ LADEN
