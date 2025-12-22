@@ -2334,10 +2334,8 @@ btnCreateAccount.addEventListener("click", async () => {
       .from("profiles")
       .insert([{
         id: userId,
-        full_name: signupFullName.value.trim(),
+        full_name: `${signupFirstName.value.trim()} ${signupLastName.value.trim()}`,
         company_name: signupCompanyName.value.trim(),
-        address: `${signupStreet.value.trim()} ${signupHouseNumber.value.trim()}, ${signupPostcode.value.trim()} ${signupCity.value.trim()}`,
-        phone: signupPhone.value.trim()
       }]);
 
     if (profileError) {
