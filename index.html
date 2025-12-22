@@ -2285,12 +2285,9 @@ btnCreateAccount.addEventListener("click", async () => {
   signupStatus.className = "status";
 
   if (
-    !signupFullName.value.trim() ||
+    !signupFirstName.value.trim() ||
+    !signupLastName.value.trim() ||
     !signupCompanyName.value.trim() ||
-    !signupStreet.value.trim() ||
-    !signupHouseNumber.value.trim() ||
-    !signupPostcode.value.trim() ||
-    !signupCity.value.trim() ||
     !signupEmail.value.trim() ||
     !signupPhone.value.trim()
   ) {
