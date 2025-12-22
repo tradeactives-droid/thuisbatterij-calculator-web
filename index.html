@@ -2357,7 +2357,7 @@ btnCreateAccount.addEventListener("click", async () => {
         id: userId,
         full_name: signupFullName.value.trim(),
         company_name: signupCompanyName.value.trim(),
-        address: signupAddress.value.trim(),
+        address: `${signupStreet.value.trim()} ${signupHouseNumber.value.trim()}, ${signupPostcode.value.trim()} ${signupCity.value.trim()}`,
         phone: signupPhone.value.trim()
       }]);
 
