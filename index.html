@@ -1937,6 +1937,53 @@ if (
 
     return "<p>" + html + "</p>";
   }
+
+  function analyzeEnergyProfiles(parsedData) {
+  if (!parsedData || !parsedData.load_kwh || !parsedData.pv_kwh) {
+    return null;
+  }
+
+  const load = parsedData.load_kwh;
+  const pv   = parsedData.pv_kwh;
+
+  const totalLoad = load.reduce((a, b) => a + b, 0);
+  const totalPV   = pv.reduce((a, b) => a + b, 0);
+
+  let selfConsumption = 0;
+  let exportPV = 0;
+
+  for (let i = 0; i < load.length; i++) {
+    const usedDirect = Math.min(load[i], pv[i]);
+    selfConsumption += usedDirect;
+    exportPV += Math.max(pv[i] - load[i], 0);
+  }
+
+  // Uurprofiel (aangenomen: 8760 uur of 35040 kwartieren)
+  const stepsPerHour = load.length > 9000 ? 4 : 1;
+
+  const hourlyLoad = Array(24).fill(0);
+  const hourlyPV   = Array(24).fill(0);
+
+  for (let i = 0; i < load.length; i++) {
+    const hour = Math.floor((i / stepsPerHour) % 24);
+    hourlyLoad[hour] += load[i];
+    hourlyPV[hour]   += pv[i];
+  }
+
+  const peakLoadHour = hourlyLoad.indexOf(Math.max(...hourlyLoad));
+  const peakPVHour   = hourlyPV.indexOf(Math.max(...hourlyPV));
+
+  return {
+    totalLoad,
+    totalPV,
+    selfConsumption,
+    exportPV,
+    selfConsumptionRatio:
+      totalPV > 0 ? selfConsumption / totalPV : 0,
+    peakLoadHour,
+    peakPVHour
+  };
+}
   
 /* ----------------------------- */
 /*   ADVICE CONTEXT (FACTS)     */
