@@ -1992,6 +1992,8 @@ function buildAdviceContext(data) {
   const tariff = document.getElementById("tariff-type").value || "enkel";
   const country = document.getElementById("country").value || "NL";
 
+  const energyProfile = analyzeEnergyProfiles(parsedData);
+
   return {
     country,
 
@@ -2007,6 +2009,8 @@ function buildAdviceContext(data) {
         parseInt(document.getElementById("battery-lifetime").value || "15")
     },
 
+    energy_profile: energyProfile,
+    
     current_tariff: tariff,
     selected_tariff: tariff,
 
