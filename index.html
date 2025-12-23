@@ -1356,44 +1356,6 @@ function pdfExport(data) {
 }
 </script>
 
-<!-- ======================================= -->
-<!--       STEPPER PILLS CLICKABLE           -->
-<!-- ======================================= -->
-<script>
-document.querySelectorAll(".stepper .step").forEach((pill, index) => {
-  pill.style.cursor = "pointer";
-
-  pill.addEventListener("click", () => {
-
-    // Niet vooruit klikken zonder CSV-data
-    if (index > 1 && (!parsedData || !parsedData.load_kwh)) {
-      alert("Voltooi eerst stap 1 (CSV verwerken).");
-      return;
-    }
-
-    // Niet naar stap 3/4/5 zonder batterijdata
-    if (index > 2) {
-      const E = document.getElementById("E").value;
-      if (!E) {
-        alert("Vul eerst de batterijgegevens in bij stap 2.");
-        return;
-      }
-    }
-
-    // Niet naar stap 5 zonder berekening (computedResult)
-    if (index === 5 && !window.computedResult) {
-      alert("Voer eerst een berekening uit bij stap 4.");
-      return;
-    }
-
-    activateStep(index);
-
-    if (index === 3) {
-      applyTariffDefaultsIfEmpty();
-    }
-  });
-});
-</script>  
   
 <!-- ========================================================= -->
 <!-- =============   HOOFDLOGICA / APP     =================== -->
@@ -2354,6 +2316,45 @@ document.getElementById("btn-download-pdf").addEventListener("click", () => {
       }
     });
   }
+
+<!-- ======================================= -->
+<!--       STEPPER PILLS CLICKABLE           -->
+<!-- ======================================= -->
+<script>
+document.querySelectorAll(".stepper .step").forEach((pill, index) => {
+  pill.style.cursor = "pointer";
+
+  pill.addEventListener("click", () => {
+
+    // Niet vooruit klikken zonder CSV-data
+    if (index > 1 && (!parsedData || !parsedData.load_kwh)) {
+      alert("Voltooi eerst stap 1 (CSV verwerken).");
+      return;
+    }
+
+    // Niet naar stap 3/4/5 zonder batterijdata
+    if (index > 2) {
+      const E = document.getElementById("E").value;
+      if (!E) {
+        alert("Vul eerst de batterijgegevens in bij stap 2.");
+        return;
+      }
+    }
+
+    // Niet naar stap 5 zonder berekening (computedResult)
+    if (index === 5 && !window.computedResult) {
+      alert("Voer eerst een berekening uit bij stap 4.");
+      return;
+    }
+
+    activateStep(index);
+
+    if (index === 3) {
+      applyTariffDefaultsIfEmpty();
+    }
+  });
+});
+</script>  
   
 /* DEFAULTS */
 window.addEventListener("DOMContentLoaded", () => {
