@@ -2132,9 +2132,43 @@ function buildAdviceText(data) {
     );
   }
 
-  // 4. Specifiek advies per land
+    // 4. Analyse huidig energieprofiel
+  if (profileAnalysis) {
+    lines.push("");
+    lines.push("4. Analyse huidig energieverbruik en opwek");
+
+    lines.push(
+      `Uit de aangeleverde meetdata blijkt dat uw jaarlijkse elektriciteitsverbruik ` +
+      `ongeveer ${profileAnalysis.totalLoad.toFixed(0)} kWh bedraagt, terwijl uw ` +
+      `zonnepanelen jaarlijks circa ${profileAnalysis.totalPV.toFixed(0)} kWh opwekken.`
+    );
+
+    lines.push(
+      `Van de opgewekte zonne-energie wordt ongeveer ` +
+      `${(profileAnalysis.selfConsumptionRatio * 100).toFixed(1)}% direct in de woning verbruikt. ` +
+      `Het resterende deel wordt teruggeleverd aan het net.`
+    );
+
+    lines.push(
+      `De hoogste elektriciteitsvraag doet zich voornamelijk voor rond ${profileAnalysis.peakLoadHour}:00 uur, ` +
+      `terwijl de maximale zonneproductie plaatsvindt rond ${profileAnalysis.peakPVHour}:00 uur.`
+    );
+
+    if (profileAnalysis.peakLoadHour !== profileAnalysis.peakPVHour) {
+      lines.push(
+        `Dit tijdsverschil tussen verbruik en opwek zorgt voor teruglevering overdag en netafname in de avonduren. ` +
+        `Een thuisbatterij kan dit verschil gedeeltelijk overbruggen door zonne-energie op te slaan voor later gebruik.`
+      );
+    } else {
+      lines.push(
+        `Omdat piekverbruik en piekopwek grotendeels samenvallen, is het directe eigen verbruik van zonne-energie relatief hoog.`
+      );
+    }
+  }
+  
+  // 5. Specifiek advies per land
   lines.push("");
-  lines.push("4. Land-specifiek advies");
+  lines.push("5. Land-specifiek advies");
 
   if (country === "BE") {
     lines.push(
@@ -2158,9 +2192,9 @@ function buildAdviceText(data) {
     );
   }
 
-  // 5. Aanbevolen vervolgstappen
+  // 6. Aanbevolen vervolgstappen
   lines.push("");
-  lines.push("5. Aanbevolen vervolgstappen");
+  lines.push("6. Aanbevolen vervolgstappen");
 
   if (save > 0 && pb && pb < 10) {
     lines.push(
