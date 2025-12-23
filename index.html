@@ -2163,8 +2163,10 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
       return;
     }
 
-    textEl.value = data.advice;
     window.computedAdvice = data.advice;
+
+    document.getElementById("advice-rendered").innerHTML =
+      renderAdviceToHtml(data.advice);
 
     statusEl.textContent = "Advies succesvol gegenereerd.";
   } catch (err) {
