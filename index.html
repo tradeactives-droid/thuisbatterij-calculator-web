@@ -2038,6 +2038,8 @@ function buildAdviceContext(data) {
 function buildAdviceText(data) {
   const country = (document.getElementById("country")?.value || "NL").toUpperCase();
 
+  const profileAnalysis = analyzeEnergyProfiles(parsedData);
+
   const E   = parseFloat(document.getElementById("E").value || "0");
   const P   = parseFloat(document.getElementById("P").value || "0");
   const DoD = parseFloat(document.getElementById("DoD").value || "0");
