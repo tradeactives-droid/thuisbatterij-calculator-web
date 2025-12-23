@@ -1016,23 +1016,36 @@
   <h2>Stap 6 · Persoonlijk advies</h2>
 
   <p class="status" id="advice-status">
-    Klik op “Genereer advies” om een tekstueel advies te maken op basis van uw gegevens.
+    Klik op “Genereer advies” om een professioneel adviesrapport te maken.
   </p>
 
-  <!-- Groot tekstvak met het advies -->
-  <div class="field">
-    <label>Adviesrapport</label>
-    <textarea id="advice-text" rows="14" style="width:100%; padding:12px; border-radius:12px; border:1px solid var(--border); font-size:0.9rem;"></textarea>
+  <!-- ===== ADVIESRAPPORT (READ-ONLY WEERGAVE) ===== -->
+  <div class="advice-report-wrapper">
+    <div class="advice-report">
+      <h1 class="report-title">Thuisbatterij Adviesrapport</h1>
+      <p class="report-subtitle">
+        Besluitondersteunend energieadvies op basis van uw verbruiksdata en batterijconfiguratie
+      </p>
+
+      <div id="advice-rendered" class="report-content">
+        <!-- Hier wordt het advies als rapport gerenderd -->
+      </div>
+    </div>
+
+    <!-- ===== AANVULLENDE TOELICHTING ADVISEUR ===== -->
+    <div class="advisor-notes">
+      <h3>Aanvullende toelichting adviseur</h3>
+      <textarea
+        id="advisor-notes"
+        placeholder="Ruimte voor aanvullende toelichting, afspraken of aandachtspunten uit het gesprek."
+      ></textarea>
+    </div>
   </div>
 
-  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;">
     <button class="btn-secondary" id="back-to-4">Terug naar resultaten</button>
     <button class="btn-primary" id="btn-generate-advice">Genereer advies</button>
   </div>
-
-  <p class="status" style="margin-top:10px; font-size:0.8rem; color:var(--muted);">
-    Tip: u kunt deze tekst rechtstreeks kopiëren naar een offerte of rapport.
-  </p>
 </div>
 
 </div> <!-- wizard end -->
