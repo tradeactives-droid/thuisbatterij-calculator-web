@@ -1927,6 +1927,17 @@ if (
     
   }
 
+  function renderAdviceToHtml(text) {
+    if (!text) return "";
+
+    let html = text
+      .replace(/^### (.*)$/gm, "<h3>$1</h3>")
+      .replace(/^\d+\. (.*)$/gm, "<h3>$1</h3>")
+      .replace(/\n\n+/g, "</p><p>");
+
+    return "<p>" + html + "</p>";
+  }
+  
 /* ----------------------------- */
 /*   ADVICE CONTEXT (FACTS)     */
 /* ----------------------------- */
