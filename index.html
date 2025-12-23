@@ -2040,6 +2040,16 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
     return;
   }
 
+  const hp = !!document.getElementById("has-heatpump")?.checked;
+  const ev = !!document.getElementById("has-ev")?.checked;
+
+  if (!hp && !ev) {
+    const ok = confirm(
+      "Bevestig: er is géén warmtepomp en géén elektrische auto (thuisladen) aanwezig."
+    );
+    if (!ok) return;
+  }
+
   statusEl.textContent = "Advies wordt gegenereerd op basis van uw gegevens…";
 
   // 🧠 FEITENOBJECT (backend-leidend)
