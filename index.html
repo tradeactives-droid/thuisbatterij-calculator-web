@@ -2008,8 +2008,8 @@ function buildAdviceContext(data) {
     energy_profile: energyProfile,
 
     extra_consumers: {
-      heat_pump: !!document.getElementById("has-heatpump")?.checked,
-      ev: !!document.getElementById("has-ev")?.checked
+      heat_pump: document.getElementById("has-heatpump")?.value === "yes",
+      ev: document.getElementById("has-ev")?.value === "yes"
     },
     
     current_tariff: tariff,
