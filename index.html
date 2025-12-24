@@ -701,6 +701,39 @@
     <input type="file" id="file-prices" accept=".csv">
   </div>
 
+<!-- EXTRA ENERGIEVERBRUIKERS -->
+<div class="field">
+  <label>
+    Warmtepomp
+    <span class="info-icon"
+          data-tooltip="Een warmtepomp zorgt voor een hoger en vaak langdurig elektriciteitsverbruik, vooral in de winter. Dit beïnvloedt het verbruiksprofiel en de geschiktheid van een thuisbatterij.">
+      ℹ
+    </span>
+  </label>
+
+  <select id="has-heatpump">
+    <option value="unknown" selected>Kies een optie</option>
+    <option value="no">Nee</option>
+    <option value="yes">Ja</option>
+  </select>
+</div>
+
+<div class="field">
+  <label>
+    Elektrische auto (thuis laden)
+    <span class="info-icon"
+          data-tooltip="Thuisladen van een elektrische auto zorgt voor extra en vaak piekbelast elektriciteitsverbruik. Dit is relevant voor batterijadvies en vermogensdimensionering.">
+      ℹ
+    </span>
+  </label>
+
+  <select id="has-ev">
+    <option value="unknown" selected>Kies een optie</option>
+    <option value="no">Nee</option>
+    <option value="yes">Ja</option>
+  </select>
+</div>
+  
   <div id="csv-status" class="status">Nog geen CSV verwerkt.</div>
 
   <br>
