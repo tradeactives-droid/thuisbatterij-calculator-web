@@ -849,39 +849,6 @@
     <input id="battery-degradation" type="number" min="0" max="10" step="0.1" value="2">
   </div>
 
- <!-- EXTRA ENERGIEVERBRUIKERS -->
-<div class="field">
-  <label>
-    Warmtepomp
-    <span class="info-icon"
-          data-tooltip="Een warmtepomp zorgt voor een hoger en vaak langdurig elektriciteitsverbruik, met name in de winter. Dit kan invloed hebben op de gewenste batterijcapaciteit (E).">
-      ℹ
-    </span>
-  </label>
-
-  <select id="has-heatpump">
-    <option value="unknown" selected>Kies een optie</option>
-    <option value="no">Nee</option>
-    <option value="yes">Ja</option>
-  </select>
-</div>
-
-<div class="field">
-  <label>
-    Elektrische auto (thuis laden)
-    <span class="info-icon"
-          data-tooltip="Thuisladen van een elektrische auto vraagt vaak een hoog vermogen in korte tijd. Dit beïnvloedt vooral het benodigde laad/ontlaadvermogen (P) van de batterij.">
-      ℹ
-    </span>
-  </label>
-
-  <select id="has-ev">
-    <option value="unknown" selected>Kies een optie</option>
-    <option value="no">Nee</option>
-    <option value="yes">Ja</option>
-  </select>
-</div>
-
   <button class="btn-secondary" id="back-to-1">Vorige</button>
   <button class="btn-primary" id="to-step-3">Volgende</button>
 </div>  
