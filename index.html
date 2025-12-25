@@ -2328,8 +2328,23 @@ sb.auth.getSession().then(({ data }) => {
 // LOGIN
 // ============================
 document.getElementById("btn-login").addEventListener("click", async () => {
-  const email = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value;
+  const emailEl = document.getElementById("login-email");
+  const passEl  = document.getElementById("login-password");
+
+  if (!emailEl || !passEl) {
+    loginStatus.textContent = "Loginvelden ontbreken.";
+    loginStatus.className = "status error";
+    return;
+  }
+
+  const email = emailEl.value.trim();
+  const password = passEl.value;
+
+  if (!email || !password) {
+    loginStatus.textContent = "Vul e-mailadres en wachtwoord in.";
+    loginStatus.className = "status error";
+    return;
+  }
 
   loginStatus.textContent = "Inloggen…";
   loginStatus.className = "status";
