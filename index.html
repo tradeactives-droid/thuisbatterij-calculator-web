@@ -2457,9 +2457,8 @@ document
 
     await sb.auth.signOut();
 
-    // Terug naar login scherm
-    appView.style.display = "none";
-    loginContainer.style.display = "block";
+    // 🔑 Volledige reset afdwingen
+    window.location.reload();
 
   });
   
