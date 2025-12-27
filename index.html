@@ -1943,15 +1943,20 @@ if (
   }
 
   function renderAdviceToHtml(text) {
-    if (!text) return "";
+  if (!text) return "";
 
-    let html = text
-      .replace(/^### (.*)$/gm, "<h3>$1</h3>")
-      .replace(/^\d+\. (.*)$/gm, "<h3>$1</h3>")
-      .replace(/\n\n+/g, "</p><p>");
+  // 🔑 TARIEFMATRIX ANKER
+  const withAnchor = text.replace(
+    "[[TARIEFMATRIX]]",
+    "<div id='tariff-matrix-anchor'></div>"
+  );
 
-    return "<p>" + html + "</p>";
-  }
+  let html = withAnchor
+    .replace(/^\d+\. (.*)$/gm, "<h3>$1</h3>")
+    .replace(/\n\n+/g, "</p><p>");
+
+  return "<p>" + html + "</p>";
+}
 
   function renderTariffMatrixIntoAdvice() {
 
@@ -1961,7 +1966,7 @@ if (
 
   // 2. Zoek de lege container in stap 6
   const targetContainer =
-    document.getElementById("advice-tariff-matrix");
+    document.getElementById("tariff-matrix-anchor");
 
   // 3. Veiligheidscheck
   if (!sourceMatrix || !targetContainer) {
