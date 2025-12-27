@@ -1663,11 +1663,14 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   status.className = "status";
 
 
-  if (!parsedData.load_kwh) {
+  if (
+    !window.parsedData ||
+    !Array.isArray(window.parsedData.load_kwh) ||
+    window.parsedData.load_kwh.length === 0
+  ) {
     status.textContent = "CSV-data ontbreekt. Verwerk eerst CSV in stap 1.";
     status.className = "status error";
 
-    // UI herstellen
     btn.disabled = false;
     btn.textContent = "Berekenen";
 
