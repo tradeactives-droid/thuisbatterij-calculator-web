@@ -2127,6 +2127,8 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
     document.getElementById("advice-rendered").innerHTML =
       renderAdviceToHtml(data.advice);
 
+    renderTariffMatrixIntoAdvice();
+
     statusEl.textContent = "Advies succesvol gegenereerd.";
   } catch (err) {
     statusEl.textContent = "Fout: " + err.message;
