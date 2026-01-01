@@ -2021,6 +2021,8 @@ function buildAdviceContext(data) {
       heat_pump: document.getElementById("has-heatpump")?.value === "yes",
       ev: document.getElementById("has-ev")?.value === "yes"
     },
+
+    battery_assessment: data.battery_assessment || null,
     
     current_tariff: tariff,
     selected_tariff: tariff,
