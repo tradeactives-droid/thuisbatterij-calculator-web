@@ -1998,7 +1998,6 @@ function buildAdviceContext(data) {
   const tariff = document.getElementById("tariff-type").value || "enkel";
   const country = document.getElementById("country").value || "NL";
 
-  const energyProfile = data.energy_profile || null;
 
   return {
     country,
@@ -2015,7 +2014,7 @@ function buildAdviceContext(data) {
         parseInt(document.getElementById("battery-lifetime").value || "15")
     },
 
-    energy_profile: energyProfile,
+    energy_profile: data.energy_profile || null,
 
     extra_consumers: {
       heat_pump: document.getElementById("has-heatpump")?.value === "yes",
