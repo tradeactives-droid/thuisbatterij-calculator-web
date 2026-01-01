@@ -2041,7 +2041,7 @@ function buildAdviceContext(data) {
   const tariff = document.getElementById("tariff-type").value || "enkel";
   const country = document.getElementById("country").value || "NL";
 
-  const energyProfile = analyzeEnergyProfiles(parsedData);
+  const energyProfile = data.energy_profile || null;
 
   return {
     country,
