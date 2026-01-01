@@ -1987,6 +1987,10 @@ if (
   targetContainer.appendChild(clonedMatrix);
 }
 
+  // ⚠️ UI-ONLY helper
+  // Deze functie mag uitsluitend gebruikt worden voor visualisaties of UI-inzichten.
+  // Resultaten uit deze functie mogen NIET worden gebruikt voor AI-advies of backend-context.
+  
   function analyzeEnergyProfiles(parsedData) {
   if (!parsedData || !parsedData.load_kwh || !parsedData.pv_kwh) {
     return null;
