@@ -1995,56 +1995,25 @@ if (
 /*   ADVICE CONTEXT (FACTS)     */
 /* ----------------------------- */
 function buildAdviceContext(data) {
-  const tariff = document.getElementById("tariff-type").value || "enkel";
   const country = document.getElementById("country").value || "NL";
-
 
   return {
     country,
 
-    battery: {
-      E: parseFloat(document.getElementById("E").value || "0"),
-      P: parseFloat(document.getElementById("P").value || "0"),
-      DoD: parseFloat(document.getElementById("DoD").value || "0"),
-      eta_rt: parseFloat(document.getElementById("eta_rt").value || "0"),
-      investment_eur: parseFloat(document.getElementById("battery-cost").value || "0"),
-      degradation_per_year:
-        parseFloat(document.getElementById("battery-degradation").value || "0") / 100,
-      lifetime_years:
-        parseInt(document.getElementById("battery-lifetime").value || "15")
-    },
-
     energy_profile: data.energy_profile || null,
+
+    battery: data.battery || null,
+
+    battery_assessment: data.battery_assessment || null,
 
     extra_consumers: {
       heat_pump: document.getElementById("has-heatpump")?.value === "yes",
       ev: document.getElementById("has-ev")?.value === "yes"
     },
 
-    battery_assessment: data.battery_assessment || null,
-    
-    current_tariff: tariff,
-    selected_tariff: tariff,
+    tariff_matrix: data.tariff_matrix || data.A1_per_tariff || {},
 
-    tariff_matrix: {
-      enkel: {
-        current: data.A1_per_tariff?.enkel?.total_cost_eur ?? null,
-        without_battery: data.B1?.enkel?.total_cost_eur ?? null,
-        with_battery: data.C1?.enkel?.total_cost_eur ?? null
-      },
-      dag_nacht: {
-        current: data.A1_per_tariff?.dag_nacht?.total_cost_eur ?? null,
-        without_battery: data.B1?.dag_nacht?.total_cost_eur ?? null,
-        with_battery: data.C1?.dag_nacht?.total_cost_eur ?? null
-      },
-      dynamisch: {
-        current: data.A1_per_tariff?.dynamisch?.total_cost_eur ?? null,
-        without_battery: data.B1?.dynamisch?.total_cost_eur ?? null,
-        with_battery: data.C1?.dynamisch?.total_cost_eur ?? null
-      }
-    },
-
-    roi_per_tariff: data.roi_per_tariff || {},
+    roi_per_tariff: data.roi_per_tariff || {}
   };
 }
   
