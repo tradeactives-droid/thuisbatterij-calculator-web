@@ -1995,10 +1995,14 @@ function buildAdviceContext(data) {
 
   return {
     country,
+    current_tariff: document.getElementById("tariff-type").value || "enkel",
 
-    energy_profile: data.energy_profile || null,
+    energy_profile: data.energy_profile || {},
 
-    battery: data.battery || null,
+    battery: {
+      E: parseFloat(document.getElementById("E").value || "0"),
+      P: parseFloat(document.getElementById("P").value || "0")
+    },
 
     battery_assessment: data.battery_assessment || null,
 
