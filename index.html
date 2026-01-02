@@ -2052,6 +2052,8 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
 
     const data = await res.json();
 
+    console.log("GENERATE_ADVICE RESPONSE:", data);
+
     if (!data || data.error) {
       statusEl.textContent = "Fout bij genereren van advies.";
       return;
