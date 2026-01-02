@@ -1574,6 +1574,8 @@ document.getElementById("btn-parse-csv").addEventListener("click", async () => {
 
     const data = await res.json();
 
+    console.log("ADVICE RESPONSE:", data)
+
     if (!data || data.error) {
       if (data && data.error === "NOT_ENOUGH_DATA_FOR_FLUVIUS") {
         status.textContent =
