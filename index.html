@@ -1938,7 +1938,9 @@ if (
   }
 
   function renderAdviceToHtml(text) {
-  if (!text) return "";
+  if (!text || typeof text !== "string") {
+    return "<p>Geen advies beschikbaar.</p>";
+  }
 
   // 🔑 TARIEFMATRIX ANKER
   const withAnchor = text.replace(
