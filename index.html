@@ -2097,6 +2097,10 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
 
     const data = await res.json();
 
+    if (!data.advice.includes("Bijlage A")) {
+      console.warn("⚠️ Advies gegenereerd zonder bijlagen");
+    }
+
     console.log("GENERATE_ADVICE RESPONSE:", data);
 
     if (!data || data.error) {
