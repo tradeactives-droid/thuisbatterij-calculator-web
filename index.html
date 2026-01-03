@@ -2046,12 +2046,14 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
       return;
     }
 
+    // Backend levert volledige tekst (incl. bijlagen)
     window.computedAdvice = data.advice;
 
-    document.getElementById("advice-rendered").innerHTML =
-      renderAdviceToHtml(data.advice);
+    // 🔒 Exact weergeven — GEEN parsing
+    document.getElementById("advice-rendered").textContent =
+      data.advice;
 
-    renderTariffMatrixIntoAdvice();
+    // ❌ Tariefmatrix NIET meer injecteren
 
     statusEl.textContent = "Advies succesvol gegenereerd.";
   } catch (err) {
