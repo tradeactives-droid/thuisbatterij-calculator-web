@@ -2121,10 +2121,16 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
 
 /* PDF EXPORT */
 document.getElementById("btn-download-pdf").addEventListener("click", () => {
+  if (!window.computedAdvice || window.computedAdvice.trim() === "") {
+  alert("Genereer eerst het advies voordat u de PDF downloadt.");
+  return;
+}
+  
   if (!window.computedResult) {
     alert("Geen berekening beschikbaar. Voer eerst een berekening uit.");
     return;
   }
+  
   pdfExport(window.computedResult);
 });
 
