@@ -2044,6 +2044,70 @@ function buildAdviceText(data) {
   return "";
 }
 
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function isTitleLine(line) {
+  // Sectietitels: "1. Managementsamenvatting" etc.
+  if (/^\d+\.\s+/.test(line)) return true;
+
+  // Bijlagen: "Bijlage A — ..." etc.
+  if (/^Bijlage\s+[A-D]\s+—\s+/.test(line)) return true;
+
+  return false;
+}
+
+function renderAdviceToHtml(adviceText) {
+  const el = document.getElementById("advice-rendered");
+  if (!el) return;
+
+  if (!adviceText || adviceText.trim() === "") {
+    el.innerHTML = "";
+    return;
+  }
+
+  // Split per newline en trim rechterkant
+  const lines = adviceText.split("\n").map(l => l.replace(/\s+$/, ""));
+
+  let html = "";
+  let buffer = [];
+
+  function flushParagraph() {
+    const text = buffer.join(" ").trim();
+    buffer = [];
+    if (!text) return;
+    html += `<div class="advice-paragraph">${escapeHtml(text)}</div>`;
+  }
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    // Lege regel = alinea afsluiten
+    if (line === "") {
+      flushParagraph();
+      continue;
+    }
+
+    // Titelregel
+    if (isTitleLine(line)) {
+      flushParagraph();
+      html += `<div class="advice-title">${escapeHtml(line)}</div>`;
+      continue;
+    }
+
+    // Normale tekstregel -> toevoegen aan alinea buffer
+    buffer.push(line);
+  }
+
+  flushParagraph();
+
+  el.innerHTML = html;
+}
+  
 document.getElementById("btn-generate-advice").addEventListener("click", async () => {
   const statusEl = document.getElementById("advice-status");
   const textEl   = document.getElementById("advice-text");
