@@ -1939,24 +1939,6 @@ if (
     
   }
 
-  function renderAdviceToHtml(text) {
-  if (!text || typeof text !== "string") {
-    return "<p>Geen advies beschikbaar.</p>";
-  }
-
-  // 🔑 TARIEFMATRIX ANKER
-  const withAnchor = text.replace(
-    "[[TARIEFMATRIX]]",
-    "<div id='tariff-matrix-anchor'></div>"
-  );
-
-  let html = withAnchor
-    .replace(/^\d+\. (.*)$/gm, "<h3>$1</h3>")
-    .replace(/\n\n+/g, "</p><p>");
-
-  return "<p>" + html + "</p>";
-}
-
   function renderTariffMatrixIntoAdvice() {
 
   // 1. Zoek de tariefmatrix in stap 5
