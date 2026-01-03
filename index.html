@@ -1457,17 +1457,9 @@ function pdfExport(data) {
   const doc = new jsPDF({ unit:"pt", format:"a4" });
 
   pdfHeader(doc);
-  pdfIntro(doc);
-  pdfTariffMatrix(doc);
-  pdfCostMatrix(doc, data);
-  pdfEnergyTables(doc, data);
-  pdfBatteryStats(doc, data);
 
   // ✅ Adviestekst ophalen: eerst uit textarea, dan uit computedAdvice
   const adviceText = window.computedAdvice || "";
-
-  // ✅ Nieuwe adviespagina toevoegen (alleen als er tekst is)
-  pdfAdviceSection(doc, adviceText);
 
   doc.save("Thuisbatterij-adviesrapport.pdf");
 }
