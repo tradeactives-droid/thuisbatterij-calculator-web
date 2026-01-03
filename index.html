@@ -507,6 +507,29 @@
       white-space: pre-wrap;
     }
 
+    /* ===== ADVIES TITELS + ALINEA’S (HTML rendering) ===== */
+
+    #advice-rendered {
+      white-space: normal;   /* belangrijk: want we renderen nu HTML */
+    }
+
+    .advice-title {
+      font-family: 'Source Serif 4', serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 26px;
+      margin-bottom: 14px;
+      color: #111827;
+    }
+
+    .advice-paragraph {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      margin-bottom: 14px;
+      color: #1f2937;
+    }
+    
     /* Visuele scheiding vóór Bijlage A */
     #advice-rendered::after {
       content: "";
