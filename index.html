@@ -2088,8 +2088,7 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
     window.computedAdvice = data.advice;
 
     // 🔒 Exact weergeven — GEEN parsing
-    document.getElementById("advice-rendered").textContent =
-      data.advice;
+    renderAdviceToHtml(data.advice);
 
     // ❌ Tariefmatrix NIET meer injecteren
 
