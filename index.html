@@ -1276,6 +1276,26 @@ function pdfHeader(doc) {
   doc.text("Gegenereerd op: " + new Date().toLocaleDateString("nl-NL"), 40, 82);
 }
 
+function pdfRenderFullAdvice(doc, adviceText) {
+  if (!adviceText || adviceText.trim() === "") return;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+
+  const lines = doc.splitTextToSize(adviceText, 520);
+
+  let y = 120;
+
+  for (let i = 0; i < lines.length; i++) {
+    if (y > 780) {
+      doc.addPage();
+      y = 60;
+    }
+    doc.text(lines[i], 40, y);
+    y += 14;
+  }
+}  
+
 function pdfIntro(doc) {
   doc.setFont("helvetica","bold");
   doc.setFontSize(16);
