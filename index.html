@@ -2363,6 +2363,104 @@ document.getElementById("btn-download-pdf").addEventListener("click", () => {
       }
     });
   }
+
+function renderAdviceChart(result) {
+  const canvas = document.getElementById("chart-advice");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  // voorkom dubbele grafieken
+  if (window.adviceCostChart) {
+    window.adviceCostChart.destroy();
+  }
+
+  const lifetime =
+    parseInt(document.getElementById("battery-lifetime").value || "15");
+
+  const investment =
+    parseFloat(document.getElementById("battery-cost").value || "0");
+
+  const tariff =
+    document.getElementById("tariff-type").value || "enkel";
+
+  const roi = result.roi_per_tariff?.[tariff];
+
+  const yearlySaving =
+    roi && isFinite(roi.yearly_saving_eur)
+      ? roi.yearly_saving_eur
+      : 0;
+
+  const costWithoutBatt =
+    result.B1?.[tariff]?.total_cost_eur ?? 0;
+
+  const costWithBatt =
+    result.C1?.[tariff]?.total_cost_eur ?? 0;
+
+  let labels = [];
+  let withoutBatt = [];
+  let withBatt = [];
+  let cumulative = [];
+
+  let cum = -investment;
+
+  for (let year = 0; year <= lifetime; year++) {
+    labels.push("Jaar " + year);
+
+    if (year === 0) {
+      withoutBatt.push(0);
+      withBatt.push(-investment);
+      cumulative.push(-investment);
+    } else {
+      withoutBatt.push(costWithoutBatt);
+      withBatt.push(costWithBatt);
+      cum += yearlySaving;
+      cumulative.push(cum);
+    }
+  }
+
+  window.adviceCostChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Kosten zonder batterij",
+          data: withoutBatt,
+          borderWidth: 2,
+          tension: 0.25
+        },
+        {
+          label: "Kosten met batterij",
+          data: withBatt,
+          borderWidth: 2,
+          tension: 0.25
+        },
+        {
+          label: "Cumulatieve besparing",
+          data: cumulative,
+          borderWidth: 3,
+          borderDash: [6, 6],
+          tension: 0.25
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: "bottom" }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: v => "€ " + v
+          }
+        }
+      }
+    }
+  });
+}
+  
 </script>
   
 <!-- ======================================= -->
