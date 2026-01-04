@@ -2115,9 +2115,16 @@ function renderAdviceToHtml(adviceText) {
     // Titelregel
     if (isTitleLine(line)) {
       flushParagraph();
-      html += `<div class="advice-title">${escapeHtml(line)}</div>`;
-      continue;
-    }
+
+      // ✅ extra witruimte tussen einde vorige sectie en nieuwe titel
+      // (niet vóór de allereerste titel)
+      if (html !== "") {
+        html += `<div class="advice-section-gap"></div>`;
+      }
+
+  html += `<div class="advice-title">${escapeHtml(line)}</div>`;
+  continue;
+}
 
     // Normale tekstregel -> toevoegen aan alinea buffer
     buffer.push(line);
