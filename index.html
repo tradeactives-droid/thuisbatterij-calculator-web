@@ -2234,7 +2234,8 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
     renderAdviceToHtml(data.advice);
     injectResultsIntoAdvice();
 
-    // ❌ Tariefmatrix NIET meer injecteren
+    // ✅ Grafiek ook renderen in advies
+    renderAdviceChart(window.computedResult);
 
     statusEl.textContent = "Advies succesvol gegenereerd.";
   } catch (err) {
