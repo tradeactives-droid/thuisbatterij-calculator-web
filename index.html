@@ -2136,6 +2136,52 @@ function renderAdviceToHtml(adviceText) {
 
   el.innerHTML = html;
 }
+
+  function injectResultsIntoAdvice() {
+    const target = document.getElementById("advice-results");
+    if (!target) return;
+    if (!window.computedResult) return;
+
+    // Leegmaken zodat opnieuw genereren netjes blijft
+    target.innerHTML = "";
+
+    // Helper om bestaande blokken exact te kopiëren
+    const clone = (selector) => {
+      const el = document.querySelector(selector);
+      return el ? el.cloneNode(true) : null;
+    };
+
+    // 1️⃣ Resultaat-tiles
+    const tiles = clone(".results-summary");
+    if (tiles) {
+      target.appendChild(tiles);
+    }
+
+    // 2️⃣ Tariefmatrix (alleen de tabel, opnieuw verpakt)
+    const tariffTable = clone(".table-card table");
+    if (tariffTable) {
+      const wrap = document.createElement("div");
+      wrap.className = "table-card";
+      wrap.appendChild(tariffTable);
+      target.appendChild(wrap);
+    }
+
+    // 3️⃣ Grafiek (canvas + card)
+    const chartCard = document.querySelector("#chart")?.closest(".card");
+    if (chartCard) {
+      const chartClone = chartCard.cloneNode(true);
+      target.appendChild(chartClone);
+    }
+
+    // 4️⃣ Energie-inzichten
+    const energyTable = clone(".energy-table");
+    if (energyTable) {
+      const wrap = document.createElement("div");
+      wrap.className = "table-card";
+      wrap.appendChild(energyTable);
+      target.appendChild(wrap);
+    }
+  }
   
 document.getElementById("btn-generate-advice").addEventListener("click", async () => {
   const statusEl = document.getElementById("advice-status");
