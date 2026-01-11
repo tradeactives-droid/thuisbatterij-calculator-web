@@ -752,7 +752,7 @@
 <!--    STEP 1               -->
 <!-- ======================= -->
 <div id="step-1" style="display:none;">
-  <h2>Stap 1 · Tarief & CSV-bestanden</h2>
+  <h2>Stap 1 · Profiel & tarief</h2>
 
   <div class="field">
     <label>Land</label>
@@ -772,58 +772,60 @@
   </div>
 
   <div class="field">
-    <label>load.csv</label>
-    <input type="file" id="file-load" accept=".csv">
+    <label>Jaarverbruik (kWh)<span class="required">*</span></label>
+    <input id="annual-load" type="number" min="0" step="1" placeholder="bijv. 3500">
   </div>
 
   <div class="field">
-    <label>pv.csv</label>
-    <input type="file" id="file-pv" accept=".csv">
+    <label>Jaaropwek (kWh)<span class="required">*</span></label>
+    <input id="annual-pv" type="number" min="0" step="1" placeholder="bijv. 3200">
   </div>
 
   <div class="field">
-    <label>prices.csv (uurprijzen elektriciteit)</label>
-    <input type="file" id="file-prices" accept=".csv">
+    <label>Woning/huishoudprofiel<span class="required">*</span></label>
+    <select id="household-profile">
+      <option value="" selected>Kies een profiel</option>
+      <option value="alleenstaand_werkend">Alleenstaand (werkend)</option>
+      <option value="gezin_kinderen">Gezin met kinderen</option>
+      <option value="thuiswerker">Thuiswerker</option>
+    </select>
   </div>
 
-<!-- EXTRA ENERGIEVERBRUIKERS -->
-<div class="field">
-  <label>
-    Warmtepomp
-    <span class="info-icon"
-          data-tooltip="Een warmtepomp zorgt voor een hoger en vaak langdurig elektriciteitsverbruik, vooral in de winter. Dit beïnvloedt het verbruiksprofiel en de geschiktheid van een thuisbatterij.">
-      ℹ
-    </span>
-  </label>
+  <!-- EXTRA ENERGIEVERBRUIKERS -->
+  <div class="field">
+    <label>
+      Warmtepomp
+      <span class="info-icon"
+            data-tooltip="Warmtepomp beïnvloedt vooral het profiel (meer verbruik in winter + ochtend/avond).">
+        ℹ
+      </span>
+    </label>
+    <select id="has-heatpump">
+      <option value="unknown" selected>Kies een optie</option>
+      <option value="no">Nee</option>
+      <option value="yes">Ja</option>
+    </select>
+  </div>
 
-  <select id="has-heatpump">
-    <option value="unknown" selected>Kies een optie</option>
-    <option value="no">Nee</option>
-    <option value="yes">Ja</option>
-  </select>
-</div>
+  <div class="field">
+    <label>
+      Elektrische auto (thuis laden)
+      <span class="info-icon"
+            data-tooltip="EV-laden beïnvloedt vooral het profiel (meer verbruik in avond/nacht).">
+        ℹ
+      </span>
+    </label>
+    <select id="has-ev">
+      <option value="unknown" selected>Kies een optie</option>
+      <option value="no">Nee</option>
+      <option value="yes">Ja</option>
+    </select>
+  </div>
 
-<div class="field">
-  <label>
-    Elektrische auto (thuis laden)
-    <span class="info-icon"
-          data-tooltip="Thuisladen van een elektrische auto zorgt voor extra en vaak piekbelast elektriciteitsverbruik. Dit is relevant voor batterijadvies en vermogensdimensionering.">
-      ℹ
-    </span>
-  </label>
-
-  <select id="has-ev">
-    <option value="unknown" selected>Kies een optie</option>
-    <option value="no">Nee</option>
-    <option value="yes">Ja</option>
-  </select>
-</div>
-  
-  <div id="csv-status" class="status">Nog geen CSV verwerkt.</div>
+  <div id="profile-status" class="status">Vul de verplichte velden in om door te gaan.</div>
 
   <br>
-  <button class="btn-primary" id="btn-parse-csv">CSV verwerken</button>
-  <button class="btn-secondary" id="to-step-2" disabled>Volgende</button>
+  <button class="btn-secondary" id="to-step-2">Volgende</button>
 </div>
 
 <!-- ======================= -->
