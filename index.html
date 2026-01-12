@@ -1677,7 +1677,34 @@ document.getElementById("to-step-0-next").addEventListener("click", () => {
   activateStep(1);
 });
 
-document.getElementById("to-step-2").addEventListener("click", () => activateStep(2));
+document.getElementById("to-step-2").addEventListener("click", () => {
+  const status = document.getElementById("profile-status");
+
+  const annualLoad = parseFloat(document.getElementById("annual-load").value || "0");
+  const annualPv   = parseFloat(document.getElementById("annual-pv").value || "0");
+  const profile    = document.getElementById("household-profile").value || "";
+
+  if (!isFinite(annualLoad) || annualLoad <= 0) {
+    status.textContent = "Vul een geldig jaarverbruik in.";
+    status.className = "status error";
+    return;
+  }
+  if (!isFinite(annualPv) || annualPv < 0) {
+    status.textContent = "Vul een geldige jaaropwek in.";
+    status.className = "status error";
+    return;
+  }
+  if (!profile) {
+    status.textContent = "Kies een huishoudenprofiel.";
+    status.className = "status error";
+    return;
+  }
+
+  status.textContent = "Profiel ingesteld ✔";
+  status.className = "status success";
+  activateStep(2);
+});
+  
 document.getElementById("back-to-1").addEventListener("click", () => activateStep(1));
 document.getElementById("to-step-3").addEventListener("click", () => {
   activateStep(3);
