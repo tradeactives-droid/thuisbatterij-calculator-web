@@ -875,11 +875,17 @@
     <label>
       Round-Trip Efficiëntie | η_rt (%)
       <span class="info-icon"
-            data-tooltip="Geeft aan hoeveel energie overblijft na laden én ontladen. Bij 90% efficiëntie levert 1 kWh laden ongeveer 0.9 kWh bruikbaar vermogen op.">
+            data-tooltip="Als η_rt niet bekend is, kan je dit op 'niet bekend' zetten. Dan wordt efficiëntieverlies niet meegenomen in de berekening.">
         ℹ
       </span>
     </label>
-    <input id="eta_rt" type="number" min="0" max="100">
+
+    <select id="eta-known" style="margin-bottom:8px;">
+      <option value="unknown" selected>Niet bekend (niet meenemen)</option>
+      <option value="known">Bekend (invullen)</option>
+    </select>
+
+    <input id="eta_rt" type="number" min="0" max="100" placeholder="bijv. 90" disabled>
   </div>
 
 
