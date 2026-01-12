@@ -1769,21 +1769,6 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   status.textContent = "Berekening wordt uitgevoerd, dit kan enkele seconden duren…";
   status.className = "status";
 
-
-  if (
-    !window.parsedData ||
-    !Array.isArray(window.parsedData.load_kwh) ||
-    window.parsedData.load_kwh.length === 0
-  ) {
-    status.textContent = "CSV-data ontbreekt. Verwerk eerst CSV in stap 1.";
-    status.className = "status error";
-
-    btn.disabled = false;
-    btn.textContent = "Berekenen";
-
-    return;
-  }
-
   // ===============================
   // Batterij-investering (veilig)
   // ===============================
@@ -1821,11 +1806,25 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   // ===============================
   // REQUEST BODY
   // ===============================
+  const etaKnown = document.getElementById("eta-known")?.value === "known";
+  const degKnown = document.getElementById("degradation-known")?.value === "known";
+
+  const etaRtPercent = parseFloat(document.getElementById("eta_rt").value || "");
+  const degPercent   = parseFloat(document.getElementById("battery-degradation").value || "");
+
   const body = {
-    // Profielen
-    load_kwh: parsedData.load_kwh,
-    pv_kwh: parsedData.pv_kwh,
-    prices_dyn: parsedData.prices_dyn || [],
+    // NIEUWE INPUT (profiel-based)
+    annual_load_kwh: parseFloat(document.getElementById("annual-load").value || "0"),
+    annual_pv_kwh: parseFloat(document.getElementById("annual-pv").value || "0"),
+    household_profile: document.getElementById("household-profile").value,
+
+    has_heatpump: document.getElementById("has-heatpump")?.value === "yes",
+    has_ev: document.getElementById("has-ev")?.value === "yes",
+
+    // Dynamisch model (geen prices.csv)
+    dyn_avg_import_price: parseFloat(document.getElementById("dyn_avg_import_price").value || "0.28"),
+    dyn_spread: parseFloat(document.getElementById("dyn_spread").value || "0.10"),
+    dyn_cheap_hours_per_day: parseInt(document.getElementById("dyn_cheap_hours_per_day").value || "8"),
 
     // Tarieven
     p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
@@ -1843,35 +1842,29 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     feedin_free_kwh: parseFloat(document.getElementById("tlv_free_kwh").value || "0"),
     feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
 
-    // 🔧 Omvormer
+    // Omvormer
     inverter_power_kw: inverterPower,
-
-    // Alleen kosten meesturen als P > 0
-    inverter_cost_per_kw_month:
-      inverterPower > 0 ? inverterCostPerKwMonth : 0,
-
-    inverter_cost_per_kw:
-      inverterPower > 0 ? inverterCostPerKwMonth * 12 : 0,
+    inverter_cost_per_kw_month: inverterPower > 0 ? inverterCostPerKwMonth : 0,
+    inverter_cost_per_kw: inverterPower > 0 ? inverterCostPerKwMonth * 12 : 0,
 
     // Batterij
     E: parseFloat(document.getElementById("E").value || "0"),
     P: parseFloat(document.getElementById("P").value || "0"),
     DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
-    eta_rt: parseFloat(document.getElementById("eta_rt").value || "0") / 100,
+
+    // RTE / Degradatie: NULL als onbekend
+    eta_rt: etaKnown && isFinite(etaRtPercent) ? (etaRtPercent / 100) : null,
+    battery_degradation: degKnown && isFinite(degPercent) ? (degPercent / 100) : null,
 
     // Vastrecht (€/jaar)
     vastrecht_year: parseFloat(document.getElementById("fixed-cost").value || "0"),
 
-    // Investering & degradatie
+    // Investering & levensduur
     battery_cost: batteryCost,
-    battery_degradation:
-      parseFloat(document.getElementById("battery-degradation").value || "2") / 100,
-    battery_lifetime_years:
-      parseInt(document.getElementById("battery-lifetime").value || "15"),
+    battery_lifetime_years: parseInt(document.getElementById("battery-lifetime").value || "15"),
 
     // Capaciteitstarief (BE)
-    capacity_tariff_kw:
-      parseFloat(document.getElementById("capacity-tariff").value || "0"),
+    capacity_tariff_kw: parseFloat(document.getElementById("capacity-tariff").value || "0"),
 
     // Context
     country: document.getElementById("country").value || "NL",
@@ -1879,7 +1872,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   };
 
   try {
-    const res = await fetch(API_BASE + "/compute_v3", {
+    const res = await fetch(API_BASE + "/compute_v3_profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
