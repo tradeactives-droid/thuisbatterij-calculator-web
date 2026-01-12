@@ -1635,24 +1635,6 @@ function fmtEuro(x) {
   if (!isFinite(v)) return "–";
   return "€ " + v.toFixed(2).replace(".", ",");
 }
-    
-    status.textContent = "CSV verwerkt ✔ (" + data.load_kwh.length + " records)";
-    status.className = "status success";
-
-    const nextBtn = document.getElementById("to-step-2");
-    nextBtn.disabled = false;
-
-    // 🔶 VISUELE ACTIVERING "VOLGENDE"
-    nextBtn.style.backgroundColor = "#ff6600";
-    nextBtn.style.color = "#ffffff";
-    nextBtn.style.cursor = "pointer";
-    nextBtn.style.border = "none";
-
-  } catch (err) {
-    status.textContent = "Fout: " + err.message;
-    status.className = "status error";
-  }
-});
 
 
 /* ----------------------------- */
