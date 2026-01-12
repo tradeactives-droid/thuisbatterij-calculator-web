@@ -1574,34 +1574,46 @@ function applyTariffDefaultsIfEmpty() {
 }
 
  function wireUnknownToggles() {
-  const etaSel = document.getElementById("eta-known");
-  const etaInp = document.getElementById("eta_rt");
+  const etaSel  = document.getElementById("eta-known");
+  const etaInp  = document.getElementById("eta_rt");
+  const etaWrap = document.getElementById("eta-rt-wrap");
 
-  const degSel = document.getElementById("degradation-known");
-  const degInp = document.getElementById("battery-degradation");
+  const degSel  = document.getElementById("degradation-known");
+  const degInp  = document.getElementById("battery-degradation");
+  const degWrap = document.getElementById("battery-degradation-wrap");
 
-  if (etaSel && etaInp) {
+  if (etaSel && etaInp && etaWrap) {
     const syncEta = () => {
       const known = etaSel.value === "known";
-      etaInp.disabled = !known;
-      if (!known) etaInp.value = "";
-      if (known && etaInp.value === "") etaInp.value = "90";
+      etaWrap.style.display = known ? "block" : "none";
+
+      if (!known) {
+        etaInp.value = "";
+      } else if (etaInp.value === "") {
+        etaInp.value = "90";
+      }
     };
+
     etaSel.addEventListener("change", syncEta);
     syncEta();
   }
 
-  if (degSel && degInp) {
+  if (degSel && degInp && degWrap) {
     const syncDeg = () => {
       const known = degSel.value === "known";
-      degInp.disabled = !known;
-      if (!known) degInp.value = "";
-      if (known && degInp.value === "") degInp.value = "2";
+      degWrap.style.display = known ? "block" : "none";
+
+      if (!known) {
+        degInp.value = "";
+      } else if (degInp.value === "") {
+        degInp.value = "2";
+      }
     };
+
     degSel.addEventListener("change", syncDeg);
     syncDeg();
   }
-} 
+}
   
 /* ----------------------------- */
 /*       WIZARD STAPPEN          */
