@@ -988,6 +988,27 @@
     <input id="p_export_dyn" type="number" step="0.01">
   </div>
 
+  <h4 style="margin:14px 0 10px 0; color:#334155;">Dynamisch (modelinstellingen)</h4>
+
+  <div class="field">
+    <label>Gemiddelde importprijs (€/kWh)</label>
+    <input id="dyn_avg_import_price" type="number" step="0.01" value="0.28">
+  </div>
+
+  <div class="field">
+    <label>Spreiding (€/kWh)</label>
+    <input id="dyn_spread" type="number" step="0.01" value="0.10">
+  </div>
+
+  <div class="field">
+    <label>Aantal goedkope uren per dag</label>
+    <input id="dyn_cheap_hours_per_day" type="number" min="1" max="12" step="1" value="8">
+  </div>
+
+  <div id="dyn-fallback-note" class="status" style="display:block;">
+    Dynamische prijzen worden gemodelleerd op basis van gemiddelde prijs + spreiding.
+  </div>
+
   <div id="compute-status" class="status"></div>
 
   <div id="dyn-fallback-note" class="status" style="display:none;">
