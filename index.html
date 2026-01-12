@@ -2438,10 +2438,16 @@ document.querySelectorAll(".stepper .step").forEach((pill, index) => {
 
   pill.addEventListener("click", () => {
 
-    // Niet vooruit klikken zonder CSV-data
-    if (index > 1 && (!parsedData || !parsedData.load_kwh)) {
-      alert("Voltooi eerst stap 1 (CSV verwerken).");
-      return;
+    // Niet vooruit klikken zonder verplichte profielvelden
+    if (index > 1) {
+      const annualLoad = parseFloat(document.getElementById("annual-load")?.value || "0");
+      const annualPv   = parseFloat(document.getElementById("annual-pv")?.value || "0");
+      const profile    = document.getElementById("household-profile")?.value || "";
+
+      if (!isFinite(annualLoad) || annualLoad <= 0 || !isFinite(annualPv) || annualPv < 0 || !profile) {
+        alert("Vul eerst Stap 1 volledig in (jaarverbruik, jaaropwek en profiel).");
+        return;
+      }
     }
 
     // Niet naar stap 3/4/5 zonder batterijdata
