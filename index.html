@@ -1591,6 +1591,36 @@ function applyTariffDefaultsIfEmpty() {
     }
   });
 }
+
+ function wireUnknownToggles() {
+  const etaSel = document.getElementById("eta-known");
+  const etaInp = document.getElementById("eta_rt");
+
+  const degSel = document.getElementById("degradation-known");
+  const degInp = document.getElementById("battery-degradation");
+
+  if (etaSel && etaInp) {
+    const syncEta = () => {
+      const known = etaSel.value === "known";
+      etaInp.disabled = !known;
+      if (!known) etaInp.value = "";
+      if (known && etaInp.value === "") etaInp.value = "90";
+    };
+    etaSel.addEventListener("change", syncEta);
+    syncEta();
+  }
+
+  if (degSel && degInp) {
+    const syncDeg = () => {
+      const known = degSel.value === "known";
+      degInp.disabled = !known;
+      if (!known) degInp.value = "";
+      if (known && degInp.value === "") degInp.value = "2";
+    };
+    degSel.addEventListener("change", syncDeg);
+    syncDeg();
+  }
+} 
   
 /* ----------------------------- */
 /*       WIZARD STAPPEN          */
