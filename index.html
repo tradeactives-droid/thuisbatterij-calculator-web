@@ -1635,28 +1635,6 @@ function fmtEuro(x) {
   if (!isFinite(v)) return "–";
   return "€ " + v.toFixed(2).replace(".", ",");
 }
-
-    const data = await res.json();
-
-    console.log("ADVICE RESPONSE:", data)
-
-    if (!data || data.error) {
-      if (data && data.error === "NOT_ENOUGH_DATA_FOR_FLUVIUS") {
-        status.textContent =
-          "Uw CSV bevat te weinig datapunten. Gebruik een jaarprofiel (minimaal ±30.000 kwartierwaarden).";
-      } else {
-        status.textContent =
-          "Fout bij verwerken van CSV (controleer formaat en scheidingstekens).";
-      }
-      status.className = "status error";
-      return;
-    }
-
-    // Globaal maken zodat adviesmodule het kan lezen
-    window.parsedData = data;
-
-// Lokale alias zodat bestaande code blijft werken
-    parsedData = window.parsedData;
     
     status.textContent = "CSV verwerkt ✔ (" + data.load_kwh.length + " records)";
     status.className = "status success";
