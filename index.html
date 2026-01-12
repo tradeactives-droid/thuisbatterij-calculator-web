@@ -1628,46 +1628,6 @@ function fmtEuro(x) {
   return "€ " + v.toFixed(2).replace(".", ",");
 }
 
-
-/* ----------------------------- */
-/*      CSV VERWERKEN            */
-/* ----------------------------- */
-document.getElementById("btn-parse-csv").addEventListener("click", async () => {
-  const loadFile   = document.getElementById("file-load").files[0];
-  const pvFile     = document.getElementById("file-pv").files[0];
-  const pricesFile = document.getElementById("file-prices").files[0];
-  const status     = document.getElementById("csv-status");
-  const tarief     = document.getElementById("tariff-type").value;
-
-  // ---- VALIDATIE ----
-  if (!loadFile || !pvFile || !pricesFile) {
-    status.textContent =
-      "Load.csv, pv.csv en prices.csv zijn verplicht voor deze berekening.";
-    status.className = "status error";
-  return;
-}
-
-  
-  status.textContent = "Verwerken…";
-  status.className = "status";
-
-  try {
-    const [loadText, pvText, pricesText] = await Promise.all([
-      loadFile.text(),
-      pvFile.text(),
-      pricesFile ? pricesFile.text() : ""   // optioneel toegestaan
-    ]);
-
-    const res = await fetch(API_BASE + "/parse_csv", {
-      method: "POST",
-      headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({
-        load_file: loadText,
-        pv_file: pvText,
-        prices_file: pricesText
-      })
-    });
-
     const data = await res.json();
 
     console.log("ADVICE RESPONSE:", data)
