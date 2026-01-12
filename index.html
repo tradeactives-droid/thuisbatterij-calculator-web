@@ -947,8 +947,9 @@
       <option value="known">Bekend (invullen)</option>
     </select>
 
-    <input id="battery-degradation" type="number" min="0" max="10" step="0.1" placeholder="bijv. 2" disabled>
-  </div>
+    <div id="battery-degradation-wrap" style="display:none;">
+      <input id="battery-degradation" type="number" min="0" max="10" step="0.1" placeholder="bijv. 2">
+    </div>
 
   <button class="btn-secondary" id="back-to-1">Vorige</button>
   <button class="btn-primary" id="to-step-3">Volgende</button>
