@@ -1517,28 +1517,6 @@ function getTariffLabel(code) {
       return code;
   }
 }
-  
-/* ----------------------------- */
-/*       TARIEF DYNAMISCHE LOGICA */
-/* ----------------------------- */
-
-function updatePricesVisibility() {
-  const tarief = document.getElementById("tariff-type").value;
-  const priceFileField = document.getElementById("file-prices");
-  const priceFileLabel = priceFileField.parentElement;
-
-  // ALTIJD zichtbaar, zoals je vroeg
-  priceFileLabel.style.display = "block";
-
-  // MAAR: alleen verplicht / foutmelding bij dynamisch
-  if (tarief === "dynamisch") {
-    priceFileLabel.querySelector("label").textContent =
-      "prices.csv (verplicht bij dynamisch)";
-  } else {
-    priceFileLabel.querySelector("label").textContent =
-      "prices.csv (alleen voor dynamisch)";
-  }
-}
 
 // 🔁 HERRENDER RESULTATEN BIJ TARIEFWISSEL
 document.getElementById("tariff-type").addEventListener("change", () => {
