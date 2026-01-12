@@ -2059,6 +2059,14 @@ function buildAdviceContext(data) {
     country,
     current_tariff: document.getElementById("tariff-type").value || "enkel",
 
+    calculation_method: data.calculation_method || {},
+
+    profile_inputs: {
+      annual_load_kwh: parseFloat(document.getElementById("annual-load").value || "0"),
+      annual_pv_kwh: parseFloat(document.getElementById("annual-pv").value || "0"),
+      household_profile: document.getElementById("household-profile").value || ""
+    },
+    
     energy_profile: data.energy_profile || {},
 
     battery: {
