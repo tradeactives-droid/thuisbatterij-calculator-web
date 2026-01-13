@@ -1756,10 +1756,10 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     has_heatpump: document.getElementById("has-heatpump")?.value === "yes",
     has_ev: document.getElementById("has-ev")?.value === "yes",
 
-    // Dynamisch model (geen prices.csv)
-    dyn_avg_import_price: parseFloat(document.getElementById("dyn_avg_import_price").value || "0.28"),
-    dyn_spread: parseFloat(document.getElementById("dyn_spread").value || "0.10"),
-    dyn_cheap_hours_per_day: parseInt(document.getElementById("dyn_cheap_hours_per_day").value || "8"),
+    // Dynamisch model — vaste defaults (UI verborgen)
+    dyn_avg_import_price: 0.28,
+    dyn_spread: 0.10,
+    dyn_cheap_hours_per_day: 8,
 
     // Tarieven
     p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
