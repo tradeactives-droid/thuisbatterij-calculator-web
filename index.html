@@ -1720,9 +1720,6 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   const inverterPower =
     parseFloat(document.getElementById("P").value || "0");
 
-  const inverterCostPerKwMonth =
-    parseFloat(document.getElementById("tlv_per_kw_inverter").value || "0");
-
   // ===============================
   // REQUEST BODY
   // ===============================
@@ -1769,10 +1766,10 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     feedin_free_kwh: tlv_free_kwh,
     feedin_price_after_free: tlv_per_kwh,
 
-    // Omvormer
+    // Omvormer (geen aparte kosten ingevoerd)
     inverter_power_kw: inverterPower,
-    inverter_cost_per_kw_month: inverterPower > 0 ? inverterCostPerKwMonth : 0,
-    inverter_cost_per_kw: inverterPower > 0 ? inverterCostPerKwMonth * 12 : 0,
+    inverter_cost_per_kw_month: 0,
+    inverter_cost_per_kw: 0,
 
     // Batterij
     E: parseFloat(document.getElementById("E").value || "0"),
