@@ -1784,11 +1784,11 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     p_export_dyn: parseFloat(document.getElementById("p_export_dyn").value || "0.07"),
 
-    // Terugleverkosten
-    feedin_monthly_cost: parseFloat(document.getElementById("tlv_monthly_fee").value || "0"),
-    feedin_cost_per_kwh: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
-    feedin_free_kwh: parseFloat(document.getElementById("tlv_free_kwh").value || "0"),
-    feedin_price_after_free: parseFloat(document.getElementById("tlv_per_kwh").value || "0"),
+    // Terugleverkosten (vereenvoudigd)
+    feedin_monthly_cost: tlv_monthly_fee,
+    feedin_cost_per_kwh: tlv_per_kwh,
+    feedin_free_kwh: tlv_free_kwh,
+    feedin_price_after_free: tlv_per_kwh,
 
     // Omvormer
     inverter_power_kw: inverterPower,
