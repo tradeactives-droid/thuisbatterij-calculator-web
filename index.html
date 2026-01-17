@@ -1732,19 +1732,12 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   const etaRtPercent = parseFloat(document.getElementById("eta_rt").value || "");
   const degPercent   = parseFloat(document.getElementById("battery-degradation").value || "");
 
-  // === Simpele terugleverkosten (UI → defaults) ===
-  const feedinSimple = document.getElementById("feedin-simple")?.value;
+  // === Terugleverkosten (vereenvoudigd) ===
+  const tlv_monthly_fee =
+    parseFloat(document.getElementById("tlv_monthly_fee")?.value || "0");
 
-  let tlv_per_kwh = 0;
-  let tlv_free_kwh = 0;
-  let tlv_monthly_fee = 0;
-
-  if (feedinSimple === "yes") {
-    // Gemiddelde NL-waarden (verdedigbaar)
-    tlv_per_kwh = 0.10;      // €0,10 per kWh
-    tlv_free_kwh = 1000;     // 1.000 kWh gratis
-    tlv_monthly_fee = 0;    // geen vast maandbedrag
-  }
+  const tlv_per_kwh = 0;
+  const tlv_free_kwh = 0;
   
   const body = {
     // NIEUWE INPUT (profiel-based)
