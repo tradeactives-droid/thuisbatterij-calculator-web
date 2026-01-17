@@ -1029,18 +1029,17 @@
   </div>
 
   <div class="field">
-    <label>Terugleverkosten per kWh (€/kWh boven staffel)</label>
-    <input id="tlv_per_kwh" type="number" step="0.001" value="0">
-  </div>
-
-  <div class="field">
-    <label>Gratis teruglevering (kWh/jaar)</label>
-    <input id="tlv_free_kwh" type="number" step="1" value="0">
-  </div>
-
-  <div class="field">
-    <label>Kosten per kW omvormer (€/kW per maand)</label>
-    <input id="tlv_per_kw_inverter" type="number" step="0.01" value="0">
+    <label>
+      Terugleverkosten van toepassing?
+      <span class="info-icon"
+            data-tooltip="Gemiddelde terugleverkosten bij Nederlandse leveranciers. De batterij verlaagt deze kosten door minder terug te leveren.">
+        ℹ
+      </span>
+    </label>
+    <select id="feedin-simple">
+      <option value="no" selected>Nee</option>
+      <option value="yes">Ja (gemiddeld)</option>
+    </select>
   </div>
 
   <button class="btn-secondary" id="back-to-3">Vorige</button>
