@@ -823,6 +823,23 @@
     </select>
   </div>
 
+  <!-- EV-LAADMOMENT (alleen relevant als EV = Ja) -->
+  <div class="field" id="ev-charge-window-field" style="display:none;">
+    <label>
+      EV-laadmoment
+      <span class="info-icon"
+            data-tooltip="Dit bepaalt wanneer het extra EV-verbruik in het dagprofiel terechtkomt. Kies wat meestal klopt bij de klant.">
+        ℹ
+      </span>
+    </label>
+    <select id="ev-charge-window">
+      <option value="evening_night" selected>Avond + nacht (meest voorkomend)</option>
+      <option value="night">Alleen nacht</option>
+      <option value="midday">Overdag (bijv. thuis laden / zonnepanelen)</option>
+      <option value="spread">Verspreid</option>
+    </select>
+  </div>
+  
   <div id="profile-status" class="status">Vul de verplichte velden in om door te gaan.</div>
 
   <br>
