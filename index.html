@@ -1796,6 +1796,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     has_heatpump: document.getElementById("has-heatpump")?.value === "yes",
     has_ev: document.getElementById("has-ev")?.value === "yes",
+    ev_charge_window: document.getElementById("ev-charge-window")?.value || "evening_night",
 
     // Dynamisch model — vaste defaults (UI verborgen)
     dyn_avg_import_price: 0.28,
