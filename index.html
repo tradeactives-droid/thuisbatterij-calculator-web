@@ -1005,11 +1005,21 @@
     <input id="p_exp_dn" type="number" step="0.01">
   </div>
 
-  <h3>Dynamisch tarief</h3>
   <div class="field">
-    <label>Exportprijs (€/kWh)</label>
-    <input id="p_export_dyn" type="number" step="0.01">
-  </div>
+  <label>
+    Goedkope uren per dag
+    <span class="info-icon"
+          data-tooltip="Aantal uren per dag waarin stroom gemiddeld goedkoop is bij een dynamisch contract. Dit bepaalt hoeveel de batterij uit het net kan laden.">
+      ℹ
+    </span>
+  </label>
+  <select id="dyn-cheap-hours">
+    <option value="6">6 uur (conservatief)</option>
+    <option value="8" selected>8 uur (gemiddeld)</option>
+    <option value="10">10 uur (volatiel)</option>
+    <option value="12">12 uur (zeer volatiel)</option>
+  </select>
+</div>
 
   <div id="compute-status" class="status"></div>
 
