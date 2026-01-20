@@ -1802,11 +1802,6 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     has_ev: document.getElementById("has-ev")?.value === "yes",
     ev_charge_window: document.getElementById("ev-charge-window")?.value || "evening_night",
 
-    // Dynamisch tarief — alleen gebruikersgedrag
-    dyn_cheap_hours_per_day: parseInt(
-    document.getElementById("dyn-cheap-hours")?.value || "8"
-    ),
-
     // Tarieven
     p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
     p_enkel_exp: parseFloat(document.getElementById("p_enkel_exp").value || "0.07"),
@@ -1816,6 +1811,10 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     p_exp_dn: parseFloat(document.getElementById("p_exp_dn").value || "0.07"),
 
     p_export_dyn: parseFloat(document.getElementById("p_export_dyn").value || "0.07"),
+
+    p_dyn_imp: parseFloat(
+      document.getElementById("p_dyn_imp").value || "0.28"
+    ),
 
     // Terugleverkosten (vereenvoudigd)
     feedin_monthly_cost: tlv_monthly_fee,
