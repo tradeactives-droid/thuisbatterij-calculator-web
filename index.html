@@ -1547,11 +1547,16 @@ document.getElementById("country").addEventListener("change", updateCountryUI);
 
 function applyTariffDefaultsIfEmpty() {
   const defaults = {
+    // Enkel
     p_enkel_imp: "0.29",
     p_enkel_exp: "0.07",
+  
+    // Dag/Nacht
     p_dag: "0.31",
     p_nacht: "0.26",
     p_exp_dn: "0.07",
+  
+    // Dynamisch
     p_dyn_imp: "0.28",
     p_export_dyn: "0.07"
   };
