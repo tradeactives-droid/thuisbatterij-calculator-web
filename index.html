@@ -1805,24 +1805,23 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     annual_load_kwh: parseFloat(document.getElementById("annual-load").value || "0"),
     annual_pv_kwh: parseFloat(document.getElementById("annual-pv").value || "0"),
     household_profile: document.getElementById("household-profile").value,
-
+  
     has_heatpump: document.getElementById("has-heatpump")?.value === "yes",
     has_ev: document.getElementById("has-ev")?.value === "yes",
     ev_charge_window: document.getElementById("ev-charge-window")?.value || "evening_night",
-
+  
     // Tarieven
     p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
     p_enkel_exp: parseFloat(document.getElementById("p_enkel_exp").value || "0.07"),
-
+  
     p_dag: parseFloat(document.getElementById("p_dag").value || "0.31"),
     p_nacht: parseFloat(document.getElementById("p_nacht").value || "0.26"),
     p_exp_dn: parseFloat(document.getElementById("p_exp_dn").value || "0.07"),
-
+  
+    // Dynamisch
+    p_dyn_imp: parseFloat(document.getElementById("p_dyn_imp").value || "0.28"),
     p_export_dyn: parseFloat(document.getElementById("p_export_dyn").value || "0.07"),
-
-    p_dyn_imp: parseFloat(
-      document.getElementById("p_dyn_imp").value || "0.28"
-    ),
+  };
 
     // Terugleverkosten (vereenvoudigd)
     feedin_monthly_cost: tlv_monthly_fee,
