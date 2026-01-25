@@ -1936,16 +1936,42 @@ if (
     paybackEl.style.color = "";
     roiEl.style.color = "";
 
-    // ❗ Geen rendabele businesscase
-    if (!roi || roi.yearly_saving_eur <= 0 || roi.payback_years === null) {
-      paybackEl.textContent = "Niet rendabel";
-      roiEl.textContent = "0.0 %";
-
-      paybackEl.style.color = "#dc2626"; // rood
-      roiEl.style.color = "#dc2626";     // rood
+    // === ROI & Payback (PER TARIEF!) ===
+    const roi = data.roi_per_tariff?.[tariff];
+    
+    const paybackEl = document.getElementById("res-payback");
+    const roiEl = document.getElementById("res-roi");
+    
+    // Default styling resetten
+    paybackEl.style.color = "";
+    roiEl.style.color = "";
+    
+    // Veiligheidsfallback als backend niets geeft
+    if (!roi) {
+      paybackEl.textContent = "–";
+      roiEl.textContent = "–";
     } else {
-      paybackEl.textContent = roi.payback_years.toFixed(1) + " jaar";
-      roiEl.textContent = roi.roi_percent.toFixed(1) + " %";
+      // Payback: als null => buiten horizon/levensduur (dus wél “echt” resultaat)
+      const horizonYears = parseInt(document.getElementById("battery-lifetime")?.value || "15", 10);
+    
+      if (roi.yearly_saving_eur <= 0) {
+        paybackEl.textContent = "Geen besparing";
+        paybackEl.style.color = "#dc2626";
+      } else if (roi.payback_years === null) {
+        paybackEl.textContent = `> ${horizonYears} jaar`;
+        paybackEl.style.color = "#dc2626";
+      } else {
+        paybackEl.textContent = roi.payback_years.toFixed(1) + " jaar";
+      }
+    
+      // ROI: toon altijd de echte waarde (ook negatief)
+      const roiVal = Number(roi.roi_percent);
+      if (isFinite(roiVal)) {
+        roiEl.textContent = roiVal.toFixed(1) + " %";
+        if (roiVal < 0) roiEl.style.color = "#dc2626";
+      } else {
+        roiEl.textContent = "–";
+      }
     }
     
     // =========================
