@@ -1926,12 +1926,6 @@ if (
     document.getElementById("res-savings").textContent =
       isFinite(B1) && isFinite(C1) ? fmtEuro(B1 - C1) : "–";
 
-    const roiEl = document.getElementById("res-roi");
-
-    // Default styling resetten
-    paybackEl.style.color = "";
-    roiEl.style.color = "";
-
     // === ROI & Payback (PER TARIEF!) ===
     const roi = data.roi_per_tariff?.[tariff];
     
