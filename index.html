@@ -1946,10 +1946,8 @@ if (
     
       if (roi.yearly_saving_eur <= 0) {
         paybackEl.textContent = "Geen besparing";
-        paybackEl.style.color = "#dc2626";
       } else if (roi.payback_years === null) {
         paybackEl.textContent = `> ${horizonYears} jaar`;
-        paybackEl.style.color = "#dc2626";
       } else {
         paybackEl.textContent = roi.payback_years.toFixed(1) + " jaar";
       }
@@ -1958,7 +1956,21 @@ if (
       const roiVal = Number(roi.roi_percent);
       if (isFinite(roiVal)) {
         roiEl.textContent = roiVal.toFixed(1) + " %";
-        if (roiVal < 0) roiEl.style.color = "#dc2626";
+       if (roi.yearly_saving_eur <= 0) {
+          paybackEl.textContent = "Geen besparing";
+        } else if (roi.payback_years === null) {
+          paybackEl.textContent = `> ${horizonYears} jaar`;
+        } else {
+          paybackEl.textContent = roi.payback_years.toFixed(1) + " jaar";
+        }
+        
+        // ROI: toon altijd de echte waarde (ook negatief)
+        const roiVal = Number(roi.roi_percent);
+        if (isFinite(roiVal)) {
+          roiEl.textContent = roiVal.toFixed(1) + " %";
+        } else {
+          roiEl.textContent = "–";
+        }
       } else {
         roiEl.textContent = "–";
       }
