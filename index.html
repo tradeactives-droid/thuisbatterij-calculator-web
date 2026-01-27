@@ -1941,9 +1941,13 @@ if (
       paybackEl.textContent = "–";
       roiEl.textContent = "–";
     } else {
-      // Payback: als null => buiten horizon/levensduur (dus wél “echt” resultaat)
-      const horizonYears = parseInt(document.getElementById("battery-lifetime")?.value || "15", 10);
     
+      const horizonYears = parseInt(
+        document.getElementById("battery-lifetime")?.value || "15",
+        10
+      );
+    
+      // ===== TERUGVERDIENTIJD =====
       if (roi.yearly_saving_eur <= 0) {
         paybackEl.textContent = "Geen besparing";
       } else if (roi.payback_years === null) {
@@ -1952,25 +1956,11 @@ if (
         paybackEl.textContent = roi.payback_years.toFixed(1) + " jaar";
       }
     
-      // ROI: toon altijd de echte waarde (ook negatief)
+      // ===== ROI =====
       const roiVal = Number(roi.roi_percent);
+    
       if (isFinite(roiVal)) {
         roiEl.textContent = roiVal.toFixed(1) + " %";
-       if (roi.yearly_saving_eur <= 0) {
-          paybackEl.textContent = "Geen besparing";
-        } else if (roi.payback_years === null) {
-          paybackEl.textContent = `> ${horizonYears} jaar`;
-        } else {
-          paybackEl.textContent = roi.payback_years.toFixed(1) + " jaar";
-        }
-        
-        // ROI: toon altijd de echte waarde (ook negatief)
-        const roiVal = Number(roi.roi_percent);
-        if (isFinite(roiVal)) {
-          roiEl.textContent = roiVal.toFixed(1) + " %";
-        } else {
-          roiEl.textContent = "–";
-        }
       } else {
         roiEl.textContent = "–";
       }
