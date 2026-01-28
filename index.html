@@ -1528,7 +1528,7 @@ function getTariffLabel(code) {
 
 // 🔁 HERRENDER RESULTATEN BIJ TARIEFWISSEL
 document.getElementById("tariff-type").addEventListener("change", () => {
-  syncDynamicOptionsUI(); // ✅ nieuw: toon/verberg netladen toggle
+  syncDynamicOptionsUI();   // 👈 NIEUW
 
   // Alleen her-renderen als er al een berekening is
   if (!window.computedResult) return;
