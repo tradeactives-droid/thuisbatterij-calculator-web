@@ -948,6 +948,22 @@
     <input id="battery-cost" type="number" min="0" step="1">
   </div>
 
+  <!-- NETLADEN BIJ DYNAMISCH TARIEF -->
+<div class="field" id="grid-charge-field" style="display:none;">
+  <label>
+    Batterij laden vanuit net toestaan?
+    <span class="info-icon"
+          data-tooltip="Bij dynamisch tarief kan de batterij goedkoop stroom inkopen en later gebruiken. Dit verhoogt vaak het rendement maar is niet altijd toegestaan door contract of netbeheerder.">
+      ℹ
+    </span>
+  </label>
+
+  <select id="allow-grid-charge">
+    <option value="no" selected>Nee (alleen laden met zonnepanelen)</option>
+    <option value="yes">Ja (ook laden vanuit net)</option>
+  </select>
+</div>
+  
   <!-- LEVENSDUUR BATTERIJ -->
   <div class="field">
     <label>
