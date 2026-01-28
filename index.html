@@ -921,6 +921,21 @@
     <input id="capacity-tariff" type="number" min="0" step="0.1" value="0">
   </div>
 
+  <!-- DYNAMISCH: NETLADEN TOESTAAN -->
+  <div class="field" id="grid-charge-field">
+    <label>
+      Dynamisch: batterij laden vanuit net toestaan?
+      <span class="info-icon"
+            data-tooltip="Alleen relevant bij dynamisch tarief. Als 'Ja', kan de batterij goedkoop laden (bijv. 's nachts) en later ontladen bij dure uren.">
+        ℹ
+      </span>
+    </label>
+    <select id="allow-grid-charging">
+      <option value="yes" selected>Ja</option>
+      <option value="no">Nee<23/option>
+    </select>
+  </div>
+  
   <!-- INVESTERING -->
   <div class="field">
     <label>
