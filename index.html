@@ -1528,6 +1528,8 @@ function getTariffLabel(code) {
 
 // 🔁 HERRENDER RESULTATEN BIJ TARIEFWISSEL
 document.getElementById("tariff-type").addEventListener("change", () => {
+  syncDynamicOptionsUI(); // ✅ nieuw: toon/verberg netladen toggle
+
   // Alleen her-renderen als er al een berekening is
   if (!window.computedResult) return;
 
@@ -1583,6 +1585,15 @@ function applyTariffDefaultsIfEmpty() {
     }
   });
 }
+
+  function syncDynamicOptionsUI() {
+    const tariff = document.getElementById("tariff-type")?.value || "enkel";
+    const gridField = document.getElementById("grid-charge-field");
+    if (!gridField) return;
+  
+    // Alleen zichtbaar bij dynamisch tarief
+    gridField.style.display = (tariff === "dynamisch") ? "block" : "none";
+  }
 
   function wireEvChargeWindow() {
     const evSel = document.getElementById("has-ev");
