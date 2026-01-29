@@ -1587,15 +1587,6 @@ function applyTariffDefaultsIfEmpty() {
   });
 }
 
-  function syncDynamicOptionsUI() {
-    const tariff = document.getElementById("tariff-type")?.value || "enkel";
-    const gridField = document.getElementById("grid-charge-field");
-    if (!gridField) return;
-  
-    // Alleen zichtbaar bij dynamisch tarief
-    gridField.style.display = (tariff === "dynamisch") ? "block" : "none";
-  }
-
   function wireEvChargeWindow() {
     const evSel = document.getElementById("has-ev");
     const field = document.getElementById("ev-charge-window-field");
