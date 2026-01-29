@@ -1584,23 +1584,6 @@ function applyTariffDefaultsIfEmpty() {
   });
 }
 
-  function wireEvChargeWindow() {
-    const evSel = document.getElementById("has-ev");
-    const field = document.getElementById("ev-charge-window-field");
-    const sel   = document.getElementById("ev-charge-window");
-
-    if (!evSel || !field || !sel) return;
-
-    const sync = () => {
-      const hasEv = evSel.value === "yes";
-      field.style.display = hasEv ? "block" : "none";
-      if (!hasEv) sel.value = "evening_night";
-    };
-
-    evSel.addEventListener("change", sync);
-    sync();
-  }
-
 function wireEvChargeWindow() {
   const evSel = document.getElementById("has-ev");
   const field = document.getElementById("ev-charge-window-field");
