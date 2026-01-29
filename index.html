@@ -1879,6 +1879,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     E: parseFloat(document.getElementById("E").value || "0"),
     P: parseFloat(document.getElementById("P").value || "0"),
     DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
+    allow_grid_charge: document.getElementById("allow-grid-charge")?.value === "yes",
   
     // RTE / Degradatie
     eta_rt: etaKnown && isFinite(etaRtPercent) ? (etaRtPercent / 100) : null,
