@@ -971,13 +971,13 @@
     <label>
       Degradatie per jaar (%)
       <span class="info-icon"
-        data-tooltip="Als degradatie niet bekend is, zet op 'niet bekend'. Dan wordt degradatie niet meegenomen in ROI.">
+        data-tooltip="Als degradatie niet bekend is, wordt een standaard van 2% per jaar gebruikt (realistisch voor Li-ion).">
         ℹ
       </span>
     </label>
 
     <select id="degradation-known" style="margin-bottom:8px;">
-      <option value="unknown" selected>Niet bekend (niet meenemen)</option>
+      <option value="unknown" selected>Niet bekend (2% standaard)</option>
       <option value="known">Bekend (invullen)</option>
     </select>
 
