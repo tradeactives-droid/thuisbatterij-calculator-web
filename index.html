@@ -95,6 +95,24 @@
       gap: 10px;
       font-size: 0.8rem;
       color: #475569;
+      flex-wrap: wrap; /* Zorg dat de dashboard toggle niet uit beeld verdwijnt */
+      justify-content: flex-end;
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .theme-toggle input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--primary);
     }
 
 
@@ -596,6 +614,219 @@
       border: 1px solid #cbd5e1;
       background: #f9fafb;
     }
+
+    /* =============================== */
+    /* DASHBOARD THEME (opt-in)       */
+    /* =============================== */
+    body.dashboard-layout {
+      /* Variabelen voor bestaande UI-regels */
+      --bg: #0b1220;
+      --card-bg: #0f172a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #334155;
+      --ui-border-strong: #475569;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --highlight: rgba(59,130,246,0.25);
+
+      background: #0b1220;
+      color: var(--text);
+    }
+
+    body.dashboard-layout .top-header.header-full {
+      background: #0f172a;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    /* In dashboard-modus: stepper als links-menu */
+    body.dashboard-layout .content-container {
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    body.dashboard-layout .stepper {
+      flex-direction: column;
+      gap: 10px;
+      margin: 0;
+      align-items: stretch;
+    }
+
+    body.dashboard-layout .stepper .step {
+      width: 100%;
+      justify-content: flex-start;
+      box-shadow: none;
+      background: rgba(148,163,184,0.14);
+      border-color: var(--ui-border-strong);
+      color: #cbd5e1;
+      transform: none;
+    }
+
+    body.dashboard-layout .step:not(.active):hover {
+      background: rgba(148,163,184,0.20);
+      transform: translateY(-1px);
+    }
+
+    body.dashboard-layout .badge {
+      background: rgba(148,163,184,0.14);
+      border-color: #475569;
+      color: #e5e7eb;
+    }
+
+    body.dashboard-layout .step.active {
+      box-shadow: 0 10px 26px rgba(37,99,235,0.35);
+    }
+
+    body.dashboard-layout .step.completed {
+      background: rgba(37,99,235,0.22);
+      border-color: #2563eb;
+      color: #bfdbfe;
+      box-shadow: none;
+    }
+
+    body.dashboard-layout .step.completed .badge {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    /* Card/containers naar dark styling */
+    body.dashboard-layout .card {
+      border-color: #334155;
+      box-shadow:
+        0 30px 70px rgba(0,0,0,0.40),
+        0 4px 12px rgba(0,0,0,0.20);
+    }
+
+    body.dashboard-layout #wizard-container {
+      margin: 0;
+      max-width: none;
+    }
+
+    /* Forms */
+    body.dashboard-layout input,
+    body.dashboard-layout select {
+      background: #0b1220;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    body.dashboard-layout input:focus,
+    body.dashboard-layout select:focus {
+      background: #0b1220;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.35);
+    }
+
+    body.dashboard-layout .btn-secondary {
+      background: rgba(15,23,42,0.90);
+      color: var(--text);
+      border: 1.5px solid #475569;
+    }
+
+    body.dashboard-layout .btn-secondary:hover {
+      background: rgba(17,24,39,0.95);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+      transform: translateY(-1px);
+    }
+
+    /* Tables/cards */
+    body.dashboard-layout .table-card,
+    body.dashboard-layout table {
+      background: #0f172a;
+      border-color: #334155;
+      color: var(--text);
+    }
+
+    body.dashboard-layout th {
+      background: rgba(148,163,184,0.12);
+      border-color: #334155;
+      color: var(--text);
+    }
+
+    body.dashboard-layout td {
+      border-color: #334155;
+      color: var(--text);
+    }
+
+    body.dashboard-layout td.highlight {
+      background: rgba(37,99,235,0.22);
+      font-weight: 700;
+    }
+
+    body.dashboard-layout .result-tile {
+      background: rgba(15,23,42,0.75);
+      border-color: #334155;
+    }
+
+    body.dashboard-layout .result-tile .label {
+      color: var(--muted);
+    }
+
+    body.dashboard-layout .results-container {
+      max-width: 1200px;
+    }
+
+    body.dashboard-layout .advice-report-wrapper {
+      background: #0b1220;
+      padding: 24px 0 36px;
+    }
+
+    body.dashboard-layout .advice-report {
+      background: #0f172a;
+      border-color: #334155;
+      box-shadow:
+        0 30px 70px rgba(0,0,0,0.40),
+        0 4px 12px rgba(0,0,0,0.20);
+    }
+
+    body.dashboard-layout .report-title {
+      color: #f3f4f6;
+    }
+
+    body.dashboard-layout .report-subtitle {
+      color: #9ca3af;
+    }
+
+    body.dashboard-layout .advice-paragraph,
+    body.dashboard-layout .advisor-notes h3,
+    body.dashboard-layout .advice-title {
+      color: #e5e7eb;
+    }
+
+    body.dashboard-layout .advice-paragraph {
+      color: #e5e7eb;
+    }
+
+    body.dashboard-layout .advice-section-gap {
+      height: 18px;
+    }
+
+    body.dashboard-layout .advisor-notes textarea {
+      background: #0b1220;
+      color: var(--text);
+      border-color: #334155;
+    }
+
+    /* Mobile: terug naar 1 kolom */
+    @media (max-width: 960px) {
+      body.dashboard-layout .content-container {
+        grid-template-columns: 1fr;
+      }
+
+      body.dashboard-layout .stepper {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      body.dashboard-layout .stepper .step {
+        width: auto;
+      }
+    }
     
   </style>
 
@@ -712,6 +943,10 @@
 
       <div class="user-actions">
         <span id="user-email"></span>
+        <label class="theme-toggle" title="Wissel tussen huidige en dashboard weergave">
+          <input type="checkbox" id="toggle-dashboard-theme">
+          Dashboard layout
+        </label>
         <button id="btn-logout" class="btn-secondary">Uitloggen</button>
       </div>
     </div>
@@ -1508,6 +1743,51 @@ function pdfExport(data) {
 <!-- =============   HOOFDLOGICA / APP     =================== -->
 <!-- ========================================================= -->
 <script>
+// Dashboard theme toggle (safe preview).
+// Default keeps the current design; user can preview via the checkbox.
+const DASHBOARD_THEME_KEY = "eco_metric_dashboard_theme_v1";
+const DEFAULT_USE_DASHBOARD_THEME = false;
+
+function applyDashboardTheme(useDashboard) {
+  document.body.classList.toggle("dashboard-layout", !!useDashboard);
+}
+
+function readInitialDashboardTheme() {
+  try {
+    const saved = localStorage.getItem(DASHBOARD_THEME_KEY);
+    if (saved === null) return DEFAULT_USE_DASHBOARD_THEME;
+    return saved === "1";
+  } catch {
+    return DEFAULT_USE_DASHBOARD_THEME;
+  }
+}
+
+const initialDashboardUse = readInitialDashboardTheme();
+applyDashboardTheme(initialDashboardUse);
+
+const dashboardToggleEl = document.getElementById("toggle-dashboard-theme");
+if (dashboardToggleEl) {
+  dashboardToggleEl.checked = initialDashboardUse;
+
+  dashboardToggleEl.addEventListener("change", () => {
+    const useDashboard = dashboardToggleEl.checked;
+    applyDashboardTheme(useDashboard);
+
+    // Persist selection for next visits.
+    try {
+      localStorage.setItem(DASHBOARD_THEME_KEY, useDashboard ? "1" : "0");
+    } catch {}
+
+    // Refresh charts if a calculation exists.
+    if (window.computedResult) {
+      try {
+        updateCostChart(window.computedResult);
+        renderAdviceChart(window.computedResult);
+      } catch {}
+    }
+  });
+}
+
 const API_BASE = "https://batteryengine-server.onrender.com";
 let parsedData = {};
 let costChart = null;
@@ -1862,27 +2142,55 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       body: JSON.stringify(body)
     });
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch (parseErr) {
+      console.error("Backend returned invalid JSON:", parseErr);
+      status.textContent = "De server gaf geen geldige JSON terug. Probeer het later opnieuw.";
+      status.className = "status error";
+      btn.disabled = false;
+      btn.textContent = "Berekenen";
+      return;
+    }
 
-if (
-  !data ||
-  !data.A1_per_tariff ||
-  !data.B1 ||
-  !data.C1 ||
-  !data.B1_monthly ||
-  !data.C1_monthly ||
-  !data.roi_per_tariff
-) {
-  console.error("Backend response:", data);
-  status.textContent = "Ongeldig antwoord van de server.";
-  status.className = "status error";
+    // HTTP-fout (4xx, 5xx)
+    if (!res.ok) {
+      let errMsg = data?.error || data?.message;
+      if (!errMsg && data?.detail) {
+        if (typeof data.detail === "string") errMsg = data.detail;
+        else if (Array.isArray(data.detail) && data.detail[0]?.msg) errMsg = data.detail[0].msg;
+        else if (data.detail?.msg) errMsg = data.detail.msg;
+      }
+      const msg = errMsg ? (typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg)) : `Serverfout (${res.status})`;
+      console.error("Backend error:", res.status, data);
+      status.textContent = "Serverfout: " + msg;
+      status.className = "status error";
+      btn.disabled = false;
+      btn.textContent = "Berekenen";
+      return;
+    }
 
-  // UI herstellen
-  btn.disabled = false;
-  btn.textContent = "Berekenen";
+    // Controleer vereiste velden (B1_monthly/C1_monthly niet gebruikt in UI → optioneel)
+    const required = {
+      A1_per_tariff: data?.A1_per_tariff,
+      B1: data?.B1,
+      C1: data?.C1,
+      roi_per_tariff: data?.roi_per_tariff
+    };
+    const missing = Object.entries(required)
+      .filter(([, v]) => !v || (typeof v === "object" && Object.keys(v).length === 0))
+      .map(([k]) => k);
 
-  return;
-}
+    if (missing.length > 0) {
+      console.error("Backend response missing fields:", missing, data);
+      status.textContent =
+        "Onvolledig antwoord van de server (ontbreekt: " + missing.join(", ") + "). Probeer het later opnieuw.";
+      status.className = "status error";
+      btn.disabled = false;
+      btn.textContent = "Berekenen";
+      return;
+    }
 
     window.computedResult = data;
 
@@ -2319,6 +2627,11 @@ document.getElementById("btn-download-pdf").addEventListener("click", () => {
     const costWithBatt =
       result.C1?.[tariff]?.total_cost_eur ?? 0;
 
+    // Dashboard theme: kleuren aanpassen zodat as/rooster zichtbaar blijft op een donkere achtergrond.
+    const isDashboard = document.body.classList.contains("dashboard-layout");
+    const axisColor = isDashboard ? "#9ca3af" : undefined;
+    const gridColor = isDashboard ? "rgba(148,163,184,0.18)" : undefined;
+
     let labels = [];
     let withoutBatt = [];
     let withBatt = [];
@@ -2371,7 +2684,8 @@ document.getElementById("btn-download-pdf").addEventListener("click", () => {
         responsive: true,
         plugins: {
           legend: {
-            position: "bottom"
+            position: "bottom",
+            labels: { color: axisColor }
           },
           tooltip: {
             callbacks: {
@@ -2380,9 +2694,21 @@ document.getElementById("btn-download-pdf").addEventListener("click", () => {
           }
         },
         scales: {
+          x: {
+            ticks: {
+              color: axisColor
+            },
+            grid: {
+              color: gridColor
+            }
+          },
           y: {
             ticks: {
+              color: axisColor,
               callback: (v) => "€ " + v
+            },
+            grid: {
+              color: gridColor
             }
           }
         }
@@ -2422,6 +2748,11 @@ function renderAdviceChart(result) {
 
   const costWithBatt =
     result.C1?.[tariff]?.total_cost_eur ?? 0;
+
+  // Dashboard theme: kleuren aanpassen zodat as/rooster zichtbaar blijft op een donkere achtergrond.
+  const isDashboard = document.body.classList.contains("dashboard-layout");
+  const axisColor = isDashboard ? "#9ca3af" : undefined;
+  const gridColor = isDashboard ? "rgba(148,163,184,0.18)" : undefined;
 
   let labels = [];
   let withoutBatt = [];
@@ -2474,12 +2805,27 @@ function renderAdviceChart(result) {
     options: {
       responsive: true,
       plugins: {
-        legend: { position: "bottom" }
+        legend: {
+          position: "bottom",
+          labels: { color: axisColor }
+        }
       },
       scales: {
+        x: {
+          ticks: {
+            color: axisColor
+          },
+          grid: {
+            color: gridColor
+          }
+        },
         y: {
           ticks: {
+            color: axisColor,
             callback: v => "€ " + v
+          },
+          grid: {
+            color: gridColor
           }
         }
       }
