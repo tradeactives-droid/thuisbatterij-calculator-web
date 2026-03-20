@@ -37,6 +37,8 @@
     .page {
       /* Horizontale marge — ook gebruikt om header full-bleed uit te lijnen met inhoud */
       --page-pad-x: clamp(16px, 3vw, 32px);
+      /* Extra inspringing logo / uitloggen t.o.v. schermrand (bovenop --page-pad-x) */
+      --header-extra-inset-x: 20px;
       width: 100%;
       max-width: none;
       margin: 0 auto;
@@ -94,9 +96,29 @@
       max-width: none;
       margin-left: calc(-1 * var(--page-pad-x));
       margin-right: calc(-1 * var(--page-pad-x));
+      margin-bottom: 0;
       box-sizing: border-box;
-      padding-left: var(--page-pad-x);
-      padding-right: var(--page-pad-x);
+      padding: 10px calc(var(--page-pad-x) + var(--header-extra-inset-x));
+      border-radius: 18px;
+      overflow: hidden;
+      /* Licht thema: zelfde “kaart”-gevoel als wizard (ronde hoeken zichtbaar) */
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid #94a3b8;
+      box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.07),
+        0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Meer ruimte tussen header en stepper; stepper en wizard-card */
+    #app-view > .content-container {
+      padding-top: 48px;
+    }
+
+    #app-view .content-container > .stepper {
+      margin-top: 0;
+      margin-bottom: 40px;
+      margin-left: 0;
+      margin-right: 0;
     }
 
 
@@ -638,7 +660,11 @@
 
     body.dashboard-layout .top-header.header-full {
       background: #0f172a;
-      border-bottom: 1px solid #1f2937;
+      border: 1px solid #1f2937;
+      border-radius: 18px;
+      box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.35),
+        0 2px 6px rgba(0, 0, 0, 0.2);
     }
 
     /* In dashboard-modus: stepper als links-menu */
@@ -647,7 +673,7 @@
       width: 100%;
       display: grid;
       grid-template-columns: 260px 1fr;
-      gap: 18px;
+      gap: 32px;
       align-items: start;
     }
 
@@ -656,6 +682,11 @@
       gap: 10px;
       margin: 0;
       align-items: stretch;
+    }
+
+    /* Horizontale layout: geen extra marge onder pills (ruimte = grid-gap) */
+    body.dashboard-layout #app-view .content-container > .stepper {
+      margin-bottom: 0;
     }
 
     body.dashboard-layout .stepper .step {
