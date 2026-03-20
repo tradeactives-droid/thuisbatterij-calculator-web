@@ -35,10 +35,12 @@
     }
 
     .page {
+      /* Horizontale marge — ook gebruikt om header full-bleed uit te lijnen met inhoud */
+      --page-pad-x: clamp(16px, 3vw, 32px);
       width: 100%;
       max-width: none;
       margin: 0 auto;
-      padding: 10px clamp(16px, 3vw, 32px) 60px;
+      padding: 10px var(--page-pad-x) 60px;
       box-sizing: border-box;
     }
 
@@ -84,6 +86,17 @@
     .top-header {
       padding: 4px 0;
       margin-bottom: 4px;
+    }
+
+    /* Header over volle schermbreedte (breekt uit .page-padding), inhoud blijft uitgelijnd */
+    .top-header.header-full {
+      width: calc(100% + 2 * var(--page-pad-x));
+      max-width: none;
+      margin-left: calc(-1 * var(--page-pad-x));
+      margin-right: calc(-1 * var(--page-pad-x));
+      box-sizing: border-box;
+      padding-left: var(--page-pad-x);
+      padding-right: var(--page-pad-x);
     }
 
 
