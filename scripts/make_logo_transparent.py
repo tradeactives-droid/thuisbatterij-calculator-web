@@ -22,9 +22,12 @@ def win_long_path(path: Path) -> str:
 def is_neutral_background(r: int, g: int, b: int) -> bool:
     """
     Wit, bijna-wit, en alle grijze schaakbordvlakken (laag kleurverschil).
+    Licht getint blauw-wit (anti-alias in de 'o' van Eco) telt ook mee als gat.
     """
     mx, mn = max(r, g, b), min(r, g, b)
     if mx - mn > 42:
+        if mx >= 218 and mx - mn <= 65:
+            return True
         return False
     # Te donker = geen typische rastercel (behalve zwart in lijnwerk — blijft staan)
     if mx < 72:
@@ -104,11 +107,19 @@ def remove_enclosed_neutral_holes(
     *,
     max_area: int = 8000,
     max_bbox_side: int = 140,
+    max_area_text_region: int = 95000,
+    max_bbox_side_text_region: int = 400,
+    text_region_min_x_frac: float = 0.30,
+    transparent_neighbor_alpha: int = 48,
 ) -> Image.Image:
     """
     Verwijdert kleine afgesloten neutrale vlakken (wit in de letter-o, -e, enz.) die nergens
     aan transparantie grenzen. Grote witte vlakken (huis in batterij) vallen buiten de
     area/bbox-limiet en blijven staan.
+
+    In het woordgedeelte (rechts, x >= frac*breedte) zijn ruimere limieten: de 'o' in Eco
+    kan groter zijn dan andere holtes. Anti-aliasing (alpha ~50–120) telt niet als
+    'verbinding met transparant buiten'.
     """
     img = img.convert("RGBA")
     w, h = img.size
@@ -123,6 +134,8 @@ def remove_enclosed_neutral_holes(
                 continue
             if is_neutral_background(r, g, b):
                 neutral_on[x][y] = True
+
+    text_x0 = int(w * text_region_min_x_frac)
 
     visited = [[False] * h for _ in range(w)]
     for sx in range(w):
@@ -141,7 +154,7 @@ def remove_enclosed_neutral_holes(
                     if nx < 0 or nx >= w or ny < 0 or ny >= h:
                         continue
                     _, _, _, na = px[nx, ny]
-                    if na < 128:
+                    if na < transparent_neighbor_alpha:
                         touches_transparent = True
                         continue
                     if neutral_on[nx][ny]:
@@ -152,13 +165,19 @@ def remove_enclosed_neutral_holes(
             if touches_transparent:
                 continue
             npx = len(comp)
-            if npx > max_area:
-                continue
             xs = [p[0] for p in comp]
             ys = [p[1] for p in comp]
+            min_cx = min(xs)
+            # Tekst staat rechts; holtes in "Eco/Metric" krijgen ruimere limieten
+            if min_cx >= text_x0:
+                m_area, m_bb = max_area_text_region, max_bbox_side_text_region
+            else:
+                m_area, m_bb = max_area, max_bbox_side
+            if npx > m_area:
+                continue
             bw = max(xs) - min(xs) + 1
             bh = max(ys) - min(ys) + 1
-            if max(bw, bh) > max_bbox_side:
+            if max(bw, bh) > m_bb:
                 continue
             for cx, cy in comp:
                 r, g, b, _ = px[cx, cy]
