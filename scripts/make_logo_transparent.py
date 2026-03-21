@@ -99,6 +99,74 @@ def remove_neutral_background_rgba(img: Image.Image, dilate_size: int = 55) -> I
     return out
 
 
+def remove_enclosed_neutral_holes(
+    img: Image.Image,
+    *,
+    max_area: int = 8000,
+    max_bbox_side: int = 140,
+) -> Image.Image:
+    """
+    Verwijdert kleine afgesloten neutrale vlakken (wit in de letter-o, -e, enz.) die nergens
+    aan transparantie grenzen. Grote witte vlakken (huis in batterij) vallen buiten de
+    area/bbox-limiet en blijven staan.
+    """
+    img = img.convert("RGBA")
+    w, h = img.size
+    px = img.load()
+    assert px is not None
+
+    neutral_on = [[False] * h for _ in range(w)]
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a < 128:
+                continue
+            if is_neutral_background(r, g, b):
+                neutral_on[x][y] = True
+
+    visited = [[False] * h for _ in range(w)]
+    for sx in range(w):
+        for sy in range(h):
+            if not neutral_on[sx][sy] or visited[sx][sy]:
+                continue
+            stack = [(sx, sy)]
+            visited[sx][sy] = True
+            comp: list[tuple[int, int]] = []
+            touches_transparent = False
+            while stack:
+                cx, cy = stack.pop()
+                comp.append((cx, cy))
+                for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+                    nx, ny = cx + dx, cy + dy
+                    if nx < 0 or nx >= w or ny < 0 or ny >= h:
+                        continue
+                    _, _, _, na = px[nx, ny]
+                    if na < 128:
+                        touches_transparent = True
+                        continue
+                    if neutral_on[nx][ny]:
+                        if not visited[nx][ny]:
+                            visited[nx][ny] = True
+                            stack.append((nx, ny))
+
+            if touches_transparent:
+                continue
+            npx = len(comp)
+            if npx > max_area:
+                continue
+            xs = [p[0] for p in comp]
+            ys = [p[1] for p in comp]
+            bw = max(xs) - min(xs) + 1
+            bh = max(ys) - min(ys) + 1
+            if max(bw, bh) > max_bbox_side:
+                continue
+            for cx, cy in comp:
+                r, g, b, _ = px[cx, cy]
+                px[cx, cy] = (r, g, b, 0)
+
+    return img
+
+
 def flood_transparent_rgba(img: Image.Image) -> Image.Image:
     """Rand-flood: verwijdert achtergrond die met de buitenrand verbonden is (oude aanpak)."""
     img = img.convert("RGBA")
@@ -157,7 +225,9 @@ def process_logo(img: Image.Image) -> Image.Image:
        bij chromatische logo-inkt liggen (dilatie beschermt o.a. wit huis in het icoon).
     """
     step1 = flood_transparent_rgba(img)
-    return remove_neutral_background_rgba(step1, dilate_size=27)
+    step2 = remove_neutral_background_rgba(step1, dilate_size=27)
+    # Holtes in blauwe letters (o, e, …): wit dat nergens aan transparant grenst
+    return remove_enclosed_neutral_holes(step2)
 
 
 def main() -> int:
