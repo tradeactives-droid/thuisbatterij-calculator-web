@@ -67,11 +67,14 @@
       gap:14px;
     }
 
+    /* Compact in top-header (was 130px → te hoog); alleen app-header gebruikt .brand-logo */
     .brand-logo{
-      width:130px;
-      height:130px;
-      object-fit:contain;
-      border-radius:10px;
+      width: auto;
+      height: 84px;
+      max-height: 84px;
+      max-width: min(240px, 42vw);
+      object-fit: contain;
+      border-radius: 8px;
     }
 
     /* ===== TOP HEADER (LOGO + USER BAR) ===== */
@@ -98,7 +101,7 @@
       margin-right: calc(-1 * var(--page-pad-x));
       margin-bottom: 0;
       box-sizing: border-box;
-      padding: 10px calc(var(--page-pad-x) + var(--header-extra-inset-x));
+      padding: 6px calc(var(--page-pad-x) + var(--header-extra-inset-x));
       border-radius: 18px;
       overflow: hidden;
       /* Licht thema: zelfde “kaart”-gevoel als wizard (ronde hoeken zichtbaar) */
