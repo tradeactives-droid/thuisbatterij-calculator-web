@@ -102,6 +102,37 @@ def remove_neutral_background_rgba(img: Image.Image, dilate_size: int = 55) -> I
     return out
 
 
+def exterior_reachable_low_alpha(
+    px, w: int, h: int, alpha_threshold: int
+) -> list[list[bool]]:
+    """
+    Pixels met alpha < threshold die via alleen zulke pixels met de beeldrand verbonden zijn.
+    Afgesloten transparantie (bv. midden van een 'o' waar stap 2 al doorheen heeft gehaald)
+    telt niet mee als 'buiten' — anders blijft de witte anti-alias-ring rond het gat staan.
+    """
+    ext = [[False] * h for _ in range(w)]
+    q: deque[tuple[int, int]] = deque()
+    for x in range(w):
+        for y in (0, h - 1):
+            q.append((x, y))
+    for y in range(h):
+        for x in (0, w - 1):
+            q.append((x, y))
+    while q:
+        x, y = q.popleft()
+        if x < 0 or x >= w or y < 0 or y >= h:
+            continue
+        if ext[x][y]:
+            continue
+        _, _, _, a = px[x, y]
+        if a >= alpha_threshold:
+            continue
+        ext[x][y] = True
+        for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+            q.append((x + dx, y + dy))
+    return ext
+
+
 def remove_enclosed_neutral_holes(
     img: Image.Image,
     *,
@@ -120,11 +151,16 @@ def remove_enclosed_neutral_holes(
     In het woordgedeelte (rechts, x >= frac*breedte) zijn ruimere limieten: de 'o' in Eco
     kan groter zijn dan andere holtes. Anti-aliasing (alpha ~50–120) telt niet als
     'verbinding met transparant buiten'.
+
+    Transparante buren tellen alleen als 'buiten' als ze met de beeldrand verbonden zijn.
+    Zo worden ringen rond lettergaten verwijderd terwijl het echte binnengat al transparant is.
     """
     img = img.convert("RGBA")
     w, h = img.size
     px = img.load()
     assert px is not None
+
+    exterior_transp = exterior_reachable_low_alpha(px, w, h, transparent_neighbor_alpha)
 
     neutral_on = [[False] * h for _ in range(w)]
     for y in range(h):
@@ -153,8 +189,7 @@ def remove_enclosed_neutral_holes(
                     nx, ny = cx + dx, cy + dy
                     if nx < 0 or nx >= w or ny < 0 or ny >= h:
                         continue
-                    _, _, _, na = px[nx, ny]
-                    if na < transparent_neighbor_alpha:
+                    if exterior_transp[nx][ny]:
                         touches_transparent = True
                         continue
                     if neutral_on[nx][ny]:
