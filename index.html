@@ -293,7 +293,7 @@
       font-size:0.95rem;
       cursor:pointer;
     }
-    .choice-row input[type="checkbox"]
+    .choice-row input[type="checkbox"] {
       width:18px; height:18px;
     }
     .choice-row span { flex:1; }
@@ -322,6 +322,9 @@
       cursor:pointer;
     }
     .btn-primary { background:var(--primary); color:white; }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+    }
     .btn-secondary {
       background: #f8fafc;
       color: #1e293b;
@@ -652,7 +655,11 @@
       --ui-border-strong: #475569;
       --danger: #ef4444;
       --success: #22c55e;
-      --highlight: rgba(59,130,246,0.25);
+      /* Oranje accent (logo / knoppen / pills) */
+      --primary: #ea580c;
+      --primary-dark: #c2410c;
+      --accent-orange: #fb923c;
+      --highlight: rgba(234, 88, 12, 0.22);
 
       background: #0b1220;
       color: var(--text);
@@ -700,7 +707,12 @@
     }
 
     body.dashboard-layout .step:not(.active):hover {
-      background: rgba(148,163,184,0.20);
+      background: rgba(251, 146, 60, 0.16);
+      border-color: var(--accent-orange);
+      color: #ffedd5;
+      box-shadow:
+        0 0 0 1px rgba(251, 146, 60, 0.35),
+        0 8px 28px rgba(234, 88, 12, 0.28);
       transform: translateY(-1px);
     }
 
@@ -710,21 +722,42 @@
       color: #e5e7eb;
     }
 
-    body.dashboard-layout .step.active {
-      box-shadow: 0 10px 26px rgba(37,99,235,0.35);
+    /* Actieve stap: oranje (niet blauw) */
+    body.dashboard-layout .stepper .step.active {
+      background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
+      color: #fff;
+      font-weight: 600;
+      border: 2px solid var(--primary-dark);
+      padding: 10px 20px;
+      box-shadow:
+        0 8px 32px rgba(234, 88, 12, 0.45),
+        0 0 0 1px rgba(251, 146, 60, 0.4);
+      transform: translateY(-1px);
+    }
+
+    body.dashboard-layout .stepper .step.active .badge {
+      background: rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.85);
+      color: #fff;
     }
 
     body.dashboard-layout .step.completed {
-      background: rgba(37,99,235,0.22);
-      border-color: #2563eb;
-      color: #bfdbfe;
+      background: rgba(234, 88, 12, 0.12);
+      border-color: rgba(251, 146, 60, 0.45);
+      color: #fdba74;
       box-shadow: none;
     }
 
     body.dashboard-layout .step.completed .badge {
-      background: #2563eb;
+      background: var(--primary);
       color: #ffffff;
-      border-color: #2563eb;
+      border-color: var(--primary-dark);
+    }
+
+    body.dashboard-layout .step.completed:not(.active):hover {
+      background: rgba(251, 146, 60, 0.22);
+      border-color: var(--accent-orange);
+      color: #ffedd5;
     }
 
     /* Card/containers naar dark styling */
@@ -751,8 +784,8 @@
     body.dashboard-layout input:focus,
     body.dashboard-layout select:focus {
       background: #0b1220;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59,130,246,0.35);
+      border-color: var(--accent-orange);
+      box-shadow: 0 0 0 1px rgba(251, 146, 60, 0.4);
     }
 
     body.dashboard-layout .btn-secondary {
