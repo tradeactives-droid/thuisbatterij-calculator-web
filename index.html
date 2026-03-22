@@ -932,31 +932,35 @@
       letter-spacing: 0.3px;
     }
 
+    /* Standaard hoofdwaarden (A1/B1/C1, pieken, terugverdientijd): iets kleiner */
     body.step5-typography-premium #step-5 .result-value {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 600;
       color: #ffffff;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.25px;
       font-variant-numeric: tabular-nums;
     }
 
-    /* Iets kleiner: besparing + ROI */
+    /* ROI: nog iets subtieler t.o.v. kosten/tegels */
     body.step5-typography-premium #step-5 .result-value.result-muted {
-      font-size: 22px;
-    }
-
-    body.step5-typography-premium #step-5 .result-value.result-highlight.result-muted {
-      font-size: 22px;
+      font-size: 19px;
       font-weight: 600;
-      color: #4ade80;
-      letter-spacing: normal;
     }
 
-    /* Terugverdientijd: groter dan overige hoofdwaarden */
-    body.step5-typography-premium #step-5 .result-value .result-payback {
+    /* Besparing per jaar: duidelijk de grootste waarde */
+    body.step5-typography-premium #step-5 .result-value.result-highlight {
       font-size: 30px;
       font-weight: 600;
-      letter-spacing: -0.5px;
+      color: #4ade80;
+      letter-spacing: -0.4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Terugverdientijd: zelfde schaal als overige witte waarden */
+    body.step5-typography-premium #step-5 .result-value .result-payback {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.25px;
       color: #ffffff;
       font-variant-numeric: tabular-nums;
     }
@@ -1503,7 +1507,7 @@
         verschil tussen toekomst zonder en met batterij
       </small>
     </div>
-    <div class="value result-value result-highlight result-muted" id="res-savings">–</div>
+    <div class="value result-value result-highlight" id="res-savings">–</div>
   </div>
   <div class="result-tile">
     <div class="label result-title">
