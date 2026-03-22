@@ -2399,52 +2399,37 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   }
 });
 
-  /** Per rij van de tariefmatrix: markeer cel(len) met het laagste jaarbedrag (zelfde groen als besparing). */
+  /** Alleen rij “Geen Saldering | Met Batterij” (C1): laagste jaarbedrag groen (zelfde als besparing). */
   function highlightTariffMatrixMinimums(data) {
-    const rows = [
-      {
-        ids: ["A1-enkel", "A1-dn", "A1-dyn"],
-        vals: [
-          data.A1_per_tariff?.enkel?.total_cost_eur,
-          data.A1_per_tariff?.dag_nacht?.total_cost_eur,
-          data.A1_per_tariff?.dynamisch?.total_cost_eur,
-        ],
-      },
-      {
-        ids: ["B1-enkel", "B1-dn", "B1-dyn"],
-        vals: [
-          data.B1?.enkel?.total_cost_eur,
-          data.B1?.dag_nacht?.total_cost_eur,
-          data.B1?.dynamisch?.total_cost_eur,
-        ],
-      },
-      {
-        ids: ["C1-enkel", "C1-dn", "C1-dyn"],
-        vals: [
-          data.C1?.enkel?.total_cost_eur,
-          data.C1?.dag_nacht?.total_cost_eur,
-          data.C1?.dynamisch?.total_cost_eur,
-        ],
-      },
+    const allValueIds = [
+      "A1-enkel", "A1-dn", "A1-dyn",
+      "B1-enkel", "B1-dn", "B1-dyn",
+      "C1-enkel", "C1-dn", "C1-dyn",
     ];
+    allValueIds.forEach((id) => {
+      document.getElementById(id)?.classList.remove("tariff-matrix-min");
+    });
 
-    for (const row of rows) {
-      row.ids.forEach((id) => {
-        document.getElementById(id)?.classList.remove("tariff-matrix-min");
-      });
-      const nums = row.vals.map((v) => {
-        const n = Number(v);
-        return isFinite(n) ? n : NaN;
-      });
-      if (!nums.every((n) => isFinite(n))) continue;
-      const minV = Math.min(...nums);
-      const eps = 0.005; /* € — gelijke bedragen / afronding */
-      row.ids.forEach((id, i) => {
-        if (isFinite(nums[i]) && Math.abs(nums[i] - minV) < eps) {
-          document.getElementById(id)?.classList.add("tariff-matrix-min");
-        }
-      });
-    }
+    const row = {
+      ids: ["C1-enkel", "C1-dn", "C1-dyn"],
+      vals: [
+        data.C1?.enkel?.total_cost_eur,
+        data.C1?.dag_nacht?.total_cost_eur,
+        data.C1?.dynamisch?.total_cost_eur,
+      ],
+    };
+    const nums = row.vals.map((v) => {
+      const n = Number(v);
+      return isFinite(n) ? n : NaN;
+    });
+    if (!nums.every((n) => isFinite(n))) return;
+    const minV = Math.min(...nums);
+    const eps = 0.005; /* € — gelijke bedragen / afronding */
+    row.ids.forEach((id, i) => {
+      if (isFinite(nums[i]) && Math.abs(nums[i] - minV) < eps) {
+        document.getElementById(id)?.classList.add("tariff-matrix-min");
+      }
+    });
   }
 
   function fillResults(data) {
