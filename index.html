@@ -10,6 +10,7 @@
 
   <title>Eco Metric</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -400,6 +401,13 @@
     .result-tile .value {
       font-size:1.1rem;
       font-weight:700;
+    }
+
+    /* Ondertitelregels in resultaat-tegels (zelfde opmaak als voorheen inline #64748b) */
+    .result-tile .label .result-sub {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--muted);
     }
 
     #chart { margin-top:20px; }
@@ -885,6 +893,84 @@
         width: auto;
       }
     }
+
+    /* ----- Stap 5: premium typografie (alleen bij preview-class op body) ----- */
+    .step5-typography-preview-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 14px 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .step5-typography-preview-label {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .step5-typo-btn {
+      font-size: 0.78rem;
+      padding: 6px 12px;
+    }
+
+    .step5-typo-btn.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.35);
+    }
+
+    body.step5-typography-premium #step-5 {
+      font-family: "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+
+    body.step5-typography-premium #step-5 .result-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 0.3px;
+    }
+
+    body.step5-typography-premium #step-5 .result-value {
+      font-size: 28px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    body.step5-typography-premium #step-5 .result-sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    body.step5-typography-premium #step-5 .result-value.result-highlight {
+      font-size: 18px;
+      font-weight: 600;
+      color: #4ade80;
+      letter-spacing: normal;
+    }
+
+    body.step5-typography-premium #step-5 .tariff-matrix th.table-header {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 500;
+    }
+
+    body.step5-typography-premium #step-5 .tariff-matrix td.table-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 400;
+    }
+
+    body.step5-typography-premium #step-5 .tariff-matrix td.table-value {
+      font-weight: 500;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
     
   </style>
 
@@ -1366,103 +1452,109 @@
 <div id="step-5" style="display:none;">
   <h2>Stap 5 · Resultaten</h2>
 
+  <div class="step5-typography-preview-bar" role="group" aria-label="Typografie preview">
+    <span class="step5-typography-preview-label">Typografie</span>
+    <button type="button" class="btn-secondary step5-typo-btn" data-step5-typo="classic" id="step5-typo-classic" aria-pressed="true">Standaard</button>
+    <button type="button" class="btn-secondary step5-typo-btn" data-step5-typo="premium" id="step5-typo-premium" aria-pressed="false" title="Zet eventueel ?step5typo=premium of ?step5typo=classic in de URL">Premium (preview)</button>
+  </div>
+
   <div class="results-container">
 
     <div class="results-summary">
   <div class="result-tile">
-    <div class="label">A1. Huidige situatie</div>
-    <div class="value" id="res-A1">–</div>
+    <div class="label result-title">A1. Huidige situatie</div>
+    <div class="value result-value" id="res-A1">–</div>
   </div>
   <div class="result-tile">
-  <div class="label">
+  <div class="label result-title">
     B1. Geen Saldering | Geen Batterij<br>
-    <small id="res-B1-tariff-label" style="color:#64748b;"></small>
+    <small id="res-B1-tariff-label" class="result-sub"></small>
   </div>
-  <div class="value" id="res-B1">–</div>
+  <div class="value result-value" id="res-B1">–</div>
 </div>
 
 <div class="result-tile">
-  <div class="label">
+  <div class="label result-title">
     C1. Geen Saldering | Met Batterij<br>
-    <small id="res-C1-tariff-label" style="color:#64748b;"></small>
+    <small id="res-C1-tariff-label" class="result-sub"></small>
   </div>
-  <div class="value" id="res-C1">–</div>
+  <div class="value result-value" id="res-C1">–</div>
 </div>
 
   <!-- NIEUW: BESPARING / PAYBACK / ROI -->
   <div class="result-tile">
-    <div class="label">
+    <div class="label result-title">
       Besparing per jaar<br>
-      <small style="color:#64748b;">
+      <small class="result-sub">
         verschil tussen toekomst zonder en met batterij
       </small>
     </div>
-    <div class="value" id="res-savings">–</div>
+    <div class="value result-value result-highlight" id="res-savings">–</div>
   </div>
   <div class="result-tile">
-    <div class="label">
+    <div class="label result-title">
       Terugverdientijd<br>
-      <small style="color:#64748b">incl. batterijdegradatie</small>
+      <small class="result-sub">incl. batterijdegradatie</small>
     </div>
-    <div class="value" id="res-payback">–</div>
+    <div class="value result-value" id="res-payback">–</div>
   </div>
   <div class="result-tile">
-    <div class="label">
-      ROI (%)
+    <div class="label result-title">
+      ROI (%) 
       <span class="info-icon"
             data-tooltip="ROI = netto rendement over de volledige levensduur van de batterij, inclusief jaarlijkse degradatie.">
         ℹ
       </span>
       <br>
-      <small style="color:#64748b">over volledige levensduur</small>
+      <small class="result-sub">over volledige levensduur</small>
     </div>
-    <div class="value" id="res-roi">–</div>
+    <div class="value result-value" id="res-roi">–</div>
   </div>
   <div class="result-tile">
-  <div class="label">Piek zonder batterij (kW)</div>
-  <div class="value" id="res-peak-no">–</div>
+  <div class="label result-title">Piek zonder batterij (kW)</div>
+  <div class="value result-value" id="res-peak-no">–</div>
 </div>
 
   
 
 <div class="result-tile">
-  <div class="label">Piek met batterij (kW)</div>
-  <div class="value" id="res-peak-yes">–</div>
+  <div class="label result-title">Piek met batterij (kW)</div>
+  <div class="value result-value" id="res-peak-yes">–</div>
 </div>
 
 <div class="result-tile">
-  <div class="label">Besparing capaciteitstarief / jaar</div>
-  <div class="value" id="res-peak-saving">–</div>
+  <div class="label result-title">Besparing capaciteitstarief / jaar</div>
+  <div class="value result-value" id="res-peak-saving">–</div>
 </div>
 </div>
 
   <h3>Tariefmatrix (jaarlijkse kosten)</h3>
 
   <div class="table-card">
-    <table class="table-card">
+    <table class="table-card tariff-matrix">
     <tr>
-      <th>Scenario</th>
-      <th>Enkel</th>
-      <th>Dag/Nacht</th>
-      <th>Dynamisch</th>
+      <th class="table-header">Scenario</th>
+      <th class="table-header">Enkel</th>
+      <th class="table-header">Dag/Nacht</th>
+      <th class="table-header">Dynamisch</th>
     </tr>
     <tr>
-      <td>Huidige situatie</td>
-      <td id="A1-enkel">–</td>
-      <td id="A1-dn">–</td>
-      <td id="A1-dyn">–</td>
+      <td class="table-label">Huidige situatie</td>
+      <td class="table-value" id="A1-enkel">–</td>
+      <td class="table-value" id="A1-dn">–</td>
+      <td class="table-value" id="A1-dyn">–</td>
     </tr>
     <tr>
-      <td>Geen Saldering | Geen Batterij</td>
-      <td id="B1-enkel">–</td>
-      <td id="B1-dn">–</td>
-      <td id="B1-dyn">–</td>
+      <td class="table-label">Geen Saldering | Geen Batterij</td>
+      <td class="table-value" id="B1-enkel">–</td>
+      <td class="table-value" id="B1-dn">–</td>
+      <td class="table-value" id="B1-dyn">–</td>
     </tr>
     <tr>
-      <td>Geen Saldering | Met Batterij</td>
-      <td id="C1-enkel">–</td>
-      <td id="C1-dn">–</td>
-      <td id="C1-dyn">–</td>
+      <td class="table-label">Geen Saldering | Met Batterij</td>
+      <td class="table-value" id="C1-enkel">–</td>
+      <td class="table-value" id="C1-dn">–</td>
+      <td class="table-value" id="C1-dyn">–</td>
     </tr>
   </table>
   </div>
@@ -1798,6 +1890,58 @@ function pdfExport(data) {
 <!-- ========================================================= -->
 <script>
 // Donkere dashboard-layout is vast op <body class="dashboard-layout">; geen toggle meer.
+
+/** Stap 5: premium typografie alleen met body.step5-typography-premium (preview-knoppen of ?step5typo=). */
+const STEP5_TYPO_STORAGE = "eco_step5_typography_preview_v1";
+
+function getStep5TypoFromUrl() {
+  try {
+    const p = new URLSearchParams(window.location.search).get("step5typo");
+    if (p === "premium" || p === "1") return "premium";
+    if (p === "classic" || p === "0") return "classic";
+  } catch (_) {}
+  return null;
+}
+
+function applyStep5TypographyMode(mode) {
+  const usePremium = mode === "premium";
+  document.body.classList.toggle("step5-typography-premium", usePremium);
+  document.querySelectorAll(".step5-typo-btn").forEach((btn) => {
+    const m = btn.getAttribute("data-step5-typo");
+    const on = (m === "premium") === usePremium;
+    btn.classList.toggle("active", on);
+    btn.setAttribute("aria-pressed", String(on));
+  });
+}
+
+function initStep5TypographyPreview() {
+  const urlMode = getStep5TypoFromUrl();
+  let mode = urlMode;
+  if (mode === null) {
+    try {
+      mode = localStorage.getItem(STEP5_TYPO_STORAGE) || "classic";
+    } catch (_) {
+      mode = "classic";
+    }
+  } else {
+    try {
+      localStorage.setItem(STEP5_TYPO_STORAGE, mode);
+    } catch (_) {}
+  }
+  applyStep5TypographyMode(mode === "premium" ? "premium" : "classic");
+
+  document.querySelectorAll(".step5-typo-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const m = btn.getAttribute("data-step5-typo") || "classic";
+      applyStep5TypographyMode(m);
+      try {
+        localStorage.setItem(STEP5_TYPO_STORAGE, m);
+      } catch (_) {}
+    });
+  });
+}
+
+initStep5TypographyPreview();
 
 const API_BASE = "https://batteryengine-server.onrender.com";
 let parsedData = {};
