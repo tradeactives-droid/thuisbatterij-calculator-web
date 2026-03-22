@@ -933,10 +933,31 @@
     }
 
     body.step5-typography-premium #step-5 .result-value {
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 600;
       color: #ffffff;
+      letter-spacing: -0.3px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Iets kleiner: besparing + ROI */
+    body.step5-typography-premium #step-5 .result-value.result-muted {
+      font-size: 22px;
+    }
+
+    body.step5-typography-premium #step-5 .result-value.result-highlight.result-muted {
+      font-size: 22px;
+      font-weight: 600;
+      color: #4ade80;
+      letter-spacing: normal;
+    }
+
+    /* Terugverdientijd: groter dan overige hoofdwaarden */
+    body.step5-typography-premium #step-5 .result-value .result-payback {
+      font-size: 30px;
+      font-weight: 600;
       letter-spacing: -0.5px;
+      color: #ffffff;
       font-variant-numeric: tabular-nums;
     }
 
@@ -944,13 +965,6 @@
       font-size: 12px;
       font-weight: 400;
       color: rgba(255, 255, 255, 0.5);
-    }
-
-    body.step5-typography-premium #step-5 .result-value.result-highlight {
-      font-size: 18px;
-      font-weight: 600;
-      color: #4ade80;
-      letter-spacing: normal;
     }
 
     body.step5-typography-premium #step-5 .tariff-matrix th.table-header {
@@ -1489,14 +1503,14 @@
         verschil tussen toekomst zonder en met batterij
       </small>
     </div>
-    <div class="value result-value result-highlight" id="res-savings">–</div>
+    <div class="value result-value result-highlight result-muted" id="res-savings">–</div>
   </div>
   <div class="result-tile">
     <div class="label result-title">
       Terugverdientijd<br>
       <small class="result-sub">incl. batterijdegradatie</small>
     </div>
-    <div class="value result-value" id="res-payback">–</div>
+    <div class="value result-value" id="res-payback"><span class="result-payback">–</span></div>
   </div>
   <div class="result-tile">
     <div class="label result-title">
@@ -1508,7 +1522,7 @@
       <br>
       <small class="result-sub">over volledige levensduur</small>
     </div>
-    <div class="value result-value" id="res-roi">–</div>
+    <div class="value result-value result-muted" id="res-roi">–</div>
   </div>
   <div class="result-tile">
   <div class="label result-title">Piek zonder batterij (kW)</div>
@@ -2391,6 +2405,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     const roi = data.roi_per_tariff?.[tariff];
     
     const paybackEl = document.getElementById("res-payback");
+    const paybackTextEl = paybackEl.querySelector(".result-payback") || paybackEl;
     const roiEl = document.getElementById("res-roi");
     
     // Default styling resetten
@@ -2399,7 +2414,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     
     // Veiligheidsfallback als backend niets geeft
     if (!roi) {
-      paybackEl.textContent = "–";
+      paybackTextEl.textContent = "–";
       roiEl.textContent = "–";
     } else {
     
@@ -2410,11 +2425,11 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     
       // ===== TERUGVERDIENTIJD =====
       if (roi.yearly_saving_eur <= 0) {
-        paybackEl.textContent = "Geen besparing";
+        paybackTextEl.textContent = "Geen besparing";
       } else if (roi.payback_years === null) {
-        paybackEl.textContent = `> ${horizonYears} jaar`;
+        paybackTextEl.textContent = `> ${horizonYears} jaar`;
       } else {
-        paybackEl.textContent = roi.payback_years.toFixed(1) + " jaar";
+        paybackTextEl.textContent = roi.payback_years.toFixed(1) + " jaar";
       }
     
       // ===== ROI =====
