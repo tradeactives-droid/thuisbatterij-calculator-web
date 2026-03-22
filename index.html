@@ -135,26 +135,9 @@
       gap: 10px;
       font-size: 0.8rem;
       color: #475569;
-      flex-wrap: wrap; /* Zorg dat de dashboard toggle niet uit beeld verdwijnt */
+      flex-wrap: wrap;
       justify-content: flex-end;
     }
-
-    .theme-toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
-    }
-
-    .theme-toggle input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      margin: 0;
-      accent-color: var(--primary);
-    }
-
 
   /* STEPPER */
   .stepper {
@@ -650,7 +633,7 @@
     }
 
     /* =============================== */
-    /* DASHBOARD THEME (opt-in)       */
+    /* DASHBOARD THEME (standaard)     */
     /* =============================== */
     body.dashboard-layout {
       /* Variabelen voor bestaande UI-regels */
@@ -910,7 +893,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
-<body>
+<body class="dashboard-layout">
 <div class="page">
 
 <div id="login-container" style="max-width:420px; margin:80px auto;">
@@ -1018,10 +1001,6 @@
 
       <div class="user-actions">
         <span id="user-email"></span>
-        <label class="theme-toggle" title="Wissel tussen huidige en dashboard weergave">
-          <input type="checkbox" id="toggle-dashboard-theme">
-          Dashboard layout
-        </label>
         <button id="btn-logout" class="btn-secondary">Uitloggen</button>
       </div>
     </div>
@@ -1818,50 +1797,7 @@ function pdfExport(data) {
 <!-- =============   HOOFDLOGICA / APP     =================== -->
 <!-- ========================================================= -->
 <script>
-// Dashboard theme toggle (safe preview).
-// Default keeps the current design; user can preview via the checkbox.
-const DASHBOARD_THEME_KEY = "eco_metric_dashboard_theme_v1";
-const DEFAULT_USE_DASHBOARD_THEME = false;
-
-function applyDashboardTheme(useDashboard) {
-  document.body.classList.toggle("dashboard-layout", !!useDashboard);
-}
-
-function readInitialDashboardTheme() {
-  try {
-    const saved = localStorage.getItem(DASHBOARD_THEME_KEY);
-    if (saved === null) return DEFAULT_USE_DASHBOARD_THEME;
-    return saved === "1";
-  } catch {
-    return DEFAULT_USE_DASHBOARD_THEME;
-  }
-}
-
-const initialDashboardUse = readInitialDashboardTheme();
-applyDashboardTheme(initialDashboardUse);
-
-const dashboardToggleEl = document.getElementById("toggle-dashboard-theme");
-if (dashboardToggleEl) {
-  dashboardToggleEl.checked = initialDashboardUse;
-
-  dashboardToggleEl.addEventListener("change", () => {
-    const useDashboard = dashboardToggleEl.checked;
-    applyDashboardTheme(useDashboard);
-
-    // Persist selection for next visits.
-    try {
-      localStorage.setItem(DASHBOARD_THEME_KEY, useDashboard ? "1" : "0");
-    } catch {}
-
-    // Refresh charts if a calculation exists.
-    if (window.computedResult) {
-      try {
-        updateCostChart(window.computedResult);
-        renderAdviceChart(window.computedResult);
-      } catch {}
-    }
-  });
-}
+// Donkere dashboard-layout is vast op <body class="dashboard-layout">; geen toggle meer.
 
 const API_BASE = "https://batteryengine-server.onrender.com";
 let parsedData = {};
