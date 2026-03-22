@@ -470,6 +470,12 @@
       margin-bottom: 40px;
     }
 
+    /* Laagste bedrag per rij: zelfde accent als “Besparing per jaar” (#4ade80) */
+    .tariff-matrix td.table-value.tariff-matrix-min {
+      color: #4ade80;
+      font-weight: 600;
+    }
+
     /* Grafiek-card extra ruimte eronder */
     #chart {
       margin-bottom: 0; /* canvas zelf niet */
@@ -988,6 +994,11 @@
       font-weight: 500;
       color: #ffffff;
       font-variant-numeric: tabular-nums;
+    }
+
+    body.step5-typography-premium #step-5 .tariff-matrix td.table-value.tariff-matrix-min {
+      color: #4ade80;
+      font-weight: 600;
     }
     
   </style>
@@ -2388,6 +2399,54 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   }
 });
 
+  /** Per rij van de tariefmatrix: markeer cel(len) met het laagste jaarbedrag (zelfde groen als besparing). */
+  function highlightTariffMatrixMinimums(data) {
+    const rows = [
+      {
+        ids: ["A1-enkel", "A1-dn", "A1-dyn"],
+        vals: [
+          data.A1_per_tariff?.enkel?.total_cost_eur,
+          data.A1_per_tariff?.dag_nacht?.total_cost_eur,
+          data.A1_per_tariff?.dynamisch?.total_cost_eur,
+        ],
+      },
+      {
+        ids: ["B1-enkel", "B1-dn", "B1-dyn"],
+        vals: [
+          data.B1?.enkel?.total_cost_eur,
+          data.B1?.dag_nacht?.total_cost_eur,
+          data.B1?.dynamisch?.total_cost_eur,
+        ],
+      },
+      {
+        ids: ["C1-enkel", "C1-dn", "C1-dyn"],
+        vals: [
+          data.C1?.enkel?.total_cost_eur,
+          data.C1?.dag_nacht?.total_cost_eur,
+          data.C1?.dynamisch?.total_cost_eur,
+        ],
+      },
+    ];
+
+    for (const row of rows) {
+      row.ids.forEach((id) => {
+        document.getElementById(id)?.classList.remove("tariff-matrix-min");
+      });
+      const nums = row.vals.map((v) => {
+        const n = Number(v);
+        return isFinite(n) ? n : NaN;
+      });
+      if (!nums.every((n) => isFinite(n))) continue;
+      const minV = Math.min(...nums);
+      const eps = 0.005; /* € — gelijke bedragen / afronding */
+      row.ids.forEach((id, i) => {
+        if (isFinite(nums[i]) && Math.abs(nums[i] - minV) < eps) {
+          document.getElementById(id)?.classList.add("tariff-matrix-min");
+        }
+      });
+    }
+  }
+
   function fillResults(data) {
     // 🔑 huidig gekozen tarief
     const tariff = document.getElementById("tariff-type").value || "enkel";
@@ -2481,6 +2540,8 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     document.getElementById("C1-dyn").textContent =
       fmtEuro(data.C1?.dynamisch?.total_cost_eur);
+
+    highlightTariffMatrixMinimums(data);
 
     // =========================
     // ENERGIE-INZICHTEN (kWh)
