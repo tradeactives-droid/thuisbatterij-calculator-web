@@ -68,16 +68,15 @@
       gap:14px;
     }
 
-    /* Compact in top-header (was 130px → te hoog); alleen app-header gebruikt .brand-logo */
+    /* Header-logo (Eco Metric); groter voor leesbaarheid op desktop */
     .brand-logo{
       width: auto;
-      height: 84px;
-      max-height: 84px;
-      /* Eco + Metric woordmerk naast icoon → iets breder toestaan */
-      max-width: min(340px, 72vw);
+      height: 118px;
+      max-height: 118px;
+      max-width: min(480px, 88vw);
       object-fit: contain;
       border-radius: 8px;
-      /* Geen eigen vlak: header-kleur moet door PNG-alpha heen zichtbaar zijn */
+      /* Zwart vlak in PNG sluit aan op donkere dashboard-header */
       background: transparent;
       background-color: transparent;
     }
@@ -673,6 +672,8 @@
       background: #0f172a;
       border: 1px solid #1f2937;
       border-radius: 18px;
+      padding-top: 10px;
+      padding-bottom: 10px;
       box-shadow:
         0 4px 18px rgba(0, 0, 0, 0.35),
         0 2px 6px rgba(0, 0, 0, 0.2);
