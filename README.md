@@ -10,5 +10,7 @@ Frontend voor de thuisbatterij besparingscalculator met CSV
 - Bij **401** met `{ "error_code": "SESSION_INVALID" }`: token wordt gewist, uitloggen, terug naar login.
 
 ## Header-logo (`logo-header.png`)
-- **Huidige header:** officiële Eco Metric-asset (PNG ongewijzigd), bedoeld voor donkere header (`#0f172a`).
-- **Oud/transparant pipeline:** optioneel nog `logo-source.png` + `python scripts/make_logo_transparent.py` als je weer een transparante variant wilt genereren.
+- **Zwarte achtergrond transparant maken** (effen zwart rond het logo):
+  - `python scripts/make_logo_transparent.py --black-bg`
+  - Optioneel drempel fijner afstellen: `--max-rgb 48` (lager = strenger, minder grijze rand).
+- **Oudere pipeline** (schaakbord / wit): `python scripts/make_logo_transparent.py` gebruikt `logo-source.png`.

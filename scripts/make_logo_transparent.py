@@ -4,6 +4,7 @@ Logo-inhoud (blauw, oranje, wit binnen het kader) blijft intact zolang die niet 
 """
 from __future__ import annotations
 
+import argparse
 import sys
 from collections import deque
 from pathlib import Path
@@ -271,6 +272,59 @@ def flood_transparent_rgba(img: Image.Image) -> Image.Image:
     return out
 
 
+def flood_black_background_rgba(img: Image.Image, *, max_rgb: int = 52) -> Image.Image:
+    """
+    Rand-flood voor effen (bijna) zwarte achtergrond (zoals PNG met #000 rond het logo).
+    Alles wat met de beeldrand verbonden is en donker genoeg is, wordt transparant.
+    Logo-inkt (blauw/oranje) blijft staan: die heeft hogere RGB-waarden.
+    """
+    img = img.convert("RGBA")
+    w, h = img.size
+    pixels = img.load()
+    assert pixels is not None
+
+    def is_edge_blackish(r: int, g: int, b: int, a: int) -> bool:
+        if a < 200:
+            return True
+        return max(r, g, b) <= max_rgb
+
+    transparent_mask = [[False] * h for _ in range(w)]
+    q: deque[tuple[int, int]] = deque()
+    for x in range(w):
+        for y in (0, h - 1):
+            q.append((x, y))
+    for y in range(h):
+        for x in (0, w - 1):
+            q.append((x, y))
+
+    seen: set[tuple[int, int]] = set()
+    while q:
+        x, y = q.popleft()
+        if (x, y) in seen:
+            continue
+        if x < 0 or x >= w or y < 0 or y >= h:
+            continue
+        seen.add((x, y))
+        r, g, b, a = pixels[x, y]
+        if not is_edge_blackish(r, g, b, a):
+            continue
+        transparent_mask[x][y] = True
+        for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+            nx, ny = x + dx, y + dy
+            if (nx, ny) not in seen and 0 <= nx < w and 0 <= ny < h:
+                q.append((nx, ny))
+
+    out = img.copy()
+    op = out.load()
+    assert op is not None
+    for x in range(w):
+        for y in range(h):
+            if transparent_mask[x][y]:
+                r, g, b, _ = op[x, y]
+                op[x, y] = (r, g, b, 0)
+    return out
+
+
 def process_logo(img: Image.Image) -> Image.Image:
     """
     1) Flood vanaf rand: verwijdert alles wat met de buitenrand verbonden is (wit vlak,
@@ -285,8 +339,48 @@ def process_logo(img: Image.Image) -> Image.Image:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Maak logo-achtergrond transparant.")
+    parser.add_argument(
+        "--black-bg",
+        action="store_true",
+        help="Zwarte rand-achtergrond transparant maken (header-logo met #000). "
+        "Bron: logo-header.png als die bestaat, anders logo-source.png.",
+    )
+    parser.add_argument(
+        "--max-rgb",
+        type=int,
+        default=52,
+        metavar="N",
+        help="Met --black-bg: max(r,g,b) voor flood vanaf rand (default 52, anti-alias).",
+    )
+    args = parser.parse_args()
+
     repo = Path(__file__).resolve().parent.parent
     out_path = repo / "logo-header.png"
+
+    if args.black_bg:
+        candidates = [
+            repo / "logo-header.png",
+            repo / "logo-source.png",
+            repo / "assets" / "logo-source.png",
+        ]
+        src = None
+        for p in candidates:
+            check = Path(win_long_path(p)) if sys.platform == "win32" else p
+            if check.is_file():
+                src = p
+                break
+        if src is None:
+            print(
+                "Geen bron voor --black-bg (logo-header.png of logo-source.png).",
+                file=sys.stderr,
+            )
+            return 1
+        img = Image.open(win_long_path(src) if sys.platform == "win32" else str(src))
+        out = flood_black_background_rgba(img, max_rgb=args.max_rgb)
+        out.save(out_path, "PNG", optimize=True)
+        print(f"OK (black-bg): {src} -> {out_path} ({out_path.stat().st_size} bytes)")
+        return 0
 
     # logo-source.png in repo heeft voorrang (export uit ontwerptool, geen screenshots).
     candidates = [
