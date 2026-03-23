@@ -222,6 +222,91 @@ def remove_enclosed_neutral_holes(
     return img
 
 
+def is_dark_hole_fill(r: int, g: int, b: int, *, max_rgb: int) -> bool:
+    """Donkere achtergrondkleur die in gesloten letterholtes blijft hangen."""
+    return max(r, g, b) <= max_rgb
+
+
+def remove_enclosed_dark_holes(
+    img: Image.Image,
+    *,
+    hole_max_rgb: int,
+    max_area: int = 28000,
+    max_bbox_side: int = 220,
+    max_area_text_region: int = 110000,
+    max_bbox_side_text_region: int = 480,
+    text_region_min_x_frac: float = 0.28,
+    transparent_neighbor_alpha: int = 48,
+) -> Image.Image:
+    """
+    Na flood_black blijven holtes in 'o', 'e', ruimte tussen 't' en 'r' soms donker
+    omdat ze niet met de buitenrand verbonden zijn. Zelfde principe als bij witte holtes.
+    """
+    img = img.convert("RGBA")
+    w, h = img.size
+    px = img.load()
+    assert px is not None
+
+    exterior_transp = exterior_reachable_low_alpha(px, w, h, transparent_neighbor_alpha)
+
+    dark_on = [[False] * h for _ in range(w)]
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a < 128:
+                continue
+            if is_dark_hole_fill(r, g, b, max_rgb=hole_max_rgb):
+                dark_on[x][y] = True
+
+    text_x0 = int(w * text_region_min_x_frac)
+
+    visited = [[False] * h for _ in range(w)]
+    for sx in range(w):
+        for sy in range(h):
+            if not dark_on[sx][sy] or visited[sx][sy]:
+                continue
+            stack = [(sx, sy)]
+            visited[sx][sy] = True
+            comp: list[tuple[int, int]] = []
+            touches_transparent = False
+            while stack:
+                cx, cy = stack.pop()
+                comp.append((cx, cy))
+                for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+                    nx, ny = cx + dx, cy + dy
+                    if nx < 0 or nx >= w or ny < 0 or ny >= h:
+                        continue
+                    if exterior_transp[nx][ny]:
+                        touches_transparent = True
+                        continue
+                    if dark_on[nx][ny]:
+                        if not visited[nx][ny]:
+                            visited[nx][ny] = True
+                            stack.append((nx, ny))
+
+            if touches_transparent:
+                continue
+            npx = len(comp)
+            xs = [p[0] for p in comp]
+            ys = [p[1] for p in comp]
+            min_cx = min(xs)
+            if min_cx >= text_x0:
+                m_area, m_bb = max_area_text_region, max_bbox_side_text_region
+            else:
+                m_area, m_bb = max_area, max_bbox_side
+            if npx > m_area:
+                continue
+            bw = max(xs) - min(xs) + 1
+            bh = max(ys) - min(ys) + 1
+            if max(bw, bh) > m_bb:
+                continue
+            for cx, cy in comp:
+                r, g, b, _ = px[cx, cy]
+                px[cx, cy] = (r, g, b, 0)
+
+    return img
+
+
 def flood_transparent_rgba(img: Image.Image) -> Image.Image:
     """Rand-flood: verwijdert achtergrond die met de buitenrand verbonden is (oude aanpak)."""
     img = img.convert("RGBA")
@@ -353,6 +438,13 @@ def main() -> int:
         metavar="N",
         help="Met --black-bg: max(r,g,b) voor flood vanaf rand (default 52, anti-alias).",
     )
+    parser.add_argument(
+        "--hole-max-rgb",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Met --black-bg: max(r,g,b) voor gesloten donkere letterholtes (default: min(85, max-rgb+28)).",
+    )
     args = parser.parse_args()
 
     repo = Path(__file__).resolve().parent.parent
@@ -378,6 +470,12 @@ def main() -> int:
             return 1
         img = Image.open(win_long_path(src) if sys.platform == "win32" else str(src))
         out = flood_black_background_rgba(img, max_rgb=args.max_rgb)
+        hole_max = (
+            args.hole_max_rgb
+            if args.hole_max_rgb is not None
+            else min(85, args.max_rgb + 28)
+        )
+        out = remove_enclosed_dark_holes(out, hole_max_rgb=hole_max)
         out.save(out_path, "PNG", optimize=True)
         print(f"OK (black-bg): {src} -> {out_path} ({out_path.stat().st_size} bytes)")
         return 0

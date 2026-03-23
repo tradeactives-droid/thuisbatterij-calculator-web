@@ -10,7 +10,7 @@ Frontend voor de thuisbatterij besparingscalculator met CSV
 - Bij **401** met `{ "error_code": "SESSION_INVALID" }`: token wordt gewist, uitloggen, terug naar login.
 
 ## Header-logo (`logo-header.png`)
-- **Zwarte achtergrond transparant maken** (effen zwart rond het logo):
+- **Zwarte achtergrond transparant maken** (effen zwart rond het logo + donkere holtes in letters o/e, t–r):
   - `python scripts/make_logo_transparent.py --black-bg`
-  - Optioneel drempel fijner afstellen: `--max-rgb 48` (lager = strenger, minder grijze rand).
+  - Optioneel: `--max-rgb 48` (rand-flood), `--hole-max-rgb 68` (holtes; te hoog kan blauwe inkt aantasten).
 - **Oudere pipeline** (schaakbord / wit): `python scripts/make_logo_transparent.py` gebruikt `logo-source.png`.
