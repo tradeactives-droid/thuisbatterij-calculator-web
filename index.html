@@ -3225,22 +3225,42 @@ async function ensureDeviceFingerprint() {
   }
 }
 
-/** Verwijdert bestaande rijen voor user, schrijft nieuwe session_token + localStorage. */
+/** Registreert actieve sessie via backend endpoint /register-session. */
 async function registerActiveSessionForUser() {
   const { data: wrap } = await sb.auth.getSession();
   const session = wrap?.session;
-  if (!session?.user) return;
-  const userId = session.user.id;
+  const accessToken = session?.access_token;
+  if (!accessToken) {
+    throw new Error("AUTH_SESSION_MISSING");
+  }
   const sessionToken = crypto.randomUUID();
-  await sb.from("active_sessions").delete().eq("user_id", userId);
-  const { error } = await sb.from("active_sessions").insert({
-    user_id: userId,
-    session_token: sessionToken
-  });
-  if (error) console.error("active_sessions:", error);
   try {
     localStorage.setItem(LS_SESSION_TOKEN, sessionToken);
   } catch (_) {}
+
+  const base =
+    typeof window.batteryEngineApiBase === "string"
+      ? window.batteryEngineApiBase
+      : "https://batteryengine-server.onrender.com";
+  const res = await fetch(base.replace(/\/$/, "") + "/register-session", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + accessToken
+    },
+    body: JSON.stringify({
+      session_token: sessionToken
+    })
+  });
+
+  if (!res.ok) {
+    let msg = `register-session failed (${res.status})`;
+    try {
+      const j = await res.json();
+      if (j?.message) msg = String(j.message);
+    } catch (_) {}
+    throw new Error(msg);
+  }
 }
 
 let sessionValidationIntervalId = null;
@@ -3266,7 +3286,10 @@ async function validateSession() {
   try {
     token = localStorage.getItem(LS_SESSION_TOKEN) || "";
   } catch (_) {}
-  if (!token) return;
+  if (!token) {
+    await handleSessionInvalid();
+    return;
+  }
 
   try {
     const { data: wrap } = await sb.auth.getSession();
@@ -3287,14 +3310,13 @@ async function validateSession() {
       }
     });
 
-    if (res.status === 401) {
-      let data = null;
-      try {
-        data = await res.json();
-      } catch (_) {}
-      if (data?.error_code === "SESSION_INVALID") {
-        await handleSessionInvalid();
-      }
+    let data = null;
+    try {
+      data = await res.clone().json();
+    } catch (_) {}
+
+    if (res.status === 401 || data?.error_code === "SESSION_INVALID") {
+      await handleSessionInvalid();
     }
   } catch (err) {
     console.error("Session check failed", err);
@@ -3305,7 +3327,7 @@ async function validateSession() {
 function startSessionValidationLoop() {
   if (sessionValidationIntervalId != null) return;
   validateSession();
-  sessionValidationIntervalId = window.setInterval(validateSession, 10000);
+  sessionValidationIntervalId = window.setInterval(validateSession, 180000);
   window.addEventListener("focus", validateSession);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
@@ -3328,6 +3350,12 @@ window.batteryEngineFetch = async function (path, init) {
   try {
     sessionToken = localStorage.getItem(LS_SESSION_TOKEN) || "";
   } catch (_) {}
+  if (!sessionToken) {
+    await handleSessionInvalid();
+    const err = new Error("SESSION_TOKEN_MISSING");
+    err.code = "SESSION_TOKEN_MISSING";
+    throw err;
+  }
 
   const deviceId = ensureDeviceId();
   const deviceFp = await ensureDeviceFingerprint();
@@ -3338,7 +3366,7 @@ window.batteryEngineFetch = async function (path, init) {
     hdrs.set("Content-Type", "application/json");
   }
   if (accessToken) hdrs.set("Authorization", "Bearer " + accessToken);
-  if (sessionToken) hdrs.set("x-session-token", sessionToken);
+  hdrs.set("x-session-token", sessionToken);
   hdrs.set("x-device-id", deviceId);
   hdrs.set("x-device-fingerprint", deviceFp);
 
@@ -3393,7 +3421,8 @@ sb.auth.getSession().then(async ({ data }) => {
       st = localStorage.getItem(LS_SESSION_TOKEN);
     } catch (_) {}
     if (!st) {
-      await registerActiveSessionForUser();
+      await handleSessionInvalid();
+      return;
     }
 
     loginContainer.style.display = "none";
@@ -3453,7 +3482,7 @@ document.getElementById("btn-login").addEventListener("click", async () => {
   loginStatus.textContent = "Inloggen…";
   loginStatus.className = "status";
 
-  const { error } = await sb.auth.signInWithPassword({
+  const { data, error } = await sb.auth.signInWithPassword({
     email,
     password
   });
@@ -3464,14 +3493,26 @@ document.getElementById("btn-login").addEventListener("click", async () => {
     return;
   }
 
-  await registerActiveSessionForUser();
+  try {
+    await registerActiveSessionForUser();
+  } catch (e) {
+    loginStatus.textContent = "Sessie kon niet geregistreerd worden. Probeer opnieuw.";
+    loginStatus.className = "status error";
+    try {
+      localStorage.removeItem(LS_SESSION_TOKEN);
+    } catch (_) {}
+    await sb.auth.signOut();
+    return;
+  }
   startSessionValidationLoop();
 
   loginContainer.style.display = "none";
   appView.style.display = "block";
 
   const userEmailBanner = document.getElementById("user-email");
-  if (userEmailBanner) userEmailBanner.textContent = email;
+  if (userEmailBanner) {
+    userEmailBanner.textContent = data?.user?.email || email;
+  }
 });
 
 // ============================
