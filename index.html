@@ -3243,6 +3243,77 @@ async function registerActiveSessionForUser() {
   } catch (_) {}
 }
 
+let sessionValidationIntervalId = null;
+let isHandlingInvalidSession = false;
+
+/** Force logout bij invalide actieve sessie (andere device login). */
+async function handleSessionInvalid() {
+  if (isHandlingInvalidSession) return;
+  isHandlingInvalidSession = true;
+  try {
+    localStorage.removeItem(LS_SESSION_TOKEN);
+  } catch (_) {}
+  try {
+    await sb.auth.signOut();
+  } catch (_) {}
+  alert("Je bent uitgelogd omdat je account op een ander apparaat is gebruikt.");
+  window.location.href = "/login";
+}
+
+/** Actieve sessie valideren tegen backend. */
+async function validateSession() {
+  let token = "";
+  try {
+    token = localStorage.getItem(LS_SESSION_TOKEN) || "";
+  } catch (_) {}
+  if (!token) return;
+
+  try {
+    const { data: wrap } = await sb.auth.getSession();
+    const accessToken = wrap?.session?.access_token || "";
+    const deviceId = ensureDeviceId();
+    const deviceFp = await ensureDeviceFingerprint();
+    const base =
+      typeof window.batteryEngineApiBase === "string"
+        ? window.batteryEngineApiBase
+        : "https://batteryengine-server.onrender.com";
+    const res = await fetch(base.replace(/\/$/, "") + "/validate-session", {
+      method: "GET",
+      headers: {
+        ...(accessToken ? { Authorization: "Bearer " + accessToken } : {}),
+        "x-session-token": token,
+        "x-device-id": deviceId,
+        "x-device-fingerprint": deviceFp
+      }
+    });
+
+    if (res.status === 401) {
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (_) {}
+      if (data?.error_code === "SESSION_INVALID") {
+        await handleSessionInvalid();
+      }
+    }
+  } catch (err) {
+    console.error("Session check failed", err);
+  }
+}
+
+/** Start checks op load + interval + tab terug in focus. */
+function startSessionValidationLoop() {
+  if (sessionValidationIntervalId != null) return;
+  validateSession();
+  sessionValidationIntervalId = window.setInterval(validateSession, 10000);
+  window.addEventListener("focus", validateSession);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      validateSession();
+    }
+  });
+}
+
 window.batteryEngineFetch = async function (path, init) {
   init = init || {};
   const base =
@@ -3280,24 +3351,7 @@ window.batteryEngineFetch = async function (path, init) {
       j = await res.clone().json();
     } catch (_) {}
     if (j && j.error_code === "SESSION_INVALID") {
-      try {
-        localStorage.removeItem(LS_SESSION_TOKEN);
-      } catch (_) {}
-      await sb.auth.signOut();
-      const av = document.getElementById("app-view");
-      const lc = document.getElementById("login-container");
-      const sc = document.getElementById("signup-container");
-      if (av) av.style.display = "none";
-      if (sc) sc.style.display = "none";
-      if (lc) {
-        lc.style.display = "block";
-        const st = document.getElementById("login-status");
-        if (st) {
-          st.textContent =
-            "Je bent uitgelogd omdat je account op een ander apparaat is gebruikt.";
-          st.className = "status error";
-        }
-      }
+      await handleSessionInvalid();
       const err = new Error("SESSION_INVALID");
       err.code = "SESSION_INVALID";
       throw err;
@@ -3350,6 +3404,7 @@ sb.auth.getSession().then(async ({ data }) => {
     if (emailEl) {
       emailEl.textContent = user.email;
     }
+    startSessionValidationLoop();
   } else {
     loginContainer.style.display = "block";
     signupContainer.style.display = "none";
@@ -3410,6 +3465,7 @@ document.getElementById("btn-login").addEventListener("click", async () => {
   }
 
   await registerActiveSessionForUser();
+  startSessionValidationLoop();
 
   loginContainer.style.display = "none";
   appView.style.display = "block";
