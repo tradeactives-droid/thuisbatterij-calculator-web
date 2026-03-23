@@ -1030,11 +1030,12 @@
       <input type="password" id="login-password" required>
     </div>
 
-    <button class="btn-primary" id="btn-login" style="width:100%;">
+    <button type="button" class="btn-primary" id="btn-login" style="width:100%;">
       Inloggen
     </button>
 
     <button
+      type="button"
       class="btn-secondary"
       id="go-to-signup"
       style="width:100%; margin-top:12px;"
@@ -1091,7 +1092,7 @@
         <input type="password" id="signup-password-confirm" required>
       </div>
 
-      <button class="btn-primary" id="btn-signup-submit" style="width:100%;">
+      <button type="button" class="btn-primary" id="btn-signup-submit" style="width:100%;">
         Account aanmaken
       </button>
 
@@ -1099,7 +1100,7 @@
 
       <hr style="margin:24px 0; border:none; border-top:1px solid #e2e8f0;">
 
-      <button class="btn-secondary" id="back-to-login" style="width:100%;">
+      <button type="button" class="btn-secondary" id="back-to-login" style="width:100%;">
         Terug naar inloggen
       </button>
     </div>
@@ -3413,8 +3414,8 @@ document.getElementById("btn-login").addEventListener("click", async () => {
   loginContainer.style.display = "none";
   appView.style.display = "block";
 
-  const emailEl = document.getElementById("user-email");
-  if (emailEl) emailEl.textContent = email;
+  const userEmailBanner = document.getElementById("user-email");
+  if (userEmailBanner) userEmailBanner.textContent = email;
 });
 
 // ============================
