@@ -1255,6 +1255,9 @@
 <!-- ======================= -->
 <div id="step-2" style="display:none;">
   <h2>Stap 2 · Batterij</h2>
+  <p style="font-size:0.86rem;color:var(--muted);margin:-6px 0 16px;line-height:1.45;max-width:52rem;">
+    Let op: bij zeer lage capaciteit (E) en/of vermogen (P) kan de server dit als <strong>geen effectieve thuisbatterij</strong> behandelen — dan vallen de scenario’s B1 en C1 samen. Dat is geen fout in de app.
+  </p>
 
   <!-- OPSLAGCAPACITEIT -->
   <div class="field">
@@ -1973,6 +1976,44 @@ function initStep5TypographyPreview() {
 initStep5TypographyPreview();
 
 const API_BASE = "https://batteryengine-server.onrender.com";
+window.batteryEngineApiBase = API_BASE;
+
+/**
+ * @typedef {number|string|null|undefined} PaybackYears
+ * API: number (jaren), null (n.v.t.), of string bv. "> 10 jaar"
+ */
+
+/** Lees backend-fout (plat object met error_code + message, of detail-wrapper). */
+function formatBatteryApiErrorMessage(data, status) {
+  if (data && typeof data === "object") {
+    if (typeof data.error_code === "string" && data.message != null) {
+      return String(data.message);
+    }
+    if (typeof data.detail === "string") return data.detail;
+    if (Array.isArray(data.detail) && data.detail[0]?.msg) return String(data.detail[0].msg);
+    if (data.detail?.msg) return String(data.detail.msg);
+    if (data.error != null) return typeof data.error === "string" ? data.error : JSON.stringify(data.error);
+    if (data.message != null) return String(data.message);
+  }
+  return status ? `Serverfout (${status})` : "Onbekende serverfout";
+}
+
+/**
+ * Terugverdientijd uit roi-object: geen .toFixed op string/null.
+ * @param {{ yearly_saving_eur?: number, payback_years?: PaybackYears }} roi
+ * @returns {string}
+ */
+function formatPaybackYearsDisplay(roi) {
+  if (!roi) return "–";
+  const py = roi.payback_years;
+  if (typeof py === "string" && py.length > 0) return py;
+  const ys = Number(roi.yearly_saving_eur);
+  if (isFinite(ys) && ys <= 0) return "Geen besparing";
+  if (py === null || py === undefined) return "–";
+  if (typeof py === "number" && isFinite(py)) return py.toFixed(1) + " jaar";
+  return "–";
+}
+
 let parsedData = {};
 let costChart = null;
 
@@ -2320,11 +2361,20 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
   };
 
   try {
-    const res = await fetch(API_BASE + "/compute_v3_profile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
+    let res;
+    try {
+      res = await window.batteryEngineFetch("/compute_v3_profile", {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
+    } catch (fetchErr) {
+      if (fetchErr && fetchErr.code === "SESSION_INVALID") {
+        btn.disabled = false;
+        btn.textContent = "Berekenen";
+        return;
+      }
+      throw fetchErr;
+    }
 
     let data;
     try {
@@ -2340,13 +2390,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     // HTTP-fout (4xx, 5xx)
     if (!res.ok) {
-      let errMsg = data?.error || data?.message;
-      if (!errMsg && data?.detail) {
-        if (typeof data.detail === "string") errMsg = data.detail;
-        else if (Array.isArray(data.detail) && data.detail[0]?.msg) errMsg = data.detail[0].msg;
-        else if (data.detail?.msg) errMsg = data.detail.msg;
-      }
-      const msg = errMsg ? (typeof errMsg === "string" ? errMsg : JSON.stringify(errMsg)) : `Serverfout (${res.status})`;
+      const msg = formatBatteryApiErrorMessage(data, res.status);
       console.error("Backend error:", res.status, data);
       status.textContent = "Serverfout: " + msg;
       status.className = "status error";
@@ -2466,19 +2510,8 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       roiEl.textContent = "–";
     } else {
     
-      const horizonYears = parseInt(
-        document.getElementById("battery-lifetime")?.value || "15",
-        10
-      );
-    
-      // ===== TERUGVERDIENTIJD =====
-      if (roi.yearly_saving_eur <= 0) {
-        paybackTextEl.textContent = "Geen besparing";
-      } else if (roi.payback_years === null) {
-        paybackTextEl.textContent = `> ${horizonYears} jaar`;
-      } else {
-        paybackTextEl.textContent = roi.payback_years.toFixed(1) + " jaar";
-      }
+      // ===== TERUGVERDIENTIJD (payback_years: number | null | string, API-leidend) =====
+      paybackTextEl.textContent = formatPaybackYearsDisplay(roi);
     
       // ===== ROI =====
       const roiVal = Number(roi.roi_percent);
@@ -2758,25 +2791,50 @@ document.getElementById("btn-generate-advice").addEventListener("click", async (
   const draftText = buildAdviceText(window.computedResult);
 
   try {
-    const res = await fetch(API_BASE + "/generate_advice", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        context: context,
-        draft_text: draftText
-      })
-    });
+    let res;
+    try {
+      res = await window.batteryEngineFetch("/generate_advice", {
+        method: "POST",
+        body: JSON.stringify({
+          context: context,
+          draft_text: draftText
+        })
+      });
+    } catch (e) {
+      if (e && e.code === "SESSION_INVALID") {
+        statusEl.textContent = "";
+        return;
+      }
+      throw e;
+    }
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      statusEl.textContent = "Ongeldig antwoord van de server (geen JSON).";
+      return;
+    }
 
-    if (!data.advice.includes("Bijlage A")) {
+    if (!res.ok) {
+      statusEl.textContent = formatBatteryApiErrorMessage(data, res.status);
+      return;
+    }
+
+    if (data.device_warning === true && data.device_count != null) {
+      /* optioneel: later zachte waarschuwing */
+    }
+
+    if (data.advice && !data.advice.includes("Bijlage A")) {
       console.warn("⚠️ Advies gegenereerd zonder bijlagen");
     }
 
     console.log("GENERATE_ADVICE RESPONSE:", data);
 
     if (!data || data.error) {
-      statusEl.textContent = "Fout bij genereren van advies.";
+      statusEl.textContent = data?.message
+        ? String(data.message)
+        : "Fout bij genereren van advies.";
       return;
     }
 
@@ -3124,6 +3182,130 @@ const sb = window.supabase.createClient(
   SUPABASE_ANON_KEY
 );
 
+/* ---- BatteryEngine API: sessie, device-headers, fetch-wrapper ---- */
+const LS_SESSION_TOKEN = "session_token";
+const LS_DEVICE_ID = "device_id";
+const LS_DEVICE_FINGERPRINT = "device_fingerprint";
+
+function ensureDeviceId() {
+  try {
+    let id = localStorage.getItem(LS_DEVICE_ID);
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(LS_DEVICE_ID, id);
+    }
+    return id;
+  } catch {
+    return "unknown-device";
+  }
+}
+
+async function sha256HexFromString(str) {
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function ensureDeviceFingerprint() {
+  try {
+    let fp = localStorage.getItem(LS_DEVICE_FINGERPRINT);
+    if (fp) return fp;
+    const raw = [
+      navigator.userAgent || "",
+      navigator.language || "",
+      typeof screen !== "undefined" ? `${screen.width}x${screen.height}` : "",
+      Intl.DateTimeFormat().resolvedOptions().timeZone || ""
+    ].join("|");
+    fp = await sha256HexFromString(raw);
+    localStorage.setItem(LS_DEVICE_FINGERPRINT, fp);
+    return fp;
+  } catch {
+    return "na";
+  }
+}
+
+/** Verwijdert bestaande rijen voor user, schrijft nieuwe session_token + localStorage. */
+async function registerActiveSessionForUser() {
+  const { data: wrap } = await sb.auth.getSession();
+  const session = wrap?.session;
+  if (!session?.user) return;
+  const userId = session.user.id;
+  const sessionToken = crypto.randomUUID();
+  await sb.from("active_sessions").delete().eq("user_id", userId);
+  const { error } = await sb.from("active_sessions").insert({
+    user_id: userId,
+    session_token: sessionToken
+  });
+  if (error) console.error("active_sessions:", error);
+  try {
+    localStorage.setItem(LS_SESSION_TOKEN, sessionToken);
+  } catch (_) {}
+}
+
+window.batteryEngineFetch = async function (path, init) {
+  init = init || {};
+  const base =
+    typeof window.batteryEngineApiBase === "string"
+      ? window.batteryEngineApiBase
+      : "https://batteryengine-server.onrender.com";
+  const url = path.startsWith("http") ? path : base.replace(/\/$/, "") + path;
+
+  const { data: wrap } = await sb.auth.getSession();
+  const accessToken = wrap?.session?.access_token || "";
+  let sessionToken = "";
+  try {
+    sessionToken = localStorage.getItem(LS_SESSION_TOKEN) || "";
+  } catch (_) {}
+
+  const deviceId = ensureDeviceId();
+  const deviceFp = await ensureDeviceFingerprint();
+
+  const hdrs = new Headers(init.headers || {});
+  const body = init.body;
+  if (body != null && typeof body === "string" && !hdrs.has("Content-Type")) {
+    hdrs.set("Content-Type", "application/json");
+  }
+  if (accessToken) hdrs.set("Authorization", "Bearer " + accessToken);
+  if (sessionToken) hdrs.set("x-session-token", sessionToken);
+  hdrs.set("x-device-id", deviceId);
+  hdrs.set("x-device-fingerprint", deviceFp);
+
+  const { headers: _ignoreInitHeaders, ...restInit } = init;
+  const res = await fetch(url, { ...restInit, headers: hdrs });
+
+  if (res.status === 401) {
+    let j = null;
+    try {
+      j = await res.clone().json();
+    } catch (_) {}
+    if (j && j.error_code === "SESSION_INVALID") {
+      try {
+        localStorage.removeItem(LS_SESSION_TOKEN);
+      } catch (_) {}
+      await sb.auth.signOut();
+      const av = document.getElementById("app-view");
+      const lc = document.getElementById("login-container");
+      const sc = document.getElementById("signup-container");
+      if (av) av.style.display = "none";
+      if (sc) sc.style.display = "none";
+      if (lc) {
+        lc.style.display = "block";
+        const st = document.getElementById("login-status");
+        if (st) {
+          st.textContent =
+            "Je bent uitgelogd omdat je account op een ander apparaat is gebruikt.";
+          st.className = "status error";
+        }
+      }
+      const err = new Error("SESSION_INVALID");
+      err.code = "SESSION_INVALID";
+      throw err;
+    }
+  }
+
+  return res;
+};
+
 const loginContainer = document.getElementById("login-container");
 const appView = document.getElementById("app-view");
 const loginStatus = document.getElementById("login-status");
@@ -3146,9 +3328,18 @@ const btnCreateAccount = document.getElementById("btn-signup-submit");
 // ============================
 // CHECK LOGIN BIJ LADEN
 // ============================
-sb.auth.getSession().then(({ data }) => {
+sb.auth.getSession().then(async ({ data }) => {
+  ensureDeviceId();
   if (data && data.session) {
     const user = data.session.user;
+
+    let st = null;
+    try {
+      st = localStorage.getItem(LS_SESSION_TOKEN);
+    } catch (_) {}
+    if (!st) {
+      await registerActiveSessionForUser();
+    }
 
     loginContainer.style.display = "none";
     appView.style.display = "block";
@@ -3217,8 +3408,13 @@ document.getElementById("btn-login").addEventListener("click", async () => {
     return;
   }
 
+  await registerActiveSessionForUser();
+
   loginContainer.style.display = "none";
   appView.style.display = "block";
+
+  const emailEl = document.getElementById("user-email");
+  if (emailEl) emailEl.textContent = email;
 });
 
 // ============================
@@ -3311,6 +3507,10 @@ btnCreateAccount.addEventListener("click", async () => {
 document
   .getElementById("btn-logout")
   .addEventListener("click", async () => {
+
+    try {
+      localStorage.removeItem(LS_SESSION_TOKEN);
+    } catch (_) {}
 
     await sb.auth.signOut();
 
