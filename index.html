@@ -1187,6 +1187,30 @@
     <input id="annual-pv" type="number" min="0" step="1" placeholder="bijv. 3200">
   </div>
 
+  <div class="field" id="annual-feedin-field">
+    <label>
+      Jaarlijkse teruglevering (kWh)
+      <span class="info-icon"
+            data-tooltip="Staat op uw jaarafrekening als
+            'teruggeleverd' of 'terugleveringen'. Vult u dit in,
+            dan controleert de tool of uw profiel klopt met de
+            werkelijkheid. Laat leeg als u dit niet weet.">
+        ℹ
+      </span>
+      <span style="font-weight:400; font-size:0.8rem;
+                   color:var(--muted); margin-left:8px;">
+        — optioneel, voor profielvalidatie
+      </span>
+    </label>
+    <input
+      id="annual-feedin"
+      type="number"
+      min="0"
+      step="1"
+      placeholder="bijv. 1800 kWh  (laat leeg als onbekend)"
+    >
+  </div>
+
   <div class="field" id="day-night-split-field">
     <label>
       Dag- en nachtverbruik (kWh)
@@ -1743,6 +1767,17 @@
   <div class="results-container">
 
     <div class="results-summary">
+  <div id="profile-warning"
+       style="display:none;
+              background:#fef3c7;
+              border:1px solid #f59e0b;
+              border-radius:8px;
+              padding:12px 16px;
+              margin-bottom:16px;
+              font-size:0.85rem;
+              color:#92400e;
+              grid-column: 1 / -1;">
+  </div>
   <div class="result-tile">
     <div class="label result-title">A1. Huidige situatie</div>
     <div class="value result-value" id="res-A1">–</div>
@@ -2578,6 +2613,12 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     // NIEUWE INPUT (profiel-based)
     annual_load_kwh: parseFloat(document.getElementById("annual-load").value || "0"),
     annual_pv_kwh: parseFloat(document.getElementById("annual-pv").value || "0"),
+    annual_feedin_kwh: (() => {
+      const v = parseFloat(
+        document.getElementById("annual-feedin").value || ""
+      );
+      return isFinite(v) && v > 0 ? v : null;
+    })(),
     monthly_load_kwh: (() => {
       const inputs = [
         ...document.querySelectorAll(".monthly-kwh-input")
@@ -2932,7 +2973,19 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
 
     document.getElementById("C1-exp-dyn").textContent =
       fmtKwh(data.C1?.dynamisch?.export_kwh);
-    
+
+    // Profielwaarschuwing tonen als backend een mismatch meldt
+    const warning = data.profile_warning;
+    const warningEl = document.getElementById("profile-warning");
+    if (warningEl) {
+      if (warning && warning.type === "feedin_mismatch") {
+        warningEl.textContent = warning.message;
+        warningEl.style.display = "block";
+      } else {
+        warningEl.style.display = "none";
+        warningEl.textContent = "";
+      }
+    }
   }
 
   // ⚠️ UI-ONLY helper
