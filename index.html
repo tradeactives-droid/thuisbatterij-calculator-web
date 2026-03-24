@@ -1371,6 +1371,31 @@
     </select>
   </div>
 
+  <div class="field" id="home-during-day-field">
+    <label>
+      Overdag iemand thuis?
+      <span class="info-icon"
+            data-tooltip="Dit is de belangrijkste factor voor
+            batterijpotentieel. Als niemand overdag thuis is,
+            is de kloof tussen zonneopwek en verbruik het grootst
+            — een batterij heeft dan de meeste toegevoegde waarde.">
+        ℹ
+      </span>
+    </label>
+    <select id="home-during-day">
+      <option value="" selected>Kies een optie</option>
+      <option value="never">
+        Niemand overdag thuis (beiden werkend buitenshuis)
+      </option>
+      <option value="partial">
+        Wisselend (deels thuiswerk, parttime)
+      </option>
+      <option value="always">
+        Altijd iemand thuis overdag
+      </option>
+    </select>
+  </div>
+
   <!-- EXTRA ENERGIEVERBRUIKERS -->
   <div class="field">
     <label>
@@ -2513,6 +2538,14 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       return Math.min(0.95, Math.max(0.05, fraction));
     })(),
     household_profile: document.getElementById("household-profile").value,
+    home_during_day: (() => {
+      const val = document.getElementById(
+        "home-during-day"
+      )?.value || "";
+      return ["never", "partial", "always"].includes(val)
+        ? val
+        : null;
+    })(),
   
     has_heatpump: document.getElementById("has-heatpump")?.value === "yes",
     has_ev: document.getElementById("has-ev")?.value === "yes",
