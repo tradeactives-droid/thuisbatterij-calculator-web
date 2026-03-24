@@ -1403,7 +1403,8 @@
     <label>
       Warmtepomp
       <span class="info-icon"
-            data-tooltip="Warmtepomp beïnvloedt vooral het profiel (meer verbruik in winter + ochtend/avond).">
+            data-tooltip="Een warmtepomp beïnvloedt het
+            verbruiksprofiel significant, vooral in de winter.">
         ℹ
       </span>
     </label>
@@ -1411,6 +1412,53 @@
       <option value="unknown" selected>Kies een optie</option>
       <option value="no">Nee</option>
       <option value="yes">Ja</option>
+    </select>
+  </div>
+
+  <!-- Warmtepomp type — alleen zichtbaar als has-heatpump = yes -->
+  <div class="field" id="heatpump-type-field" style="display:none;">
+    <label>
+      Type warmtepomp
+      <span class="info-icon"
+            data-tooltip="Een buffervat slaat warmte op waardoor
+            de pomp minder vaak hoeft te starten. Dit geeft een
+            vlakker en beter voorspelbaar verbruiksprofiel.">
+        ℹ
+      </span>
+    </label>
+    <select id="heatpump-type">
+      <option value="air_water" selected>
+        Lucht/water zonder buffervat
+      </option>
+      <option value="air_water_buffer">
+        Lucht/water met buffervat
+      </option>
+    </select>
+  </div>
+
+  <!-- Warmtepomp schema — alleen zichtbaar als has-heatpump = yes -->
+  <div class="field" id="heatpump-schedule-field"
+       style="display:none;">
+    <label>
+      Wanneer verwarmt de warmtepomp voornamelijk?
+      <span class="info-icon"
+            data-tooltip="Dit bepaalt wanneer het extra verbruik
+            van de warmtepomp in het dagprofiel terechtkomt.
+            Kies wat het beste past bij de instelling van de
+            klant.">
+        ℹ
+      </span>
+    </label>
+    <select id="heatpump-schedule">
+      <option value="day_night" selected>
+        Ochtend en avond (meest voorkomend)
+      </option>
+      <option value="night">
+        Voornamelijk 's nachts
+      </option>
+      <option value="day">
+        Voornamelijk overdag
+      </option>
     </select>
   </div>
 
@@ -2307,6 +2355,27 @@ function wireEvChargeWindow() {
   evSel.addEventListener("change", sync);
   sync();
 }
+
+function wireHeatpumpFields() {
+  const hpSel       = document.getElementById("has-heatpump");
+  const typeField   = document.getElementById(
+    "heatpump-type-field"
+  );
+  const schedField  = document.getElementById(
+    "heatpump-schedule-field"
+  );
+
+  if (!hpSel || !typeField || !schedField) return;
+
+  const sync = () => {
+    const hasHp = hpSel.value === "yes";
+    typeField.style.display  = hasHp ? "block" : "none";
+    schedField.style.display = hasHp ? "block" : "none";
+  };
+
+  hpSel.addEventListener("change", sync);
+  sync();
+}
   
   
  function wireUnknownToggles() {
@@ -2550,6 +2619,24 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     })(),
   
     has_heatpump: document.getElementById("has-heatpump")?.value === "yes",
+    heatpump_type: (() => {
+      const hasHp = document.getElementById(
+        "has-heatpump"
+      )?.value === "yes";
+      if (!hasHp) return null;
+      return document.getElementById(
+        "heatpump-type"
+      )?.value || "air_water";
+    })(),
+    heatpump_schedule: (() => {
+      const hasHp = document.getElementById(
+        "has-heatpump"
+      )?.value === "yes";
+      if (!hasHp) return null;
+      return document.getElementById(
+        "heatpump-schedule"
+      )?.value || "day_night";
+    })(),
     has_ev: document.getElementById("has-ev")?.value === "yes",
     ev_charge_window: document.getElementById("ev-charge-window")?.value || "evening_night",
   
@@ -3405,6 +3492,7 @@ window.addEventListener("DOMContentLoaded", () => {
   updateCountryUI();
   wireUnknownToggles();
   wireEvChargeWindow();
+  wireHeatpumpFields();
 
   function updateDaytimeSplitPreview() {
     const dag   = parseFloat(
