@@ -1232,6 +1232,134 @@
     </div>
   </div>
 
+  <div class="field" id="monthly-load-field">
+    <label>
+      Maandelijks verbruik (kWh per maand)
+      <span class="info-icon"
+            data-tooltip="Staat in het portaal van uw netbeheerder
+            (Mijn Enexis, Mijn Liander, Fluvius) als grafiek of
+            tabel per maand. Vul alle 12 maanden in voor de
+            nauwkeurigste berekening.">
+        ℹ
+      </span>
+      <span style="font-weight:400; font-size:0.8rem;
+                   color:var(--muted); margin-left:8px;">
+        — optioneel, maar sterk aanbevolen
+      </span>
+    </label>
+
+    <div id="monthly-inputs-toggle" style="margin-bottom:8px;">
+      <button type="button" class="btn-secondary"
+              id="btn-toggle-monthly"
+              style="font-size:0.8rem; padding:6px 12px;">
+        + Maandwaarden invoeren
+      </button>
+    </div>
+
+    <div id="monthly-inputs-grid" style="display:none;">
+      <div style="display:grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  gap:8px; margin-bottom:8px;">
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Jan
+          </label>
+          <input class="monthly-kwh-input" data-month="0"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Feb
+          </label>
+          <input class="monthly-kwh-input" data-month="1"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Mrt
+          </label>
+          <input class="monthly-kwh-input" data-month="2"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Apr
+          </label>
+          <input class="monthly-kwh-input" data-month="3"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Mei
+          </label>
+          <input class="monthly-kwh-input" data-month="4"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Jun
+          </label>
+          <input class="monthly-kwh-input" data-month="5"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Jul
+          </label>
+          <input class="monthly-kwh-input" data-month="6"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Aug
+          </label>
+          <input class="monthly-kwh-input" data-month="7"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Sep
+          </label>
+          <input class="monthly-kwh-input" data-month="8"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Okt
+          </label>
+          <input class="monthly-kwh-input" data-month="9"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Nov
+          </label>
+          <input class="monthly-kwh-input" data-month="10"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; color:var(--muted);">
+            Dec
+          </label>
+          <input class="monthly-kwh-input" data-month="11"
+                 type="number" min="0" step="1" placeholder="kWh">
+        </div>
+      </div>
+
+      <div id="monthly-load-preview"
+           style="font-size:0.8rem; color:var(--muted);
+                  margin-top:4px;">
+      </div>
+
+      <button type="button" class="btn-secondary"
+              id="btn-clear-monthly"
+              style="font-size:0.78rem; padding:4px 10px;
+                     margin-top:6px;">
+        Wissen
+      </button>
+    </div>
+  </div>
+
   <div class="field">
     <label>Woning/huishoudprofiel<span class="required">*</span></label>
     <select id="household-profile">
@@ -2354,6 +2482,21 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     // NIEUWE INPUT (profiel-based)
     annual_load_kwh: parseFloat(document.getElementById("annual-load").value || "0"),
     annual_pv_kwh: parseFloat(document.getElementById("annual-pv").value || "0"),
+    monthly_load_kwh: (() => {
+      const inputs = [
+        ...document.querySelectorAll(".monthly-kwh-input")
+      ];
+      const values = inputs.map(
+        el => parseFloat(el.value || "")
+      );
+      if (
+        values.length === 12 &&
+        values.every(v => isFinite(v) && v >= 0)
+      ) {
+        return values;
+      }
+      return null;
+    })(),
     daytime_fraction: (() => {
       const dag   = parseFloat(
         document.getElementById("daytime-kwh").value || ""
@@ -3276,6 +3419,84 @@ window.addEventListener("DOMContentLoaded", () => {
     .addEventListener("input", updateDaytimeSplitPreview);
   document.getElementById("annual-load")
     .addEventListener("input", updateDaytimeSplitPreview);
+
+  // Toggle maandverbruik grid
+  document.getElementById("btn-toggle-monthly")
+    .addEventListener("click", () => {
+      const grid = document.getElementById(
+        "monthly-inputs-grid"
+      );
+      const btn = document.getElementById("btn-toggle-monthly");
+      const open = grid.style.display === "none";
+      grid.style.display = open ? "block" : "none";
+      btn.textContent = open
+        ? "− Maandwaarden verbergen"
+        : "+ Maandwaarden invoeren";
+    });
+
+  // Wis-knop
+  document.getElementById("btn-clear-monthly")
+    .addEventListener("click", () => {
+      document.querySelectorAll(".monthly-kwh-input")
+        .forEach(el => el.value = "");
+      document.getElementById("monthly-load-preview")
+        .textContent = "";
+    });
+
+  // Live preview
+  function updateMonthlyLoadPreview() {
+    const inputs = [
+      ...document.querySelectorAll(".monthly-kwh-input")
+    ];
+    const values = inputs.map(
+      el => parseFloat(el.value || "")
+    );
+    const filled = values.filter(v => isFinite(v) && v >= 0);
+    const preview = document.getElementById(
+      "monthly-load-preview"
+    );
+
+    if (filled.length === 0) {
+      preview.textContent = "";
+      return;
+    }
+
+    const sum = filled.reduce((a, b) => a + b, 0);
+    const annual = parseFloat(
+      document.getElementById("annual-load").value || "0"
+    );
+
+    if (filled.length < 12) {
+      preview.textContent =
+        `${filled.length}/12 maanden ingevuld — ` +
+        `som tot nu toe: ${Math.round(sum)} kWh`;
+      preview.style.color = "var(--muted)";
+      return;
+    }
+
+    const diff = Math.abs(sum - annual);
+    const pct = annual > 0 ? (diff / annual * 100) : 0;
+
+    if (pct > 15 && annual > 0) {
+      preview.textContent =
+        `⚠ Som maanden: ${Math.round(sum)} kWh — wijkt ` +
+        `${Math.round(pct)}% af van jaarverbruik ` +
+        `(${Math.round(annual)} kWh). Controleer uw invoer.`;
+      preview.style.color = "#f59e0b";
+    } else {
+      preview.textContent =
+        `✓ Som: ${Math.round(sum)} kWh ` +
+        `(jaarverbruik: ${Math.round(annual)} kWh)`;
+      preview.style.color = "#22c55e";
+    }
+  }
+
+  document.querySelectorAll(".monthly-kwh-input")
+    .forEach(el => {
+      el.addEventListener("input", updateMonthlyLoadPreview);
+    });
+  document.getElementById("annual-load")
+    .addEventListener("input", updateMonthlyLoadPreview);
   updateDaytimeSplitPreview();
 });
   
