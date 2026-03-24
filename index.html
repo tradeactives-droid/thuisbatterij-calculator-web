@@ -1187,6 +1187,29 @@
     <input id="annual-pv" type="number" min="0" step="1" placeholder="bijv. 3200">
   </div>
 
+  <div class="field" id="day-night-split-field">
+    <label>
+      Dagverbruik (% van jaarverbruik)
+      <span class="info-icon"
+            data-tooltip="Uw netbeheerder (bijv. Mijn Enexis, Mijn Liander) toont dag- en nachtverbruik apart. Dagverbruik = verbruik tussen 07:00 en 23:00. Vult u dit in, dan wordt de berekening aanzienlijk nauwkeuriger. Laat leeg als u dit niet weet.">
+        ℹ
+      </span>
+    </label>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <input
+        id="daytime-pct"
+        type="number"
+        min="10"
+        max="95"
+        step="1"
+        placeholder="Bijv. 65  (laat leeg als onbekend)"
+        style="flex:1;"
+      >
+      <span style="color:var(--muted); font-size:0.85rem; white-space:nowrap;">% overdag</span>
+    </div>
+    <div id="daytime-split-preview" style="margin-top:6px; font-size:0.8rem; color:var(--muted);"></div>
+  </div>
+
   <div class="field">
     <label>Woning/huishoudprofiel<span class="required">*</span></label>
     <select id="household-profile">
@@ -2309,6 +2332,12 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     // NIEUWE INPUT (profiel-based)
     annual_load_kwh: parseFloat(document.getElementById("annual-load").value || "0"),
     annual_pv_kwh: parseFloat(document.getElementById("annual-pv").value || "0"),
+    daytime_fraction: (() => {
+      const pct = parseFloat(document.getElementById("daytime-pct").value || "");
+      if (!isFinite(pct) || pct <= 0) return null;
+      const clamped = Math.min(95, Math.max(10, pct));
+      return clamped / 100;
+    })(),
     household_profile: document.getElementById("household-profile").value,
   
     has_heatpump: document.getElementById("has-heatpump")?.value === "yes",
@@ -3167,6 +3196,31 @@ window.addEventListener("DOMContentLoaded", () => {
   updateCountryUI();
   wireUnknownToggles();
   wireEvChargeWindow();
+
+  function updateDaytimeSplitPreview() {
+    const pct = parseFloat(
+      document.getElementById("daytime-pct").value || ""
+    );
+    const load = parseFloat(
+      document.getElementById("annual-load").value || ""
+    );
+    const preview = document.getElementById("daytime-split-preview");
+    if (!preview) return;
+    if (!isFinite(pct) || pct <= 0 || !isFinite(load) || load <= 0) {
+      preview.textContent = "";
+      return;
+    }
+    const dag = Math.round(load * pct / 100);
+    const nacht = Math.round(load * (1 - pct / 100));
+    preview.textContent =
+      `→ Dagverbruik: ${dag} kWh  |  Nachtverbruik: ${nacht} kWh`;
+  }
+
+  document.getElementById("daytime-pct")
+    .addEventListener("input", updateDaytimeSplitPreview);
+  document.getElementById("annual-load")
+    .addEventListener("input", updateDaytimeSplitPreview);
+  updateDaytimeSplitPreview();
 });
   
 </script>
