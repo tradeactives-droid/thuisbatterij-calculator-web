@@ -1779,34 +1779,47 @@
               grid-column: 1 / -1;">
   </div>
   <div class="result-tile">
-    <div class="label result-title">A1. Huidige situatie</div>
+    <div class="label result-title">
+      Huidige situatie
+      <br>
+      <small class="result-sub">
+        Met saldering — uw energiekosten nu
+      </small>
+    </div>
     <div class="value result-value" id="res-A1">–</div>
   </div>
   <div class="result-tile">
-  <div class="label result-title">
-    B1. Geen Saldering | Geen Batterij<br>
-    <small id="res-B1-tariff-label" class="result-sub"></small>
+    <div class="label result-title">
+      Toekomst zonder batterij
+      <br>
+      <small id="res-B1-tariff-label" class="result-sub">
+        Zonder saldering — wat u straks betaalt
+      </small>
+    </div>
+    <div class="value result-value" id="res-B1">–</div>
   </div>
-  <div class="value result-value" id="res-B1">–</div>
-</div>
-
-<div class="result-tile">
-  <div class="label result-title">
-    C1. Geen Saldering | Met Batterij<br>
-    <small id="res-C1-tariff-label" class="result-sub"></small>
+  <div class="result-tile">
+    <div class="label result-title">
+      Toekomst met batterij
+      <br>
+      <small id="res-C1-tariff-label" class="result-sub">
+        Zonder saldering — met eigen opslag
+      </small>
+    </div>
+    <div class="value result-value" id="res-C1">–</div>
   </div>
-  <div class="value result-value" id="res-C1">–</div>
-</div>
 
   <!-- NIEUW: BESPARING / PAYBACK / ROI -->
   <div class="result-tile">
     <div class="label result-title">
-      Besparing per jaar<br>
-      <small class="result-sub">
+      Besparing per jaar
+      <br>
+      <small id="res-savings-sub" class="result-sub">
         verschil tussen toekomst zonder en met batterij
       </small>
     </div>
-    <div class="value result-value result-highlight" id="res-savings">–</div>
+    <div class="value result-value result-highlight"
+         id="res-savings">–</div>
   </div>
   <div class="result-tile">
     <div class="label result-title">
@@ -1856,19 +1869,19 @@
       <th class="table-header">Dynamisch</th>
     </tr>
     <tr>
-      <td class="table-label">Huidige situatie</td>
+      <td class="table-label">Huidige situatie (met saldering)</td>
       <td class="table-value" id="A1-enkel">–</td>
       <td class="table-value" id="A1-dn">–</td>
       <td class="table-value" id="A1-dyn">–</td>
     </tr>
     <tr>
-      <td class="table-label">Geen Saldering | Geen Batterij</td>
+      <td class="table-label">Toekomst zonder batterij</td>
       <td class="table-value" id="B1-enkel">–</td>
       <td class="table-value" id="B1-dn">–</td>
       <td class="table-value" id="B1-dyn">–</td>
     </tr>
     <tr>
-      <td class="table-label">Geen Saldering | Met Batterij</td>
+      <td class="table-label">Toekomst met batterij</td>
       <td class="table-value" id="C1-enkel">–</td>
       <td class="table-value" id="C1-dn">–</td>
       <td class="table-value" id="C1-dyn">–</td>
@@ -2860,6 +2873,34 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     // === Besparing ===
     document.getElementById("res-savings").textContent =
       isFinite(B1) && isFinite(C1) ? fmtEuro(B1 - C1) : "–";
+
+    const B1val = data.B1?.[tariff]?.total_cost_eur;
+    const A1val = data.A1_per_tariff?.[tariff]?.total_cost_eur;
+    const savingsSub = document.getElementById(
+      "res-savings-sub"
+    );
+    if (savingsSub && isFinite(B1val) && isFinite(A1val)) {
+      const saldImpact = B1val - A1val;
+      if (saldImpact > 50) {
+        savingsSub.textContent =
+          `Saldering kost u straks €${Math.round(saldImpact)}/jr extra — `
+          + `batterij compenseert €${Math.round(
+              isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
+            )}/jr`;
+      } else if (saldImpact < -50) {
+        savingsSub.textContent =
+          `Saldering levert u weinig op — `
+          + `batterij verhoogt zelfconsumptie met €${Math.round(
+              isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
+            )}/jr`;
+      } else {
+        savingsSub.textContent =
+          `Saldering heeft beperkte impact — `
+          + `batterij bespaart u €${Math.round(
+              isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
+            )}/jr`;
+      }
+    }
 
     // === ROI & Payback (PER TARIEF!) ===
     const roi = data.roi_per_tariff?.[tariff];
