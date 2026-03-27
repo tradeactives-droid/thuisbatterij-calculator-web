@@ -1049,6 +1049,73 @@
   </div>
 </div>
 
+<div id="paywall-container"
+     style="max-width:480px; margin:80px auto;
+            display:none;">
+  <div class="card">
+
+    <div class="auth-logo">
+      <img src="/logo.png" alt="Eco Metric logo">
+    </div>
+
+    <h2>Abonnement vereist</h2>
+
+    <p style="color:var(--muted); font-size:0.9rem;
+              line-height:1.6; margin-bottom:24px;">
+      Om Eco Metric te gebruiken heb je een actief
+      abonnement nodig. Voor €99 per maand krijg je
+      onbeperkt toegang tot alle functies.
+    </p>
+
+    <ul style="list-style:none; margin-bottom:28px;
+               padding:0;">
+      <li style="padding:8px 0; font-size:0.875rem;
+                 color:var(--muted);
+                 border-bottom:1px solid var(--border);">
+        ✓ Onbeperkt berekeningen
+      </li>
+      <li style="padding:8px 0; font-size:0.875rem;
+                 color:var(--muted);
+                 border-bottom:1px solid var(--border);">
+        ✓ Volledige tariefmatrix
+      </li>
+      <li style="padding:8px 0; font-size:0.875rem;
+                 color:var(--muted);
+                 border-bottom:1px solid var(--border);">
+        ✓ AI adviesrapport
+      </li>
+      <li style="padding:8px 0; font-size:0.875rem;
+                 color:var(--muted);">
+        ✓ Maandelijks opzegbaar
+      </li>
+    </ul>
+
+    <button type="button"
+            class="btn-primary"
+            id="btn-subscribe"
+            style="width:100%; font-size:1rem;
+                   padding:14px;">
+      Abonnement starten — €99/maand
+    </button>
+
+    <div id="paywall-status"
+         class="status"
+         style="margin-top:10px;">
+    </div>
+
+    <hr style="margin:20px 0; border:none;
+               border-top:1px solid var(--border);">
+
+    <button type="button"
+            class="btn-secondary"
+            id="btn-logout-paywall"
+            style="width:100%;">
+      Uitloggen
+    </button>
+
+  </div>
+</div>
+
   <div id="signup-container" style="max-width:520px; margin:80px auto; display:none;">
     <div class="card">
 
@@ -3619,6 +3686,33 @@ document.querySelectorAll(".stepper .step").forEach((pill, index) => {
 <script>  
 /* DEFAULTS */
 window.addEventListener("DOMContentLoaded", () => {
+  const urlParams = new URLSearchParams(
+    window.location.search
+  );
+  if (urlParams.get("payment") === "success") {
+    setTimeout(async () => {
+      const hasSubscription = await checkSubscription();
+      if (hasSubscription) {
+        const pw = document.getElementById("paywall-container");
+        const av = document.getElementById("app-view");
+        if (pw) pw.style.display = "none";
+        if (av) av.style.display = "block";
+        try {
+          const { data: wrap } = await sb.auth.getSession();
+          const u = wrap?.session?.user;
+          const emailEl = document.getElementById("user-email");
+          if (emailEl && u?.email) emailEl.textContent = u.email;
+        } catch (_) {}
+        if (typeof startSessionValidationLoop === "function") {
+          startSessionValidationLoop();
+        }
+        window.history.replaceState(
+          {}, document.title, window.location.pathname
+        );
+      }
+    }, 2000);
+  }
+
   activateStep(0);
   updateCountryUI();
   wireUnknownToggles();
@@ -3975,6 +4069,19 @@ window.batteryEngineFetch = async function (path, init) {
   return res;
 };
 
+async function checkSubscription() {
+  try {
+    const res = await window.batteryEngineFetch(
+      "/subscription/status",
+      { method: "GET" }
+    );
+    const data = await res.json();
+    return data.active === true;
+  } catch (e) {
+    return false;
+  }
+}
+
 const loginContainer = document.getElementById("login-container");
 const appView = document.getElementById("app-view");
 const loginStatus = document.getElementById("login-status");
@@ -3999,6 +4106,7 @@ const btnCreateAccount = document.getElementById("btn-signup-submit");
 // ============================
 sb.auth.getSession().then(async ({ data }) => {
   ensureDeviceId();
+  const paywallEl = document.getElementById("paywall-container");
   if (data && data.session) {
     const user = data.session.user;
 
@@ -4011,19 +4119,30 @@ sb.auth.getSession().then(async ({ data }) => {
       return;
     }
 
-    loginContainer.style.display = "none";
-    appView.style.display = "block";
+    const hasSubscription = await checkSubscription();
 
-    // 👤 toon e-mail
-    const emailEl = document.getElementById("user-email");
-    if (emailEl) {
-      emailEl.textContent = user.email;
+    if (hasSubscription) {
+      loginContainer.style.display = "none";
+      if (paywallEl) paywallEl.style.display = "none";
+      signupContainer.style.display = "none";
+      appView.style.display = "block";
+
+      const emailEl = document.getElementById("user-email");
+      if (emailEl) {
+        emailEl.textContent = user.email;
+      }
+      startSessionValidationLoop();
+    } else {
+      loginContainer.style.display = "none";
+      signupContainer.style.display = "none";
+      appView.style.display = "none";
+      if (paywallEl) paywallEl.style.display = "block";
     }
-    startSessionValidationLoop();
   } else {
     loginContainer.style.display = "block";
     signupContainer.style.display = "none";
     appView.style.display = "none";
+    if (paywallEl) paywallEl.style.display = "none";
   }
 });
 
@@ -4034,6 +4153,8 @@ sb.auth.getSession().then(async ({ data }) => {
   // Naar signup scherm
   btnGoToSignup.addEventListener("click", () => {
     loginContainer.style.display = "none";
+    const paywallEl = document.getElementById("paywall-container");
+    if (paywallEl) paywallEl.style.display = "none";
     signupContainer.style.display = "block";
   });
 
@@ -4041,6 +4162,81 @@ sb.auth.getSession().then(async ({ data }) => {
   btnBackToLogin.addEventListener("click", () => {
     signupContainer.style.display = "none";
     loginContainer.style.display = "block";
+    const paywallEl = document.getElementById("paywall-container");
+    if (paywallEl) paywallEl.style.display = "none";
+  });
+
+document.getElementById("btn-subscribe")
+  .addEventListener("click", async () => {
+    const btn = document.getElementById(
+      "btn-subscribe"
+    );
+    const status = document.getElementById(
+      "paywall-status"
+    );
+
+    btn.disabled = true;
+    btn.textContent = "Doorsturen naar betaling...";
+    status.textContent = "";
+
+    try {
+      const { data: wrap } = await sb.auth.getSession();
+      const user = wrap?.session?.user;
+
+      if (!user) {
+        status.textContent = "Niet ingelogd.";
+        status.className = "status error";
+        btn.disabled = false;
+        btn.textContent = "Abonnement starten — €99/maand";
+        return;
+      }
+
+      const apiBase = (typeof window.batteryEngineApiBase === "string"
+        ? window.batteryEngineApiBase
+        : "https://batteryengine-server.onrender.com"
+      ).replace(/\/$/, "");
+
+      const res = await fetch(
+        apiBase + "/stripe/create-checkout-session",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: user.id,
+            email: user.email,
+            success_url: window.location.origin
+              + "?payment=success",
+            cancel_url: window.location.origin
+              + "?payment=cancelled",
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else {
+        throw new Error(
+          data.error || "Geen checkout URL ontvangen"
+        );
+      }
+
+    } catch (err) {
+      status.textContent = "Fout: " + err.message;
+      status.className = "status error";
+      btn.disabled = false;
+      btn.textContent = "Abonnement starten — €99/maand";
+    }
+  });
+
+document.getElementById("btn-logout-paywall")
+  .addEventListener("click", async () => {
+    try {
+      localStorage.removeItem(LS_SESSION_TOKEN);
+    } catch (_) {}
+    await sb.auth.signOut();
+    window.location.reload();
   });
 
 // ============================
@@ -4092,12 +4288,22 @@ document.getElementById("btn-login").addEventListener("click", async () => {
   }
   startSessionValidationLoop();
 
-  loginContainer.style.display = "none";
-  appView.style.display = "block";
+  const hasSubscription = await checkSubscription();
+  const paywallEl = document.getElementById("paywall-container");
 
-  const userEmailBanner = document.getElementById("user-email");
-  if (userEmailBanner) {
-    userEmailBanner.textContent = data?.user?.email || email;
+  if (hasSubscription) {
+    loginContainer.style.display = "none";
+    if (paywallEl) paywallEl.style.display = "none";
+    appView.style.display = "block";
+    const userEmailBanner = document.getElementById("user-email");
+    if (userEmailBanner) {
+      userEmailBanner.textContent =
+        data?.user?.email || email;
+    }
+  } else {
+    loginContainer.style.display = "none";
+    if (paywallEl) paywallEl.style.display = "block";
+    appView.style.display = "none";
   }
 });
 
