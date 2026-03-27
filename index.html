@@ -1041,7 +1041,7 @@
       id="go-to-signup"
       style="width:100%; margin-top:12px;"
     >
-      Account aanmaken
+      Nog geen account? Aanmelden
     </button>
 
     <div id="login-status" class="status" style="margin-top:10px;"></div>
@@ -3685,7 +3685,7 @@ document.querySelectorAll(".stepper .step").forEach((pill, index) => {
 
 <script>  
 /* DEFAULTS */
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(
     window.location.search
   );
@@ -3698,7 +3698,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (pw) pw.style.display = "none";
         if (av) av.style.display = "block";
         try {
-          const { data: wrap } = await sb.auth.getSession();
+          const { data: wrap } = await window.sb.auth.getSession();
           const u = wrap?.session?.user;
           const emailEl = document.getElementById("user-email");
           if (emailEl && u?.email) emailEl.textContent = u.email;
@@ -3711,6 +3711,34 @@ window.addEventListener("DOMContentLoaded", () => {
         );
       }
     }, 2000);
+  }
+
+  if (urlParams.get("payment") === "cancelled") {
+    const { data: wrap } = await window.sb.auth.getSession();
+    if (wrap?.session) {
+      const loginC = document.getElementById("login-container");
+      const signupC = document.getElementById("signup-container");
+      if (loginC) loginC.style.display = "none";
+      if (signupC) signupC.style.display = "none";
+      const paywall = document.getElementById(
+        "paywall-container"
+      );
+      if (paywall) {
+        paywall.style.display = "block";
+        const status = document.getElementById(
+          "paywall-status"
+        );
+        if (status) {
+          status.textContent =
+            "Betaling geannuleerd. " +
+            "Klik hieronder om het opnieuw te proberen.";
+          status.className = "status";
+        }
+      }
+    }
+    window.history.replaceState(
+      {}, document.title, window.location.pathname
+    );
   }
 
   activateStep(0);
@@ -3862,6 +3890,7 @@ const sb = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
+window.sb = sb;
 
 /* ---- BatteryEngine API: sessie, device-headers, fetch-wrapper ---- */
 const LS_SESSION_TOKEN = "session_token";
@@ -4377,18 +4406,88 @@ btnCreateAccount.addEventListener("click", async () => {
       signupStatus.className = "status error";
       return;
     }
+  } else {
+    signupStatus.textContent = "Account aangemaakt ✔ U kunt nu inloggen.";
+    signupStatus.className = "status success";
+    document.getElementById("login-email").value = signupEmail.value.trim();
+    document.getElementById("login-password").value = "";
+    setTimeout(() => {
+      signupContainer.style.display = "none";
+      loginContainer.style.display = "block";
+    }, 800);
+    return;
   }
 
-  signupStatus.textContent = "Account aangemaakt ✔ U kunt nu inloggen.";
+  signupStatus.textContent =
+    "Account aangemaakt ✔ Doorsturen naar betaling...";
   signupStatus.className = "status success";
 
-  document.getElementById("login-email").value = signupEmail.value.trim();
-  document.getElementById("login-password").value = "";
+  const { data: loginData, error: loginError } =
+    await sb.auth.signInWithPassword({
+      email: signupEmail.value.trim(),
+      password: signupPassword.value,
+    });
 
-  setTimeout(() => {
-    signupContainer.style.display = "none";
-    loginContainer.style.display = "block";
-  }, 800);
+  if (loginError) {
+    signupStatus.textContent =
+      "Account aangemaakt maar inloggen mislukt. " +
+      "Probeer handmatig in te loggen.";
+    signupStatus.className = "status error";
+    setTimeout(() => {
+      signupContainer.style.display = "none";
+      loginContainer.style.display = "block";
+    }, 2000);
+    return;
+  }
+
+  try {
+    await registerActiveSessionForUser();
+  } catch (e) {
+    signupStatus.textContent =
+      "Sessie registratie mislukt. Probeer opnieuw.";
+    signupStatus.className = "status error";
+    return;
+  }
+
+  try {
+    const user = loginData?.user;
+    const apiBase = (typeof window.batteryEngineApiBase === "string"
+      ? window.batteryEngineApiBase
+      : "https://batteryengine-server.onrender.com"
+    ).replace(/\/$/, "");
+    const res = await fetch(
+      apiBase + "/stripe/create-checkout-session",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          email: user.email,
+          success_url: window.location.origin
+            + "?payment=success",
+          cancel_url: window.location.origin
+            + "?payment=cancelled",
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.checkout_url) {
+      window.location.href = data.checkout_url;
+    } else {
+      throw new Error(
+        data.error || "Geen checkout URL ontvangen"
+      );
+    }
+
+  } catch (err) {
+    signupStatus.textContent =
+      "Betaling starten mislukt: " + err.message;
+    signupStatus.className = "status error";
+  }
 });
 
 // ============================
