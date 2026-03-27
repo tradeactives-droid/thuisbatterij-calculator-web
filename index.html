@@ -927,12 +927,12 @@
       box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.35);
     }
 
-    body.step5-typography-premium #step-5 {
+    body.step5-typography-premium #step-6 {
       font-family: "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
       font-variant-numeric: tabular-nums;
     }
 
-    body.step5-typography-premium #step-5 .result-title {
+    body.step5-typography-premium #step-6 .result-title {
       font-size: 14px;
       font-weight: 500;
       color: rgba(255, 255, 255, 0.7);
@@ -940,7 +940,7 @@
     }
 
     /* Standaard hoofdwaarden (A1/B1/C1, pieken, terugverdientijd): iets kleiner */
-    body.step5-typography-premium #step-5 .result-value {
+    body.step5-typography-premium #step-6 .result-value {
       font-size: 20px;
       font-weight: 600;
       color: #ffffff;
@@ -949,13 +949,13 @@
     }
 
     /* ROI: nog iets subtieler t.o.v. kosten/tegels */
-    body.step5-typography-premium #step-5 .result-value.result-muted {
+    body.step5-typography-premium #step-6 .result-value.result-muted {
       font-size: 19px;
       font-weight: 600;
     }
 
     /* Besparing per jaar: duidelijk de grootste waarde */
-    body.step5-typography-premium #step-5 .result-value.result-highlight {
+    body.step5-typography-premium #step-6 .result-value.result-highlight {
       font-size: 30px;
       font-weight: 600;
       color: #4ade80;
@@ -964,7 +964,7 @@
     }
 
     /* Terugverdientijd: zelfde schaal als overige witte waarden */
-    body.step5-typography-premium #step-5 .result-value .result-payback {
+    body.step5-typography-premium #step-6 .result-value .result-payback {
       font-size: 20px;
       font-weight: 600;
       letter-spacing: -0.25px;
@@ -972,13 +972,13 @@
       font-variant-numeric: tabular-nums;
     }
 
-    body.step5-typography-premium #step-5 .result-sub {
+    body.step5-typography-premium #step-6 .result-sub {
       font-size: 12px;
       font-weight: 400;
       color: rgba(255, 255, 255, 0.5);
     }
 
-    body.step5-typography-premium #step-5 .tariff-matrix th.table-header {
+    body.step5-typography-premium #step-6 .tariff-matrix th.table-header {
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -986,18 +986,18 @@
       font-weight: 500;
     }
 
-    body.step5-typography-premium #step-5 .tariff-matrix td.table-label {
+    body.step5-typography-premium #step-6 .tariff-matrix td.table-label {
       color: rgba(255, 255, 255, 0.7);
       font-weight: 400;
     }
 
-    body.step5-typography-premium #step-5 .tariff-matrix td.table-value {
+    body.step5-typography-premium #step-6 .tariff-matrix td.table-value {
       font-weight: 500;
       color: #ffffff;
       font-variant-numeric: tabular-nums;
     }
 
-    body.step5-typography-premium #step-5 .tariff-matrix td.table-value.tariff-matrix-min {
+    body.step5-typography-premium #step-6 .tariff-matrix td.table-value.tariff-matrix-min {
       color: #4ade80;
       font-weight: 600;
     }
@@ -1129,11 +1129,12 @@
     <div class="stepper">
       <div class="step active" id="step-pill-0"><div class="badge">0</div> Start</div>
       <div class="step" id="step-pill-1"><div class="badge">1</div> Persoonlijk Profiel</div>
-      <div class="step" id="step-pill-2"><div class="badge">2</div> Batterij</div>
-      <div class="step" id="step-pill-3"><div class="badge">3</div> Tarieven</div>
-      <div class="step" id="step-pill-4"><div class="badge">4</div> Contractkosten</div>
-      <div class="step" id="step-pill-5"><div class="badge">5</div> Resultaat</div>
-      <div class="step" id="step-pill-6"><div class="badge">6</div> Advies</div>
+      <div class="step" id="step-pill-2"><div class="badge">2</div> Huishoudprofiel</div>
+      <div class="step" id="step-pill-3"><div class="badge">3</div> Batterij</div>
+      <div class="step" id="step-pill-4"><div class="badge">4</div> Tarieven</div>
+      <div class="step" id="step-pill-5"><div class="badge">5</div> Contractkosten</div>
+      <div class="step" id="step-pill-6"><div class="badge">6</div> Resultaat</div>
+      <div class="step" id="step-pill-7"><div class="badge">7</div> Advies</div>
     </div>
 
     <div class="card" id="wizard-container">
@@ -1394,15 +1395,17 @@
     </div>
   </div>
 
-  <h3 style="font-size:1.125rem; font-weight:600;
-             color:var(--muted);
-             text-transform:uppercase;
-             letter-spacing:0.05em;
-             margin:56px 0 12px 0;
-             padding-bottom:6px;
-             border-bottom:1px solid var(--border);">
-    Huishoudprofiel
-  </h3>
+  <div id="profile-status" class="status">Vul jaarverbruik en jaaropwek in om door te gaan.</div>
+
+  <br>
+  <button class="btn-secondary" id="to-step-2">Volgende</button>
+</div>
+
+<!-- ======================= -->
+<!--    STEP 2 · HUISHOUD    -->
+<!-- ======================= -->
+<div id="step-2" style="display:none;">
+  <h2>Huishoudprofiel</h2>
 
   <div class="field">
     <label>Woning/huishoudprofiel<span class="required">*</span></label>
@@ -1537,18 +1540,19 @@
       <option value="spread">Verspreid</option>
     </select>
   </div>
-  
-  <div id="profile-status" class="status">Vul de verplichte velden in om door te gaan.</div>
+
+  <div id="huishoud-status" class="status">Kies een huishoudprofiel om door te gaan.</div>
 
   <br>
-  <button class="btn-secondary" id="to-step-2">Volgende</button>
+  <button class="btn-secondary" id="back-to-1">Vorige</button>
+  <button class="btn-primary" id="to-step-3">Volgende</button>
 </div>
 
 <!-- ======================= -->
-<!--    STEP 2               -->
+<!--    STEP 3 · BATTERIJ    -->
 <!-- ======================= -->
-<div id="step-2" style="display:none;">
-  <h2>Stap 2 · Batterij</h2>
+<div id="step-3" style="display:none;">
+  <h2>Stap 3 · Batterij</h2>
   <p style="font-size:0.86rem;color:var(--muted);margin:-6px 0 16px;line-height:1.45;max-width:52rem;">
     Let op: bij zeer lage capaciteit (E) en/of vermogen (P) kan de server dit als <strong>geen effectieve thuisbatterij</strong> behandelen — dan vallen de scenario’s B1 en C1 samen. Dat is geen fout in de app.
   </p>
@@ -1688,15 +1692,15 @@
 
     </div> <!-- 👈 SLUIT .field (degradatie) -->
 
-  <button class="btn-secondary" id="back-to-1">Vorige</button>
-  <button class="btn-primary" id="to-step-3">Volgende</button>
+  <button class="btn-secondary" id="back-to-2">Vorige</button>
+  <button class="btn-primary" id="to-step-4">Volgende</button>
   </div>  
 
 <!-- ======================= -->
-<!--    STEP 3               -->
+<!--    STEP 4 · TARIEVEN    -->
 <!-- ======================= -->
-<div id="step-3" style="display:none;">
-  <h2>Stap 3 · Tarieven</h2>
+<div id="step-4" style="display:none;">
+  <h2>Stap 4 · Tarieven</h2>
 
   <h3>Enkel tarief</h3>
   <div class="field">
@@ -1738,15 +1742,15 @@
     Dynamische prijzen werden gesimuleerd op basis van historische marktdata (APX-profiel).
   </div>
 
-  <button class="btn-secondary" id="back-to-2">Vorige</button>
-  <button class="btn-primary" id="to-step-4">Volgende</button>
+  <button class="btn-secondary" id="back-to-3">Vorige</button>
+  <button class="btn-primary" id="to-step-5">Volgende</button>
 </div>
 
   <!-- ======================= -->
-  <!--    STEP 4 · CONTRACTKOSTEN -->
+  <!--    STEP 5 · CONTRACTKOSTEN -->
   <!-- ======================= -->
-<div id="step-4" style="display:none;">
-  <h2>Stap 4 · Contractkosten</h2>
+<div id="step-5" style="display:none;">
+  <h2>Stap 5 · Contractkosten</h2>
 
   <h3>Vaste contractkosten</h3>
 
@@ -1766,17 +1770,17 @@
     <input id="tlv_monthly_fee" type="number" step="0.01" value="0">
   </div>
 
-  <button class="btn-secondary" id="back-to-3">Vorige</button>
+  <button class="btn-secondary" id="back-to-4">Vorige</button>
   <button class="btn-primary" id="btn-compute">Berekenen</button>
   
   <div id="compute-status" class="status" style="margin-top:10px;"></div>
 </div>
 
 <!-- ======================= -->
-<!--    STEP 5               -->
+<!--    STEP 6 · RESULTATEN  -->
 <!-- ======================= -->
-<div id="step-5" style="display:none;">
-  <h2>Stap 5 · Resultaten</h2>
+<div id="step-6" style="display:none;">
+  <h2>Stap 6 · Resultaten</h2>
 
   <div class="step5-typography-preview-bar" role="group" aria-label="Typografie preview">
     <span class="step5-typography-preview-label">Typografie</span>
@@ -1957,7 +1961,7 @@
     📄 Download PDF
   </button>
 
-  <button class="btn-secondary" id="to-step-6" style="margin-left:8px;">
+  <button class="btn-secondary" id="to-step-7" style="margin-left:8px;">
     Persoonlijk advies bekijken
   </button>
 
@@ -1965,10 +1969,10 @@
   </div>
 
 <!-- ======================= -->
-<!--    STEP 6 · ADVIES      -->
+<!--    STEP 7 · ADVIES      -->
 <!-- ======================= -->
-<div id="step-6" style="display:none;">
-  <h2>Stap 6 · Persoonlijk advies</h2>
+<div id="step-7" style="display:none;">
+  <h2>Stap 7 · Persoonlijk advies</h2>
 
   <p class="status" id="advice-status">
     Klik op “Genereer advies” om een professioneel adviesrapport te maken.
@@ -1991,7 +1995,7 @@
     </div>
 
   <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;">
-    <button class="btn-secondary" id="back-to-4">Terug naar resultaten</button>
+    <button class="btn-secondary" id="back-to-6">Terug naar resultaten</button>
     <button class="btn-primary" id="btn-generate-advice">Genereer advies</button>
   </div>
 </div>
@@ -2492,7 +2496,7 @@ function wireHeatpumpFields() {
 /*       WIZARD STAPPEN          */
 /* ----------------------------- */
 function activateStep(n) {
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 8; i++) {
     const pill  = document.getElementById("step-pill-" + i);
     const step  = document.getElementById("step-" + i);
     const badge = pill ? pill.querySelector(".badge") : null;
@@ -2538,7 +2542,6 @@ document.getElementById("to-step-2").addEventListener("click", () => {
 
   const annualLoad = parseFloat(document.getElementById("annual-load").value || "0");
   const annualPv   = parseFloat(document.getElementById("annual-pv").value || "0");
-  const profile    = document.getElementById("household-profile").value || "";
 
   if (!isFinite(annualLoad) || annualLoad <= 0) {
     status.textContent = "Vul een geldig jaarverbruik in.";
@@ -2550,37 +2553,48 @@ document.getElementById("to-step-2").addEventListener("click", () => {
     status.className = "status error";
     return;
   }
+
+  status.textContent = "Energiedata opgeslagen ✔";
+  status.className = "status success";
+  activateStep(2);
+});
+
+document.getElementById("back-to-1").addEventListener("click", () => activateStep(1));
+
+document.getElementById("to-step-3").addEventListener("click", () => {
+  const status = document.getElementById("huishoud-status");
+  const profile = document.getElementById("household-profile").value || "";
+
   if (!profile) {
-    status.textContent = "Kies een huishoudenprofiel.";
+    status.textContent = "Kies een huishoudprofiel.";
     status.className = "status error";
     return;
   }
 
   status.textContent = "Profiel ingesteld ✔";
   status.className = "status success";
-  activateStep(2);
-});
-  
-document.getElementById("back-to-1").addEventListener("click", () => activateStep(1));
-document.getElementById("to-step-3").addEventListener("click", () => {
   activateStep(3);
+});
+
+document.getElementById("back-to-2").addEventListener("click", () => activateStep(2));
+document.getElementById("to-step-4").addEventListener("click", () => {
+  activateStep(4);
   applyTariffDefaultsIfEmpty();
 });
-document.getElementById("back-to-2").addEventListener("click", () => activateStep(2));
-document.getElementById("back-to-3")
-  ?.addEventListener("click", () => activateStep(3));
-document.getElementById("to-step-4")
-  ?.addEventListener("click", () => activateStep(4));
+document.getElementById("back-to-3").addEventListener("click", () => activateStep(3));
+document.getElementById("to-step-5").addEventListener("click", () => activateStep(5));
 
 document.getElementById("back-to-4").addEventListener("click", () => activateStep(4));
 
-document.getElementById("to-step-6")?.addEventListener("click", () => {
+document.getElementById("to-step-7")?.addEventListener("click", () => {
   if (!window.computedResult) {
     alert("Voer eerst een berekening uit.");
     return;
   }
-  activateStep(6);
+  activateStep(7);
 });
+
+document.getElementById("back-to-6").addEventListener("click", () => activateStep(6));
 
 /* ----------------------------- */
 /*      COMPUTE                 */
@@ -2826,7 +2840,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
     status.textContent = "Berekening afgerond.";
     status.className = "status success";
     
-    activateStep(5);
+    activateStep(6);
     fillResults(data);
     updateCountryUI(); 
     updateCostChart(data);
@@ -3563,36 +3577,39 @@ document.querySelectorAll(".stepper .step").forEach((pill, index) => {
 
   pill.addEventListener("click", () => {
 
-    // Niet vooruit klikken zonder verplichte profielvelden
     if (index > 1) {
       const annualLoad = parseFloat(document.getElementById("annual-load")?.value || "0");
       const annualPv   = parseFloat(document.getElementById("annual-pv")?.value || "0");
-      const profile    = document.getElementById("household-profile")?.value || "";
-
-      if (!isFinite(annualLoad) || annualLoad <= 0 || !isFinite(annualPv) || annualPv < 0 || !profile) {
-        alert("Vul eerst Stap 1 volledig in (jaarverbruik, jaaropwek en profiel).");
+      if (!isFinite(annualLoad) || annualLoad <= 0 || !isFinite(annualPv) || annualPv < 0) {
+        alert("Vul eerst Stap 1 in (jaarverbruik en jaaropwek).");
         return;
       }
     }
 
-    // Niet naar stap 3/4/5 zonder batterijdata
     if (index > 2) {
-      const E = document.getElementById("E").value;
-      if (!E) {
-        alert("Vul eerst de batterijgegevens in bij stap 2.");
+      const profile = document.getElementById("household-profile")?.value || "";
+      if (!profile) {
+        alert("Vul eerst Stap 2 in (huishoudprofiel).");
         return;
       }
     }
 
-    // Niet naar stap 5 zonder berekening (computedResult)
-    if (index === 5 && !window.computedResult) {
-      alert("Voer eerst een berekening uit bij stap 4.");
+    if (index > 3) {
+      const E = document.getElementById("E")?.value;
+      if (!E) {
+        alert("Vul eerst de batterijgegevens in bij stap 3.");
+        return;
+      }
+    }
+
+    if (index === 6 && !window.computedResult) {
+      alert("Voer eerst een berekening uit bij stap 5.");
       return;
     }
 
     activateStep(index);
 
-    if (index === 3) {
+    if (index === 4) {
       applyTariffDefaultsIfEmpty();
     }
   });
