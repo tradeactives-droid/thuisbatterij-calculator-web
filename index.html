@@ -3727,6 +3727,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     localStorage.removeItem("pending_payment");
 
     setTimeout(async () => {
+      // Verberg alles eerst
+      document.getElementById("app-view")
+        .style.display = "none";
+      document.getElementById("login-container")
+        .style.display = "none";
+      document.getElementById("paywall-container")
+        .style.display = "none";
+
       try {
         const { data: wrap } =
           await window.sb.auth.getSession();
@@ -3783,32 +3791,36 @@ window.addEventListener("DOMContentLoaded", async () => {
     }, 3000);
   }
 
-  if (urlParams.get("payment") === "cancelled") {
-    const { data: wrap } = await window.sb.auth.getSession();
-    if (wrap?.session) {
-      const loginC = document.getElementById("login-container");
-      const signupC = document.getElementById("signup-container");
-      if (loginC) loginC.style.display = "none";
-      if (signupC) signupC.style.display = "none";
-      const paywall = document.getElementById(
-        "paywall-container"
-      );
-      if (paywall) {
-        paywall.style.display = "block";
-        const status = document.getElementById(
-          "paywall-status"
+  const waitingForPayment = paymentSuccess;
+
+  if (!waitingForPayment) {
+    if (urlParams.get("payment") === "cancelled") {
+      const { data: wrap } = await window.sb.auth.getSession();
+      if (wrap?.session) {
+        const loginC = document.getElementById("login-container");
+        const signupC = document.getElementById("signup-container");
+        if (loginC) loginC.style.display = "none";
+        if (signupC) signupC.style.display = "none";
+        const paywall = document.getElementById(
+          "paywall-container"
         );
-        if (status) {
-          status.textContent =
-            "Betaling geannuleerd. " +
-            "Klik hieronder om het opnieuw te proberen.";
-          status.className = "status";
+        if (paywall) {
+          paywall.style.display = "block";
+          const status = document.getElementById(
+            "paywall-status"
+          );
+          if (status) {
+            status.textContent =
+              "Betaling geannuleerd. " +
+              "Klik hieronder om het opnieuw te proberen.";
+            status.className = "status";
+          }
         }
       }
+      window.history.replaceState(
+        {}, document.title, window.location.pathname
+      );
     }
-    window.history.replaceState(
-      {}, document.title, window.location.pathname
-    );
   }
 
   activateStep(0);
