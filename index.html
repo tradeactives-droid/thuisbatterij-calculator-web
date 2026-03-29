@@ -3718,16 +3718,21 @@ window.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(
     window.location.search
   );
-  if (urlParams.get("payment") === "success") {
-    // Wacht tot webhook verwerkt is
+
+  const paymentSuccess =
+    urlParams.get("payment") === "success" ||
+    localStorage.getItem("pending_payment") === "true";
+
+  if (paymentSuccess) {
+    localStorage.removeItem("pending_payment");
+
     setTimeout(async () => {
       try {
-        // Haal sessie op
-        const { data: wrap } = await window.sb.auth.getSession();
+        const { data: wrap } =
+          await window.sb.auth.getSession();
         const session = wrap?.session;
 
         if (!session) {
-          // Geen sessie — toon login
           document.getElementById("paywall-container")
             .style.display = "none";
           document.getElementById("login-container")
@@ -3738,25 +3743,27 @@ window.addEventListener("DOMContentLoaded", async () => {
           return;
         }
 
-        // Registreer sessie opnieuw
         try {
           await registerActiveSessionForUser();
         } catch (e) {
-          console.warn("Sessie herregistratie mislukt:", e);
+          console.warn(
+            "Sessie herregistratie mislukt:", e
+          );
         }
 
         startSessionValidationLoop();
 
-        // Check abonnement
-        const hasSubscription = await checkSubscription();
+        const hasSubscription =
+          await checkSubscription();
 
         if (hasSubscription) {
           document.getElementById("paywall-container")
             .style.display = "none";
           document.getElementById("login-container")
             .style.display = "none";
-          document.getElementById("check-email-container")
-            .style.display = "block";
+          document.getElementById(
+            "check-email-container"
+          ).style.display = "block";
         } else {
           document.getElementById("login-container")
             .style.display = "none";
@@ -3765,7 +3772,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
 
       } catch (err) {
-        console.error("Payment success handler fout:", err);
+        console.error(
+          "Payment success handler fout:", err
+        );
       }
 
       window.history.replaceState(
@@ -4305,6 +4314,7 @@ document.getElementById("btn-subscribe")
       const data = await res.json();
 
       if (data.checkout_url) {
+        localStorage.setItem("pending_payment", "true");
         window.location.href = data.checkout_url;
       } else {
         throw new Error(
