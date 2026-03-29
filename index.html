@@ -1116,6 +1116,35 @@
   </div>
 </div>
 
+<div id="check-email-container"
+     style="max-width:480px; margin:80px auto;
+            display:none;">
+  <div class="card">
+
+    <div class="auth-logo">
+      <img src="/logo.png" alt="Eco Metric logo">
+    </div>
+
+    <h2>Check je e-mail</h2>
+
+    <p style="color:var(--muted); font-size:0.9rem;
+              line-height:1.6; margin-bottom:24px;">
+      Je betaling is bevestigd. We hebben een
+      welkomstmail gestuurd naar je e-mailadres.
+      Je kunt nu inloggen via de knop hieronder.
+    </p>
+
+    <button type="button"
+            class="btn-primary"
+            id="btn-goto-login-from-email"
+            style="width:100%; font-size:1rem;
+                   padding:14px;">
+      Inloggen
+    </button>
+
+  </div>
+</div>
+
   <div id="signup-container" style="max-width:520px; margin:80px auto; display:none;">
     <div class="card">
 
@@ -3726,17 +3755,9 @@ window.addEventListener("DOMContentLoaded", async () => {
             .style.display = "none";
           document.getElementById("login-container")
             .style.display = "none";
-          document.getElementById("app-view")
+          document.getElementById("check-email-container")
             .style.display = "block";
-
-          const emailEl = document.getElementById(
-            "user-email"
-          );
-          if (emailEl) {
-            emailEl.textContent = session.user.email;
-          }
         } else {
-          // Nog niet actief — toon betaalmuur
           document.getElementById("login-container")
             .style.display = "none";
           document.getElementById("paywall-container")
@@ -4306,6 +4327,14 @@ document.getElementById("btn-logout-paywall")
     } catch (_) {}
     await sb.auth.signOut();
     window.location.reload();
+  });
+
+document.getElementById("btn-goto-login-from-email")
+  .addEventListener("click", () => {
+    document.getElementById("check-email-container")
+      .style.display = "none";
+    document.getElementById("login-container")
+      .style.display = "block";
   });
 
 // ============================
