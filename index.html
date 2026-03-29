@@ -3690,27 +3690,67 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.search
   );
   if (urlParams.get("payment") === "success") {
+    // Wacht tot webhook verwerkt is
     setTimeout(async () => {
-      const hasSubscription = await checkSubscription();
-      if (hasSubscription) {
-        const pw = document.getElementById("paywall-container");
-        const av = document.getElementById("app-view");
-        if (pw) pw.style.display = "none";
-        if (av) av.style.display = "block";
-        try {
-          const { data: wrap } = await window.sb.auth.getSession();
-          const u = wrap?.session?.user;
-          const emailEl = document.getElementById("user-email");
-          if (emailEl && u?.email) emailEl.textContent = u.email;
-        } catch (_) {}
-        if (typeof startSessionValidationLoop === "function") {
-          startSessionValidationLoop();
+      try {
+        // Haal sessie op
+        const { data: wrap } = await window.sb.auth.getSession();
+        const session = wrap?.session;
+
+        if (!session) {
+          // Geen sessie — toon login
+          document.getElementById("paywall-container")
+            .style.display = "none";
+          document.getElementById("login-container")
+            .style.display = "block";
+          window.history.replaceState(
+            {}, document.title, window.location.pathname
+          );
+          return;
         }
-        window.history.replaceState(
-          {}, document.title, window.location.pathname
-        );
+
+        // Registreer sessie opnieuw
+        try {
+          await registerActiveSessionForUser();
+        } catch (e) {
+          console.warn("Sessie herregistratie mislukt:", e);
+        }
+
+        startSessionValidationLoop();
+
+        // Check abonnement
+        const hasSubscription = await checkSubscription();
+
+        if (hasSubscription) {
+          document.getElementById("paywall-container")
+            .style.display = "none";
+          document.getElementById("login-container")
+            .style.display = "none";
+          document.getElementById("app-view")
+            .style.display = "block";
+
+          const emailEl = document.getElementById(
+            "user-email"
+          );
+          if (emailEl) {
+            emailEl.textContent = session.user.email;
+          }
+        } else {
+          // Nog niet actief — toon betaalmuur
+          document.getElementById("login-container")
+            .style.display = "none";
+          document.getElementById("paywall-container")
+            .style.display = "block";
+        }
+
+      } catch (err) {
+        console.error("Payment success handler fout:", err);
       }
-    }, 2000);
+
+      window.history.replaceState(
+        {}, document.title, window.location.pathname
+      );
+    }, 3000);
   }
 
   if (urlParams.get("payment") === "cancelled") {
