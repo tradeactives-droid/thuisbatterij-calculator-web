@@ -4060,7 +4060,7 @@ async function handleSessionInvalid() {
     await sb.auth.signOut();
   } catch (_) {}
   alert("Je bent uitgelogd omdat je account op een ander apparaat is gebruikt.");
-  window.location.href = "/login";
+  window.location.reload();
 }
 
 /** Actieve sessie valideren tegen backend. */
