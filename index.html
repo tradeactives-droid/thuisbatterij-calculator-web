@@ -4343,13 +4343,17 @@ document.getElementById("btn-logout-paywall")
     window.location.reload();
   });
 
-document.getElementById("btn-goto-login-from-email")
-  .addEventListener("click", () => {
+const btnGotoLogin = document.getElementById(
+  "btn-goto-login-from-email"
+);
+if (btnGotoLogin) {
+  btnGotoLogin.addEventListener("click", () => {
     document.getElementById("check-email-container")
       .style.display = "none";
     document.getElementById("login-container")
       .style.display = "block";
   });
+}
 
 // ============================
 // LOGIN
