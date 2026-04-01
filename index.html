@@ -1095,7 +1095,7 @@
             id="btn-subscribe"
             style="width:100%; font-size:1rem;
                    padding:14px;">
-      Abonnement starten — €99/maand
+      Abonnement starten, €99/maand
     </button>
 
     <div id="paywall-status"
@@ -1298,7 +1298,7 @@
       </span>
       <span style="font-weight:400; font-size:0.8rem;
                    color:var(--muted); margin-left:8px;">
-        — optioneel, voor profielvalidatie
+        optioneel, voor profielvalidatie
       </span>
     </label>
     <input
@@ -1319,7 +1319,7 @@
       </span>
       <span style="font-weight:400; font-size:0.8rem;
                    color:var(--muted); margin-left:8px;">
-        — optioneel, maar verhoogt de nauwkeurigheid
+        optioneel, maar verhoogt de nauwkeurigheid
       </span>
     </label>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
@@ -1367,7 +1367,7 @@
       </span>
       <span style="font-weight:400; font-size:0.8rem;
                    color:var(--muted); margin-left:8px;">
-        — optioneel, maar sterk aanbevolen
+        optioneel, maar sterk aanbevolen
       </span>
     </label>
 
@@ -1514,8 +1514,8 @@
       <span class="info-icon"
             data-tooltip="Dit is de belangrijkste factor voor
             batterijpotentieel. Als niemand overdag thuis is,
-            is de kloof tussen zonneopwek en verbruik het grootst
-            — een batterij heeft dan de meeste toegevoegde waarde.">
+            is de kloof tussen zonneopwek en verbruik het grootst,
+            een batterij heeft dan de meeste toegevoegde waarde.">
         ℹ
       </span>
     </label>
@@ -1642,7 +1642,7 @@
 <div id="step-3" style="display:none;">
   <h2>Stap 3 · Batterij</h2>
   <p style="font-size:0.86rem;color:var(--muted);margin:-6px 0 16px;line-height:1.45;max-width:52rem;">
-    Let op: bij zeer lage capaciteit (E) en/of vermogen (P) kan de server dit als <strong>geen effectieve thuisbatterij</strong> behandelen — dan vallen de scenario’s B1 en C1 samen. Dat is geen fout in de app.
+    Let op: bij zeer lage capaciteit (E) en/of vermogen (P) kan de server dit als <strong>geen effectieve thuisbatterij</strong> behandelen, dan vallen de scenario’s B1 en C1 samen. Dat is geen fout in de app.
   </p>
 
   <!-- OPSLAGCAPACITEIT -->
@@ -1895,7 +1895,7 @@
       Huidige situatie
       <br>
       <small class="result-sub">
-        Met saldering — uw energiekosten nu
+        Met saldering, uw energiekosten nu
       </small>
     </div>
     <div class="value result-value" id="res-A1">–</div>
@@ -1905,7 +1905,7 @@
       Toekomst zonder batterij
       <br>
       <small id="res-B1-tariff-label" class="result-sub">
-        Zonder saldering — wat u straks betaalt
+        Zonder saldering, wat u straks betaalt
       </small>
     </div>
     <div class="value result-value" id="res-B1">–</div>
@@ -1915,7 +1915,7 @@
       Toekomst met batterij
       <br>
       <small id="res-C1-tariff-label" class="result-sub">
-        Zonder saldering — met eigen opslag
+        Zonder saldering, met eigen opslag
       </small>
     </div>
     <div class="value result-value" id="res-C1">–</div>
@@ -2001,7 +2001,7 @@
   </table>
   </div>
 
-  <h3>Grafiek — Kosten & rendement over levensduur</h3>
+  <h3>Grafiek: Kosten & rendement over levensduur</h3>
 
   <div class="card" style="margin-top:16px;">
     <canvas id="chart" height="180"></canvas>
@@ -3005,19 +3005,19 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       const saldImpact = B1val - A1val;
       if (saldImpact > 50) {
         savingsSub.textContent =
-          `Saldering kost u straks €${Math.round(saldImpact)}/jr extra — `
+          `Saldering kost u straks €${Math.round(saldImpact)}/jr extra, `
           + `batterij compenseert €${Math.round(
               isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
             )}/jr`;
       } else if (saldImpact < -50) {
         savingsSub.textContent =
-          `Saldering levert u weinig op — `
+          `Saldering levert u weinig op, `
           + `batterij verhoogt zelfconsumptie met €${Math.round(
               isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
             )}/jr`;
       } else {
         savingsSub.textContent =
-          `Saldering heeft beperkte impact — `
+          `Saldering heeft beperkte impact, `
           + `batterij bespaart u €${Math.round(
               isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
             )}/jr`;
@@ -3918,7 +3918,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     if (filled.length < 12) {
       preview.textContent =
-        `${filled.length}/12 maanden ingevuld — ` +
+        `${filled.length}/12 maanden ingevuld, ` +
         `som tot nu toe: ${Math.round(sum)} kWh`;
       preview.style.color = "var(--muted)";
       return;
@@ -3929,7 +3929,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     if (pct > 15 && annual > 0) {
       preview.textContent =
-        `⚠ Som maanden: ${Math.round(sum)} kWh — wijkt ` +
+        `⚠ Som maanden: ${Math.round(sum)} kWh, wijkt ` +
         `${Math.round(pct)}% af van jaarverbruik ` +
         `(${Math.round(annual)} kWh). Controleer uw invoer.`;
       preview.style.color = "#f59e0b";
@@ -4290,7 +4290,7 @@ document.getElementById("btn-subscribe")
         status.textContent = "Niet ingelogd.";
         status.className = "status error";
         btn.disabled = false;
-        btn.textContent = "Abonnement starten — €99/maand";
+        btn.textContent = "Abonnement starten, €99/maand";
         return;
       }
 
@@ -4330,7 +4330,7 @@ document.getElementById("btn-subscribe")
       status.textContent = "Fout: " + err.message;
       status.className = "status error";
       btn.disabled = false;
-      btn.textContent = "Abonnement starten — €99/maand";
+      btn.textContent = "Abonnement starten, €99/maand";
     }
   });
 
