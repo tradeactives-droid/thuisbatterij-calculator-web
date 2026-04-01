@@ -1904,7 +1904,7 @@
       Huidige situatie
       <br>
       <small class="result-sub">
-        Met saldering, uw energiekosten nu
+        Met saldering
       </small>
     </div>
     <div class="value result-value" id="res-A1">–</div>
@@ -1914,7 +1914,7 @@
       Toekomst zonder batterij
       <br>
       <small id="res-B1-tariff-label" class="result-sub">
-        Zonder saldering, wat u straks betaalt
+        Zonder saldering
       </small>
     </div>
     <div class="value result-value" id="res-B1">–</div>
@@ -1924,7 +1924,7 @@
       Toekomst met batterij
       <br>
       <small id="res-C1-tariff-label" class="result-sub">
-        Zonder saldering, met eigen opslag
+        Zonder saldering
       </small>
     </div>
     <div class="value result-value" id="res-C1">–</div>
@@ -3014,10 +3014,7 @@ document.getElementById("btn-compute").addEventListener("click", async () => {
       const saldImpact = B1val - A1val;
       if (saldImpact > 50) {
         savingsSub.textContent =
-          `Saldering kost u straks €${Math.round(saldImpact)}/jr extra, `
-          + `batterij compenseert €${Math.round(
-              isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
-            )}/jr`;
+          `Saldering kost u straks €${Math.round(saldImpact)}/jr extra`;
       } else if (saldImpact < -50) {
         savingsSub.textContent =
           `Saldering levert u weinig op, `
