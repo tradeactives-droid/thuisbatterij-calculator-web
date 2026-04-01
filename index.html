@@ -1,4600 +1,849 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-
-  <!-- FAVICONS -->
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-
-  <title>Eco Metric</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eco Metric: Sluit meer batterijdeals</title>
+  <meta name="description" content="De rekentool voor batterijverkopers bij installatiebedrijven. Laat in elk salesgesprek direct zien wat het wegvallen van saldering kost.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --bg: #f5f7fa;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --danger: #dc2626;
-      --success: #15803d;
-      --highlight: #dbeafe;
-      --ui-border-strong: #94a3b8;
+      --bg: #0c0e12;
+      --bg2: #13161c;
+      --bg3: #1a1e27;
+      --accent: #e8622a;
+      --accent2: #f28c5e;
+      --gold: #c9a84c;
+      --white: #ffffff;
+      --off: #f0ede8;
+      --muted: #8a8f9e;
+      --border: rgba(255,255,255,0.07);
+      --green: #3ddc84;
     }
 
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
     body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #cbe5fc; /* 🎯 jouw gekozen kleur */
-      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      overflow-x: hidden;
     }
 
-    .page {
-      /* Horizontale marge — ook gebruikt om header full-bleed uit te lijnen met inhoud */
-      --page-pad-x: clamp(16px, 3vw, 32px);
-      /* Extra inspringing logo / uitloggen t.o.v. schermrand (bovenop --page-pad-x) */
-      --header-extra-inset-x: 20px;
-      width: 100%;
-      max-width: none;
-      margin: 0 auto;
-      padding: 10px var(--page-pad-x) 60px;
-      box-sizing: border-box;
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 20px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(12,14,18,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
     }
-
-    /* =============================== */
-    /* CONTENT UITLIJNING (HEADER + UI) */
-    /* =============================== */
-
-    .content-container {
-      max-width: 100%;
-      width: 100%;
-      margin: 0 auto;
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.08em;
+      color: var(--white);
     }
-
-    .title { font-size:2rem; font-weight:700; }
-    .subtitle { margin-top:4px; font-size:1rem; color:var(--muted); }
-
-    .app-header { margin-bottom: 10px; }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
+    .nav-logo span { color: var(--accent); }
+    .nav-btn {
+      background: var(--accent);
+      color: var(--white);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      padding: 11px 26px; border-radius: 100px;
+      text-decoration: none; letter-spacing: 0.02em;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(232,98,42,0.4);
     }
+    .nav-btn:hover { background: #c44d18; transform: translateY(-1px); }
 
-    /* Header-logo (Eco Metric); groter voor leesbaarheid op desktop */
-    .brand-logo{
-      width: auto;
-      height: 118px;
-      max-height: 118px;
-      max-width: min(480px, 88vw);
-      object-fit: contain;
-      border-radius: 8px;
-      /* Zwart vlak in PNG sluit aan op donkere dashboard-header */
-      background: transparent;
-      background-color: transparent;
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 140px 60px 80px;
+      position: relative; overflow: hidden;
     }
-
-    /* ===== TOP HEADER (LOGO + USER BAR) ===== */
-
-    .header-inner {
-      max-width: 100%;
-      width: 100%;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 110% 50%, rgba(232,98,42,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 80% at -10% 80%, rgba(201,168,76,0.06) 0%, transparent 50%);
     }
-    
-    .top-header {
-      padding: 4px 0;
-      margin-bottom: 4px;
+    .hero-grid-bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 70% 70% at 80% 50%, black 0%, transparent 70%);
     }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid rgba(232,98,42,0.4);
+      background: rgba(232,98,42,0.08);
+      color: var(--accent2); font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 7px 16px; border-radius: 100px;
+      margin-bottom: 28px; position: relative;
+    }
+    .hero-tag::before {
+      content: ''; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 9vw, 9rem);
+      line-height: 0.92; letter-spacing: 0.02em;
+      margin-bottom: 32px; position: relative;
+      max-width: 900px;
+    }
+    .hero-title .line2 { color: var(--accent); }
+    .hero-title .line3 {
+      -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+      color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.15rem; font-weight: 300; line-height: 1.7;
+      color: rgba(255,255,255,0.6); max-width: 520px;
+      margin-bottom: 48px; position: relative;
+    }
+    .hero-sub strong { color: var(--white); font-weight: 500; }
+    .hero-actions {
+      display: flex; align-items: center; gap: 20px;
+      flex-wrap: wrap; position: relative;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--accent); color: var(--white);
+      font-size: 1rem; font-weight: 600;
+      padding: 16px 36px; border-radius: 100px;
+      text-decoration: none;
+      box-shadow: 0 8px 32px rgba(232,98,42,0.45);
+      transition: all 0.2s;
+    }
+    .btn-primary:hover { background: #c44d18; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,98,42,0.55); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.6); font-size: 0.9rem; font-weight: 400;
+      text-decoration: none; transition: color 0.2s;
+    }
+    .btn-ghost:hover { color: var(--white); }
+    .hero-stats {
+      position: absolute; right: 60px; top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .hero-stat {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px 24px;
+      min-width: 180px;
+    }
+    .hero-stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem; letter-spacing: 0.02em;
+      line-height: 1; margin-bottom: 4px;
+    }
+    .hero-stat-num.orange { color: var(--accent); }
+    .hero-stat-num.green { color: var(--green); }
+    .hero-stat-label { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
 
-    /* Header over volle schermbreedte (breekt uit .page-padding), inhoud blijft uitgelijnd */
-    .top-header.header-full {
-      width: calc(100% + 2 * var(--page-pad-x));
-      max-width: none;
-      margin-left: calc(-1 * var(--page-pad-x));
-      margin-right: calc(-1 * var(--page-pad-x));
-      margin-bottom: 0;
-      box-sizing: border-box;
-      padding: 6px calc(var(--page-pad-x) + var(--header-extra-inset-x));
-      border-radius: 18px;
+    /* ── PROBLEM STRIP ── */
+    .strip {
+      background: var(--accent);
+      padding: 18px 60px;
       overflow: hidden;
-      /* Licht thema: zelfde “kaart”-gevoel als wizard (ronde hoeken zichtbaar) */
-      background: rgba(255, 255, 255, 0.82);
-      border: 1px solid #94a3b8;
-      box-shadow:
-        0 4px 14px rgba(0, 0, 0, 0.07),
-        0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+    .strip-inner {
+      display: flex; gap: 60px; align-items: center;
+      white-space: nowrap;
+      animation: scroll 20s linear infinite;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .strip-item {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; letter-spacing: 0.1em;
+      color: var(--white); flex-shrink: 0;
+    }
+    .strip-dot { color: rgba(255,255,255,0.4); }
+
+    /* ── PROBLEM ── */
+    .problem {
+      padding: 120px 60px;
+      background: var(--bg);
+    }
+    .problem-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 100px; align-items: center;
+    }
+    .section-overline {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 20px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      line-height: 1.0; letter-spacing: 0.03em;
+      margin-bottom: 24px;
+    }
+    .section-body {
+      font-size: 1rem; font-weight: 300; line-height: 1.75;
+      color: rgba(255,255,255,0.6);
+    }
+    .section-body strong { color: var(--white); font-weight: 500; }
+    .section-body p + p { margin-top: 16px; }
+    .problem-cards {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .problem-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 28px 24px;
+      position: relative; overflow: hidden;
+    }
+    .problem-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .problem-card-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem; letter-spacing: 0.02em;
+      color: var(--accent); line-height: 1; margin-bottom: 8px;
+    }
+    .problem-card-label {
+      font-size: 0.82rem; color: var(--muted); line-height: 1.4;
     }
 
-    /* Meer ruimte tussen header en stepper; stepper en wizard-card */
-    #app-view > .content-container {
-      padding-top: 48px;
+    /* ── HOW ── */
+    .how {
+      padding: 120px 60px;
+      background: var(--off);
+      color: var(--bg);
     }
-
-    #app-view .content-container > .stepper {
-      margin-top: 0;
-      margin-bottom: 40px;
-      margin-left: 0;
-      margin-right: 0;
+    .how-inner { max-width: 1200px; margin: 0 auto; }
+    .how-header { text-align: center; margin-bottom: 80px; }
+    .how-header .section-overline { color: var(--accent); }
+    .how-header .section-title { color: var(--bg); }
+    .how-steps {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; background: rgba(0,0,0,0.08); border-radius: 20px;
+      overflow: hidden;
     }
-
-
-    .user-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.8rem;
-      color: #475569;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-  /* STEPPER */
-  .stepper {
-    display:flex;
-    gap:10px;
-    margin:24px 0;
-    flex-wrap:wrap;
-  }
-
-  /* 🔹 TOEKOMSTIG (default) */
-  .step {
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:8px 16px;
-    border-radius:999px;
-
-    background:#e6f1fb;              /* licht grijs-blauw */
-    border:1.5px solid var(--ui-border-strong);
-    color:#1e3a8a;
-
-    font-size:0.85rem;
-    cursor:pointer;
-
-    /* 👇 individuele pill-schaduw */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-
-    transition:
-      box-shadow 0.2s ease,
-      transform 0.15s ease,
-      background 0.25s ease;
-  }
-
-  /* 🔵 ACTIEF */
-  .step.active {
-    background:#2563eb;
-    color:white;
-    font-weight:600;
-
-    /* 👇 sterker accent */
-    border:2px solid #1d4ed8;
-    padding:10px 20px;
-
-    box-shadow:0 10px 26px rgba(37,99,235,0.45);
-    transform: translateY(-2px) scale(1.03);
-  }
-
-  /* 🟦 VOLTOOID */
-  .step.completed {
-    background:#dbeafe;
-    border-color:#93c5fd;
-    color:#1d4ed8;
-
-    box-shadow: 0 4px 12px rgba(59,130,246,0.25);  
-  }
-
-  /* subtiele hover */
-  .step:not(.active):hover {
-    background:#cfe4ff;
-    transform: translateY(-1px);
-  }
-
-  /* badge */
-  .badge {
-    width:22px;
-    height:22px;
-    border-radius:999px;
-    border:1px solid currentColor;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:0.75rem;
-    background:rgba(255,255,255,0.35);
-    transition: all 0.2s ease;
-  }
-
-  /* ✓ badge bij voltooide stappen */
-  .step.completed .badge {
-    background:#2563eb;
-    color:white;
-    border-color:#2563eb;
-    font-weight:700;
-  }
-    
-    .card {
-      background:var(--card-bg);
-      border-radius:18px;
-      padding:26px;
-
-      /* 👇 iets sterker los van achtergrond */
-      border:1px solid #94a3b8;
-      box-shadow:
-        0 30px 70px rgba(0,0,0,0.08),
-        0 4px 12px rgba(0,0,0,0.04);
-    }
-
-    /* =============================== */
-    /* LOGIN / SIGNUP LOGO             */
-    /* =============================== */
-
-    /* =============================== */
-    /* LOGIN / SIGNUP LOGO (RECHTS)    */
-    /* =============================== */
-
-    .auth-logo {
-      display: flex;
-      width: 100%;
-      margin-bottom: 12px;
-    }
-
-    .auth-logo img {
-      width: 90px;
-      height: auto;
-      margin-left: auto; /* 🔑 DIT dwingt rechts uitlijning af */
-    }    
-
-    /* =============================== */
-    /* WIZARD BREEDTE (ALLE STAPPEN)   */
-    /* =============================== */
-
-    #wizard-container {
-      max-width: 100%;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    h2 { margin:0 0 18px 0; font-size:1.4rem; }
-
-    .field { margin-bottom:16px; }
-    .field label { display:block; margin-bottom:7px; font-weight:600; }
-
-    .required {
-      color: #dc2626;
-      margin-left: 4px;
-    }
-
-    /* STEP 0 SELECTIE */
-    .choice-row {
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:6px 0;
-      font-size:0.95rem;
-      cursor:pointer;
-    }
-    .choice-row input[type="checkbox"] {
-      width:18px; height:18px;
-    }
-    .choice-row span { flex:1; }
-
-    input, select {
-      width:100%;
-      padding:10px 12px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      font-size:0.9rem;
-      background:#fafbfc;
-    }
-
-    input:focus, select:focus {
-      outline:none;
-      border-color:var(--primary);
-      box-shadow:0 0 0 1px #bfdbfe;
-      background:#fff;
-    }
-
-    button {
-      border:none;
-      border-radius:8px;
-      padding:10px 18px;
-      font-size:0.9rem;
-      cursor:pointer;
-    }
-    .btn-primary { background:var(--primary); color:white; }
-    .btn-primary:hover:not(:disabled) {
-      background: var(--primary-dark);
-    }
-    .btn-secondary {
-      background: #f8fafc;
-      color: #1e293b;
-
-      border: 1.5px solid #0f172a; /* zelfde stijl als pillen */
-      border-radius: 999px;
-
-      padding: 8px 14px;
-      font-size: 0.85rem;
-
-      cursor: pointer;
-
-      transition:
-        background 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.15s ease;
-    }
-    .btn-secondary:hover {
-      background: #e5e7eb;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      transform: translateY(-1px);
-    }
-    .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
-
-    .status {
-      font-size:0.8rem;
-      color:var(--muted);
-      margin-top:8px;
-    }
-    .status.error { color:var(--danger); }
-    .status.success { color:var(--success); }
-
-    table {
-      width:100%;
-      border-collapse:collapse;
-      margin-top:14px;
-      font-size:0.85rem;
-      border:1.5px solid var(--ui-border-strong);
-    }
-    th,td {
-      border:1px solid var(--border);
-      padding:8px 10px;
-      text-align:right;
-    }
-    th:first-child, td:first-child { text-align:left; }
-    th { background:#f1f5f9; font-weight:600; }
-    td.highlight { background:var(--highlight); font-weight:700; }
-
-    /* =============================== */
-    /* TABLES ALS CARDS (MATRIX + ENERGIE) */
-    /* =============================== */
-
-    .table-card {
-      background: #ffffff;
-      border-radius: 16px;
-      border: 1px solid #94a3b8; /* donkerdere rand */
-      padding: 12px;
-      margin-top: 16px;
-    }
-
-    @media (max-width: 900px) {
-      .results-summary {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .results-summary {
-        grid-template-columns: 1fr;
-      }
-    }
-    .result-tile {
-      border-radius:12px;
-      border:1.5px solid var(--ui-border-strong);
-      padding:12px 14px;
-      background:#f8fafc;
-    }
-    .result-tile .label {
-      font-size:0.8rem;
-      color:var(--muted);
-      margin-bottom:4px;
-    }
-    .result-tile .value {
-      font-size:1.1rem;
-      font-weight:700;
-    }
-
-    /* Ondertitelregels in resultaat-tegels (zelfde opmaak als voorheen inline #64748b) */
-    .result-tile .label .result-sub {
-      font-size: 0.75rem;
-      font-weight: 400;
-      color: var(--muted);
-    }
-
-    #chart { margin-top:20px; }
-
-    /* ===== TOOLTIP STYLING ===== */
-.info-icon {
-  cursor: help;
-  margin-left: 6px;
-  color: #3b82f6;
-  font-weight: bold;
-  position: relative;
-}
-
-.info-icon:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  top: 20px;
-  left: 0;
-  background: #1f2937;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  width: 260px;
-  z-index: 999;
-  font-size: 13px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-    /* =============================== */
-    /* RESULTATEN LAYOUT FIX           */
-    /* =============================== */
-
-    .results-container {
-      max-width: 100%;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    /* =============================== */
-    /* RESULT TILES GRID               */
-    /* =============================== */
-
-    .results-summary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 3 per rij op desktop */
-      gap: 12px;
-    }
-
-    /* =============================== */
-    /* SPACING TUSSEN RESULTAAT SECTIES */
-    /* =============================== */
-
-    /* Ruimte na de tiles */
-    .results-summary {
-      margin-bottom: 36px;
-    }
-
-    /* Tariefmatrix als sectie */
-    .table-card {
-      margin-bottom: 40px;
-    }
-
-    /* Laagste bedrag per rij: zelfde accent als “Besparing per jaar” (#4ade80) */
-    .tariff-matrix td.table-value.tariff-matrix-min {
-      color: #4ade80;
-      font-weight: 600;
-    }
-
-    /* Grafiek-card extra ruimte eronder */
-    #chart {
-      margin-bottom: 0; /* canvas zelf niet */
-    }
-
-    #chart,
-    #chart + * {
-      margin-bottom: 0;
-    }
-
-    /* Grafiek-container (de card rondom de chart) */
-    .card:has(#chart) {
-      margin-bottom: 44px;
-    }
-
-    /* Energie-inzichten tabel */
-    .energy-table {
-      margin-bottom: 32px;
-    }
-
-    /* =============================== */
-    /* ADVIESRAPPORT OPMAAK            */
-    /* =============================== */
-
-    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=Source+Sans+3:wght@400;500;600&display=swap');
-
-    .advice-report-wrapper {
-      background: #f3f6f9;
-      padding: 32px 0 48px;
-    }
-
-    .advice-report {
-      background: #ffffff;
-      max-width: 100%;
-      width: 100%;
-      margin: 0 auto;
-      padding: 48px 56px;
-      border-radius: 14px;
-      border: 1px solid #94a3b8;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    }
-
-    .report-title {
-      font-family: 'Source Serif 4', serif;
-      font-size: 32px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #1f2933;
-    }
-
-    .report-subtitle {
-      font-family: 'Source Sans 3', sans-serif;
-      font-size: 15px;
-      color: #6b7280;
-      margin-bottom: 32px;
-    }
-
-    .report-content h3 {
-      font-family: 'Source Serif 4', serif;
-      font-size: 21px;
-      margin-top: 36px;
-      margin-bottom: 12px;
-    }
-
-    .report-content p {
-      font-family: 'Source Sans 3', sans-serif;
-      font-size: 16px;
-      line-height: 1.7;
-      margin-bottom: 16px;
-    }
-
-    /* =============================== */
-    /* BIJLAGEN — VISUELE SCHEIDING    */
-    /* (CSS-only, inhoud blijft exact)*/
-    /* =============================== */
-
-    #advice-rendered {
-      white-space: pre-wrap;
-    }
-
-    /* ===== ADVIES TITELS + ALINEA’S (HTML rendering) ===== */
-
-    #advice-rendered {
-      white-space: normal;   /* belangrijk: want we renderen nu HTML */
-    }
-
-    .advice-title {
-      font-family: 'Source Serif 4', serif;
-      font-size: 22px;
-      font-weight: 700;
-      margin-top: 26px;
-      margin-bottom: 14px;
-      color: #111827;
-    }
-
-    .advice-section-gap {
-      height: 24px;   /* meer witruimte tussen secties */
-    }
-
-    .advice-paragraph {
-      font-family: 'Source Sans 3', sans-serif;
-      font-size: 16px;
-      line-height: 1.75;
-      margin-bottom: 14px;
-      color: #1f2937;
-    }
-    
-    /* Visuele scheiding vóór Bijlage A */
-    #advice-rendered::after {
-      content: "";
-    }
-
-    /* Marker voor begin bijlagen */
-    #advice-rendered {
+    .how-step {
+      background: var(--off);
+      padding: 48px 40px;
       position: relative;
     }
-
-    /* Subtiele scheidingslijn vóór bijlagen */
-    #advice-rendered {
-      background-image: linear-gradient(
-        to bottom,
-        transparent 0%,
-        transparent 70%,
-        #e5e7eb 70%,
-        transparent 72%
-      );
-      background-repeat: no-repeat;
-      background-size: 100% 1px;
+    .how-step-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 5rem; letter-spacing: 0.02em;
+      color: rgba(0,0,0,0.06); line-height: 1;
+      position: absolute; top: 24px; right: 28px;
+    }
+    .how-step-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--accent); display: flex;
+      align-items: center; justify-content: center;
+      margin-bottom: 24px; font-size: 1.5rem;
+    }
+    .how-step-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.04em;
+      color: var(--bg); margin-bottom: 12px;
+    }
+    .how-step-desc {
+      font-size: 0.9rem; font-weight: 300;
+      color: rgba(0,0,0,0.55); line-height: 1.65;
     }
 
-    /* Extra ademruimte bij bijlagen */
-    #advice-rendered {
-      padding-bottom: 8px;
+    /* ── TOOL MOCKUP ── */
+    .mockup-section {
+      padding: 120px 60px;
+      background: var(--bg2);
+    }
+    .mockup-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1.4fr;
+      gap: 80px; align-items: center;
+    }
+    .mockup-frame {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5),
+                  0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .mockup-topbar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 24px;
+    }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-dot:nth-child(1) { background: #ff5f57; }
+    .mockup-dot:nth-child(2) { background: #febc2e; }
+    .mockup-dot:nth-child(3) { background: #28c840; }
+    .mockup-url {
+      flex: 1; background: rgba(255,255,255,0.05);
+      border-radius: 6px; padding: 6px 12px;
+      font-size: 0.72rem; color: var(--muted);
+      margin-left: 8px;
+    }
+    .mockup-tiles {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 14px;
+    }
+    .mockup-tile {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 14px;
+    }
+    .mockup-tile-label {
+      font-size: 0.65rem; color: var(--muted);
+      margin-bottom: 8px; line-height: 1.3;
+    }
+    .mockup-tile-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.02em;
+    }
+    .mockup-tile-val.red { color: #ff6b6b; }
+    .mockup-tile-val.green { color: var(--green); }
+    .mockup-saving {
+      background: rgba(61,220,132,0.08);
+      border: 1px solid rgba(61,220,132,0.2);
+      border-radius: 12px; padding: 16px 18px;
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 14px;
+    }
+    .mockup-saving-label {
+      font-size: 0.75rem; color: rgba(255,255,255,0.5);
+    }
+    .mockup-saving-label strong {
+      display: block; color: rgba(255,255,255,0.85);
+      font-size: 0.82rem; margin-bottom: 3px;
+    }
+    .mockup-saving-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem; color: var(--green);
+    }
+    .mockup-table {
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .mockup-row {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 8px 12px; font-size: 0.7rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .mockup-row:last-child { border-bottom: none; }
+    .mockup-row.header { color: var(--muted); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .mockup-row.data { color: rgba(255,255,255,0.7); }
+    .hl { color: var(--green); font-weight: 600; }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 120px 60px;
+      background: var(--bg);
+    }
+    .features-inner { max-width: 1200px; margin: 0 auto; }
+    .features-header { margin-bottom: 72px; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; background: var(--border);
+      border-radius: 20px; overflow: hidden;
+    }
+    .feature {
+      background: var(--bg);
+      padding: 48px 36px;
+      transition: background 0.2s;
+    }
+    .feature:hover { background: var(--bg2); }
+    .feature-icon {
+      font-size: 2rem; margin-bottom: 20px; display: block;
+    }
+    .feature-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem; letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+    .feature-desc {
+      font-size: 0.88rem; font-weight: 300;
+      color: var(--muted); line-height: 1.65;
     }
 
-    /* Zachte achtergrond voor onderste deel (bijlagen-zone) */
-    .advice-report {
-      background:
-        linear-gradient(
-          to bottom,
-          #ffffff 0%,
-          #ffffff 75%,
-          #f8fafc 100%
-        );
-    }    
-    
-    .advisor-notes {
-      max-width: 100%;
-      margin: 28px auto 0;
+    /* ── PRICING ── */
+    .pricing {
+      padding: 120px 60px;
+      background: var(--bg2);
+    }
+    .pricing-inner {
+      max-width: 680px; margin: 0 auto; text-align: center;
+    }
+    .pricing-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 24px; padding: 64px 56px;
+      margin-top: 56px; position: relative; overflow: hidden;
+    }
+    .pricing-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--gold), var(--accent));
+    }
+    .pricing-glow {
+      position: absolute; top: -100px; left: 50%;
+      transform: translateX(-50%);
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,98,42,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .pricing-badge {
+      display: inline-block;
+      background: rgba(232,98,42,0.15);
+      border: 1px solid rgba(232,98,42,0.3);
+      color: var(--accent2); font-size: 0.72rem;
+      font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 6px 16px;
+      border-radius: 100px; margin-bottom: 28px;
+    }
+    .pricing-amount {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 6rem; letter-spacing: 0.02em;
+      line-height: 1; position: relative;
+    }
+    .pricing-amount sup {
+      font-size: 2rem; vertical-align: top; margin-top: 16px;
+    }
+    .pricing-period {
+      font-size: 0.88rem; color: var(--muted); margin-bottom: 44px;
+    }
+    .pricing-list {
+      list-style: none; text-align: left; margin-bottom: 44px;
+    }
+    .pricing-list li {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 11px 0; font-size: 0.95rem; font-weight: 300;
+      border-bottom: 1px solid var(--border);
+    }
+    .pricing-list li:last-child { border-bottom: none; }
+    .pricing-list li::before {
+      content: '✓'; color: var(--green);
+      font-weight: 700; flex-shrink: 0; margin-top: 1px;
+    }
+    .btn-cta {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; width: 100%;
+      background: var(--accent); color: var(--white);
+      font-size: 1.05rem; font-weight: 600;
+      padding: 18px 36px; border-radius: 100px;
+      text-decoration: none;
+      box-shadow: 0 8px 32px rgba(232,98,42,0.45);
+      transition: all 0.2s;
+    }
+    .btn-cta:hover { background: #c44d18; transform: translateY(-2px); }
+    .pricing-note {
+      font-size: 0.78rem; color: var(--muted); margin-top: 16px;
     }
 
-    .advisor-notes h3 {
-      font-size: 14px;
-      font-weight: 600;
-      color: #6b7280;
-      text-transform: uppercase;
-      margin-bottom: 8px;
+    /* ── FAQ ── */
+    .faq {
+      padding: 120px 60px;
+      background: var(--bg);
     }
-
-    .advisor-notes textarea {
-      width: 100%;
-      min-height: 120px;
-      padding: 14px 16px;
-      font-size: 15px;
-      font-family: 'Source Sans 3', sans-serif;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      background: #f9fafb;
+    .faq-inner { max-width: 760px; margin: 0 auto; }
+    .faq-header { text-align: center; margin-bottom: 64px; }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 28px 0;
     }
-
-    /* =============================== */
-    /* DASHBOARD THEME (standaard)     */
-    /* =============================== */
-    body.dashboard-layout {
-      /* Variabelen voor bestaande UI-regels */
-      --bg: #0b1220;
-      --card-bg: #0f172a;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --border: #334155;
-      --ui-border-strong: #475569;
-      --danger: #ef4444;
-      --success: #22c55e;
-      /* Oranje accent (logo / knoppen / pills) */
-      --primary: #ea580c;
-      --primary-dark: #c2410c;
-      --accent-orange: #fb923c;
-      --highlight: rgba(234, 88, 12, 0.22);
-
-      background: #0b1220;
-      color: var(--text);
+    .faq-q {
+      font-size: 1rem; font-weight: 500; cursor: pointer;
+      display: flex; justify-content: space-between;
+      align-items: center; gap: 16px;
+      color: rgba(255,255,255,0.9);
     }
-
-    body.dashboard-layout .top-header.header-full {
-      background: #0f172a;
-      border: 1px solid #1f2937;
-      border-radius: 18px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      box-shadow:
-        0 4px 18px rgba(0, 0, 0, 0.35),
-        0 2px 6px rgba(0, 0, 0, 0.2);
+    .faq-q::after {
+      content: '+'; font-size: 1.4rem; color: var(--accent);
+      flex-shrink: 0; transition: transform 0.2s;
     }
-
-    /* In dashboard-modus: stepper als links-menu */
-    body.dashboard-layout .content-container {
-      max-width: 100%;
-      width: 100%;
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 32px;
-      align-items: start;
+    .faq-item.open .faq-q::after { transform: rotate(45deg); }
+    .faq-a {
+      font-size: 0.9rem; font-weight: 300;
+      color: var(--muted); line-height: 1.7;
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding-top 0.3s;
     }
+    .faq-item.open .faq-a { max-height: 200px; padding-top: 16px; }
 
-    body.dashboard-layout .stepper {
-      flex-direction: column;
-      gap: 10px;
-      margin: 0;
-      align-items: stretch;
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 40px 60px;
+      display: flex; align-items: center;
+      justify-content: space-between;
     }
-
-    /* Horizontale layout: geen extra marge onder pills (ruimte = grid-gap) */
-    body.dashboard-layout #app-view .content-container > .stepper {
-      margin-bottom: 0;
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.35);
     }
+    .footer-logo span { color: var(--accent); opacity: 0.7; }
+    .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.2); }
 
-    body.dashboard-layout .stepper .step {
-      width: 100%;
-      justify-content: flex-start;
-      box-shadow: none;
-      background: rgba(148,163,184,0.14);
-      border-color: var(--ui-border-strong);
-      color: #cbd5e1;
-      transform: none;
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
     }
+    .hero-tag { animation: fadeUp 0.5s ease both; }
+    .hero-title { animation: fadeUp 0.5s 0.1s ease both; }
+    .hero-sub { animation: fadeUp 0.5s 0.2s ease both; }
+    .hero-actions { animation: fadeUp 0.5s 0.3s ease both; }
+    .hero-stats { animation: fadeUp 0.6s 0.2s ease both; }
 
-    body.dashboard-layout .step:not(.active):hover {
-      background: rgba(251, 146, 60, 0.16);
-      border-color: var(--accent-orange);
-      color: #ffedd5;
-      box-shadow:
-        0 0 0 1px rgba(251, 146, 60, 0.35),
-        0 8px 28px rgba(234, 88, 12, 0.28);
-      transform: translateY(-1px);
-    }
-
-    body.dashboard-layout .badge {
-      background: rgba(148,163,184,0.14);
-      border-color: #475569;
-      color: #e5e7eb;
-    }
-
-    /* Actieve stap: oranje (niet blauw) */
-    body.dashboard-layout .stepper .step.active {
-      background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
-      color: #fff;
-      font-weight: 600;
-      border: 2px solid var(--primary-dark);
-      padding: 10px 20px;
-      box-shadow:
-        0 8px 32px rgba(234, 88, 12, 0.45),
-        0 0 0 1px rgba(251, 146, 60, 0.4);
-      transform: translateY(-1px);
-    }
-
-    body.dashboard-layout .stepper .step.active .badge {
-      background: rgba(0, 0, 0, 0.2);
-      border-color: rgba(255, 255, 255, 0.85);
-      color: #fff;
-    }
-
-    body.dashboard-layout .step.completed {
-      background: rgba(234, 88, 12, 0.12);
-      border-color: rgba(251, 146, 60, 0.45);
-      color: #fdba74;
-      box-shadow: none;
-    }
-
-    body.dashboard-layout .step.completed .badge {
-      background: var(--primary);
-      color: #ffffff;
-      border-color: var(--primary-dark);
-    }
-
-    body.dashboard-layout .step.completed:not(.active):hover {
-      background: rgba(251, 146, 60, 0.22);
-      border-color: var(--accent-orange);
-      color: #ffedd5;
-    }
-
-    /* Card/containers naar dark styling */
-    body.dashboard-layout .card {
-      border-color: #334155;
-      box-shadow:
-        0 30px 70px rgba(0,0,0,0.40),
-        0 4px 12px rgba(0,0,0,0.20);
-    }
-
-    body.dashboard-layout #wizard-container {
-      margin: 0;
-      max-width: none;
-    }
-
-    /* Forms */
-    body.dashboard-layout input,
-    body.dashboard-layout select {
-      background: #0b1220;
-      color: var(--text);
-      border-color: var(--border);
-    }
-
-    body.dashboard-layout input:focus,
-    body.dashboard-layout select:focus {
-      background: #0b1220;
-      border-color: var(--accent-orange);
-      box-shadow: 0 0 0 1px rgba(251, 146, 60, 0.4);
-    }
-
-    body.dashboard-layout .btn-secondary {
-      background: rgba(15,23,42,0.90);
-      color: var(--text);
-      border: 1.5px solid #475569;
-    }
-
-    body.dashboard-layout .btn-secondary:hover {
-      background: rgba(17,24,39,0.95);
-      box-shadow: 0 8px 22px rgba(0,0,0,0.35);
-      transform: translateY(-1px);
-    }
-
-    /* Tables/cards */
-    body.dashboard-layout .table-card,
-    body.dashboard-layout table {
-      background: #0f172a;
-      border-color: #334155;
-      color: var(--text);
-    }
-
-    body.dashboard-layout th {
-      background: rgba(148,163,184,0.12);
-      border-color: #334155;
-      color: var(--text);
-    }
-
-    body.dashboard-layout td {
-      border-color: #334155;
-      color: var(--text);
-    }
-
-    body.dashboard-layout td.highlight {
-      background: rgba(37,99,235,0.22);
-      font-weight: 700;
-    }
-
-    body.dashboard-layout .result-tile {
-      background: rgba(15,23,42,0.75);
-      border-color: #334155;
-    }
-
-    body.dashboard-layout .result-tile .label {
-      color: var(--muted);
-    }
-
-    body.dashboard-layout .results-container {
-      max-width: 100%;
-      width: 100%;
-    }
-
-    body.dashboard-layout .advice-report-wrapper {
-      background: #0b1220;
-      padding: 24px 0 36px;
-    }
-
-    body.dashboard-layout .advice-report {
-      background: #0f172a;
-      border-color: #334155;
-      box-shadow:
-        0 30px 70px rgba(0,0,0,0.40),
-        0 4px 12px rgba(0,0,0,0.20);
-    }
-
-    body.dashboard-layout .report-title {
-      color: #f3f4f6;
-    }
-
-    body.dashboard-layout .report-subtitle {
-      color: #9ca3af;
-    }
-
-    body.dashboard-layout .advice-paragraph,
-    body.dashboard-layout .advisor-notes h3,
-    body.dashboard-layout .advice-title {
-      color: #e5e7eb;
-    }
-
-    body.dashboard-layout .advice-paragraph {
-      color: #e5e7eb;
-    }
-
-    body.dashboard-layout .advice-section-gap {
-      height: 18px;
-    }
-
-    body.dashboard-layout .advisor-notes textarea {
-      background: #0b1220;
-      color: var(--text);
-      border-color: #334155;
-    }
-
-    /* Mobile: terug naar 1 kolom */
-    @media (max-width: 960px) {
-      body.dashboard-layout .content-container {
-        grid-template-columns: 1fr;
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1000px) {
+      nav { padding: 16px 24px; }
+      .hero { padding: 120px 24px 200px; }
+      .hero-stats {
+        position: static; transform: none;
+        flex-direction: row; flex-wrap: wrap;
+        margin-top: 48px;
       }
-
-      body.dashboard-layout .stepper {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      body.dashboard-layout .stepper .step {
-        width: auto;
-      }
+      .hero-stat { flex: 1; min-width: 140px; }
+      .problem { padding: 80px 24px; }
+      .problem-inner { grid-template-columns: 1fr; gap: 48px; }
+      .how { padding: 80px 24px; }
+      .how-steps { grid-template-columns: 1fr; }
+      .mockup-section { padding: 80px 24px; }
+      .mockup-inner { grid-template-columns: 1fr; }
+      .features { padding: 80px 24px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .pricing { padding: 80px 24px; }
+      .pricing-card { padding: 40px 28px; }
+      .faq { padding: 80px 24px; }
+      footer { padding: 32px 24px; flex-direction: column; gap: 12px; text-align: center; }
     }
-
-    /* ----- Stap 5: premium typografie (alleen bij preview-class op body) ----- */
-    .step5-typography-preview-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      margin: 0 0 14px 0;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .step5-typography-preview-label {
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .step5-typo-btn {
-      font-size: 0.78rem;
-      padding: 6px 12px;
-    }
-
-    .step5-typo-btn.active {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.35);
-    }
-
-    body.step5-typography-premium #step-6 {
-      font-family: "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
-      font-variant-numeric: tabular-nums;
-    }
-
-    body.step5-typography-premium #step-6 .result-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.7);
-      letter-spacing: 0.3px;
-    }
-
-    /* Standaard hoofdwaarden (A1/B1/C1, pieken, terugverdientijd): iets kleiner */
-    body.step5-typography-premium #step-6 .result-value {
-      font-size: 20px;
-      font-weight: 600;
-      color: #ffffff;
-      letter-spacing: -0.25px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* ROI: nog iets subtieler t.o.v. kosten/tegels */
-    body.step5-typography-premium #step-6 .result-value.result-muted {
-      font-size: 19px;
-      font-weight: 600;
-    }
-
-    /* Besparing per jaar: duidelijk de grootste waarde */
-    body.step5-typography-premium #step-6 .result-value.result-highlight {
-      font-size: 30px;
-      font-weight: 600;
-      color: #4ade80;
-      letter-spacing: -0.4px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Terugverdientijd: zelfde schaal als overige witte waarden */
-    body.step5-typography-premium #step-6 .result-value .result-payback {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.25px;
-      color: #ffffff;
-      font-variant-numeric: tabular-nums;
-    }
-
-    body.step5-typography-premium #step-6 .result-sub {
-      font-size: 12px;
-      font-weight: 400;
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    body.step5-typography-premium #step-6 .tariff-matrix th.table-header {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: rgba(255, 255, 255, 0.5);
-      font-weight: 500;
-    }
-
-    body.step5-typography-premium #step-6 .tariff-matrix td.table-label {
-      color: rgba(255, 255, 255, 0.7);
-      font-weight: 400;
-    }
-
-    body.step5-typography-premium #step-6 .tariff-matrix td.table-value {
-      font-weight: 500;
-      color: #ffffff;
-      font-variant-numeric: tabular-nums;
-    }
-
-    body.step5-typography-premium #step-6 .tariff-matrix td.table-value.tariff-matrix-min {
-      color: #4ade80;
-      font-weight: 600;
-    }
-    
   </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+<body>
 
-<body class="dashboard-layout">
-<div class="page">
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Eco<span>Metric</span></div>
+  <a href="https://app.ecometric.nl/signup" class="nav-btn">Aanmelden &rarr;</a>
+</nav>
 
-<div id="login-container" style="max-width:420px; margin:80px auto;">
-  <div class="card">
-    
-    <div class="auth-logo">
-      <img src="/logo.png" alt="Eco Metric logo">
-    </div>
-    
-    <h2>Inloggen</h2>
-
-    <div class="field">
-      <label>E-mailadres</label>
-      <input type="email" id="login-email" required autocomplete="off">
-    </div>
-
-    <div class="field">
-      <label>Wachtwoord</label>
-      <input type="password" id="login-password" required autocomplete="new-password">
-    </div>
-
-    <button type="button" class="btn-primary" id="btn-login" style="width:100%;">
-      Inloggen
-    </button>
-
-    <button
-      type="button"
-      class="btn-secondary"
-      id="go-to-signup"
-      style="width:100%; margin-top:12px;"
-    >
-      Nog geen account? Aanmelden
-    </button>
-
-    <div id="login-status" class="status" style="margin-top:10px;"></div>
-
-  </div>
-</div>
-
-<div id="paywall-container"
-     style="max-width:480px; margin:80px auto;
-            display:none;">
-  <div class="card">
-
-    <div class="auth-logo">
-      <img src="/logo.png" alt="Eco Metric logo">
-    </div>
-
-    <h2>Abonnement vereist</h2>
-
-    <p style="color:var(--muted); font-size:0.9rem;
-              line-height:1.6; margin-bottom:24px;">
-      Om Eco Metric te gebruiken heb je een actief
-      abonnement nodig. Voor €99 per maand krijg je
-      onbeperkt toegang tot alle functies.
-    </p>
-
-    <ul style="list-style:none; margin-bottom:28px;
-               padding:0;">
-      <li style="padding:8px 0; font-size:0.875rem;
-                 color:var(--muted);
-                 border-bottom:1px solid var(--border);">
-        ✓ Onbeperkt berekeningen
-      </li>
-      <li style="padding:8px 0; font-size:0.875rem;
-                 color:var(--muted);
-                 border-bottom:1px solid var(--border);">
-        ✓ Volledige tariefmatrix
-      </li>
-      <li style="padding:8px 0; font-size:0.875rem;
-                 color:var(--muted);
-                 border-bottom:1px solid var(--border);">
-        ✓ AI adviesrapport
-      </li>
-      <li style="padding:8px 0; font-size:0.875rem;
-                 color:var(--muted);">
-        ✓ Maandelijks opzegbaar
-      </li>
-    </ul>
-
-    <button type="button"
-            class="btn-primary"
-            id="btn-subscribe"
-            style="width:100%; font-size:1rem;
-                   padding:14px;">
-      Abonnement starten — €99/maand
-    </button>
-
-    <div id="paywall-status"
-         class="status"
-         style="margin-top:10px;">
-    </div>
-
-    <hr style="margin:20px 0; border:none;
-               border-top:1px solid var(--border);">
-
-    <button type="button"
-            class="btn-secondary"
-            id="btn-logout-paywall"
-            style="width:100%;">
-      Uitloggen
-    </button>
-
-  </div>
-</div>
-
-<div id="check-email-container"
-     style="max-width:480px; margin:80px auto;
-            display:none;">
-  <div class="card">
-
-    <div class="auth-logo">
-      <img src="/logo.png" alt="Eco Metric logo">
-    </div>
-
-    <h2>Gelukt!</h2>
-
-    <p style="color:var(--muted); font-size:0.9rem;
-              line-height:1.6; margin-bottom:24px;">
-      Je betaling is bevestigd. We hebben een
-      welkomstmail gestuurd waarmee je voor de
-      eerste keer kunt inloggen.
-    </p>
-
-  </div>
-</div>
-
-  <div id="signup-container" style="max-width:520px; margin:80px auto; display:none;">
-    <div class="card">
-
-      <div class="auth-logo">
-        <img src="/logo.png" alt="Eco Metric logo">
-      </div>
-      
-      <h2>Account aanmaken</h2>
-
-      <div class="field">
-        <label>Voornaam<span class="required">*</span></label>
-        <input type="text" id="signup-firstname" required>
-      </div>
-
-      <div class="field">
-        <label>Achternaam<span class="required">*</span></label>
-        <input type="text" id="signup-lastname" required>
-      </div>
-
-      <div class="field">
-        <label>Bedrijfsnaam<span class="required">*</span></label>
-        <input type="text" id="signup-company" required>
-      </div>
-
-      <div class="field">
-        <label>E-mailadres<span class="required">*</span></label>
-        <input type="email" id="signup-email" required>
-      </div>
-
-      <div class="field">
-        <label>Telefoonnummer<span class="required">*</span></label>
-        <input type="tel" id="signup-phone" required>
-      </div>
-
-      <div class="field">
-        <label>Wachtwoord<span class="required">*</span></label>
-        <input type="password" id="signup-password" required>
-      </div>
-
-      <div class="field">
-        <label>Wachtwoord herhalen<span class="required">*</span></label>
-        <input type="password" id="signup-password-confirm" required>
-      </div>
-
-      <button type="button" class="btn-primary" id="btn-signup-submit" style="width:100%;">
-        Account aanmaken
-      </button>
-
-      <div id="signup-status" class="status" style="margin-top:10px;"></div>
-
-      <hr style="margin:24px 0; border:none; border-top:1px solid #e2e8f0;">
-
-      <button type="button" class="btn-secondary" id="back-to-login" style="width:100%;">
-        Terug naar inloggen
-      </button>
-    </div>
-  </div>
-
-<div id="app-view" style="display:none;">
-
-  <!-- ===== HEADER OVER VOLLE BREEDTE ===== -->
-  <div class="top-header header-full">
-    <div class="header-inner">
-      <div class="brand">
-        <img src="/logo-header.png" alt="Eco Metric logo" class="brand-logo">
-      </div>
-
-      <div class="user-actions">
-        <span id="user-email"></span>
-        <button id="btn-logout" class="btn-secondary">Uitloggen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== GEcentreerde CONTENT ===== -->
-  <div class="content-container">
-
-    <div class="stepper">
-      <div class="step active" id="step-pill-0"><div class="badge">0</div> Start</div>
-      <div class="step" id="step-pill-1"><div class="badge">1</div> Persoonlijk Profiel</div>
-      <div class="step" id="step-pill-2"><div class="badge">2</div> Huishoudprofiel</div>
-      <div class="step" id="step-pill-3"><div class="badge">3</div> Batterij</div>
-      <div class="step" id="step-pill-4"><div class="badge">4</div> Tarieven</div>
-      <div class="step" id="step-pill-5"><div class="badge">5</div> Contractkosten</div>
-      <div class="step" id="step-pill-6"><div class="badge">6</div> Resultaat</div>
-      <div class="step" id="step-pill-7"><div class="badge">7</div> Advies</div>
-    </div>
-
-    <div class="card" id="wizard-container">
-
-  <!-- ======================= -->
-<!--    STEP 0               -->
-<!-- ======================= -->
-<div id="step-0">
-  <h2>Start nauwkeurige thuisbatterij-analyse</h2>
-
-  <p style="margin-bottom:20px; color:#475569; line-height:1.5;">
-    Eco Metric berekent de financiële en energetische impact van een thuisbatterij
-    op basis van uw <strong>jaarverbruik, jaaropwek</strong> en een realistisch verbruiksprofiel.
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-tag">Voor batterijverkopers</div>
+  <h1 class="hero-title">
+    <span class="line1">SLUIT MEER</span><br>
+    <span class="line2">BATTERIJ</span><br>
+    <span class="line3">DEALS.</span>
+  </h1>
+  <p class="hero-sub">
+    Eco Metric berekent in elk salesgesprek <strong>direct en op maat</strong> wat de salderingsafbouw kost voor die ene klant, en wat een batterij compenseert. Ter plekke. Overtuigend.
   </p>
+  <div class="hero-actions">
+    <a href="https://app.ecometric.nl/signup" class="btn-primary">
+      Nu aanmelden &rarr;
+    </a>
+    <a href="#how" class="btn-ghost">
+      Hoe werkt het? &darr;
+    </a>
+  </div>
 
-  <button class="btn-primary" id="to-step-0-next" style="font-size:1rem; padding:14px 24px;">
-    Start berekening
-  </button>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num orange">€440</div>
+      <div class="hero-stat-label">gemiddelde extra jaarkost<br>door wegvallen saldering</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">2027</div>
+      <div class="hero-stat-label">volledige afbouw<br>salderingsregeling NL</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num green">5 min</div>
+      <div class="hero-stat-label">volledige analyse<br>in het gesprek</div>
+    </div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-inner">
+    <span class="strip-item">SALDERING VERDWIJNT IN 2027</span>
+    <span class="strip-item strip-dot">·</span>
+    <span class="strip-item">UW KLANTEN WETEN HET NOG NIET</span>
+    <span class="strip-item strip-dot">·</span>
+    <span class="strip-item">LAAT DE CIJFERS HET WERK DOEN</span>
+    <span class="strip-item strip-dot">·</span>
+    <span class="strip-item">€99 PER MAAND PER GEBRUIKER</span>
+    <span class="strip-item strip-dot">·</span>
+    <span class="strip-item">SALDERING VERDWIJNT IN 2027</span>
+    <span class="strip-item strip-dot">·</span>
+    <span class="strip-item">UW KLANTEN WETEN HET NOG NIET</span>
+    <span class="strip-item strip-dot">·</span>
+    <span class="strip-item">LAAT DE CIJFERS HET WERK DOEN</span>
+    <span class="strip-item strip-dot">·</span>
+    <span class="strip-item">€99 PER MAAND PER GEBRUIKER</span>
+    <span class="strip-item strip-dot">·</span>
+  </div>
 </div>
 
-<!-- ======================= -->
-<!--    STEP 1               -->
-<!-- ======================= -->
-<div id="step-1" style="display:none;">
-  <h2>Persoonlijk Profiel</h2>
-
-  <h3 style="font-size:1.125rem; font-weight:600;
-             color:var(--muted);
-             text-transform:uppercase;
-             letter-spacing:0.05em;
-             margin:56px 0 12px 0;
-             padding-bottom:6px;
-             border-bottom:1px solid var(--border);">
-    Energiedata
-  </h3>
-
-  <div class="field">
-    <label>Land</label>
-    <select id="country">
-      <option value="NL">Nederland</option>
-      <option value="BE">België</option>
-    </select>
-  </div>
-
-  <div class="field">
-    <label>Huidig tarief</label>
-    <select id="tariff-type">
-      <option value="enkel">Enkel</option>
-      <option value="dag_nacht">Dag/Nacht</option>
-      <option value="dynamisch">Dynamisch</option>
-    </select>
-  </div>
-
-  <div class="field">
-    <label>Jaarverbruik (kWh)<span class="required">*</span></label>
-    <input id="annual-load" type="number" min="0" step="1" placeholder="bijv. 3500">
-  </div>
-
-  <div class="field">
-    <label>Jaaropwek (kWh)<span class="required">*</span></label>
-    <input id="annual-pv" type="number" min="0" step="1" placeholder="bijv. 3200">
-  </div>
-
-  <div class="field" id="annual-feedin-field">
-    <label>
-      Jaarlijkse teruglevering (kWh)
-      <span class="info-icon"
-            data-tooltip="Staat op uw jaarafrekening als
-            'teruggeleverd' of 'terugleveringen'. Vult u dit in,
-            dan controleert de tool of uw profiel klopt met de
-            werkelijkheid. Laat leeg als u dit niet weet.">
-        ℹ
-      </span>
-      <span style="font-weight:400; font-size:0.8rem;
-                   color:var(--muted); margin-left:8px;">
-        — optioneel, voor profielvalidatie
-      </span>
-    </label>
-    <input
-      id="annual-feedin"
-      type="number"
-      min="0"
-      step="1"
-      placeholder="bijv. 1800 kWh  (laat leeg als onbekend)"
-    >
-  </div>
-
-  <div class="field" id="day-night-split-field">
-    <label>
-      Dag- en nachtverbruik (kWh)
-      <span class="info-icon"
-            data-tooltip="Staat op uw jaarafrekening of in het portaal van uw netbeheerder (Mijn Enexis, Mijn Liander, Fluvius). Dagverbruik = 07:00–23:00, nachtverbruik = 23:00–07:00. Laat leeg als u dit niet weet.">
-        ℹ
-      </span>
-      <span style="font-weight:400; font-size:0.8rem;
-                   color:var(--muted); margin-left:8px;">
-        — optioneel, maar verhoogt de nauwkeurigheid
-      </span>
-    </label>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-      <div>
-        <label style="font-size:0.78rem; color:var(--muted);
-                      font-weight:400; margin-bottom:4px; display:block;">
-          Dagverbruik (07:00–23:00)
-        </label>
-        <input
-          id="daytime-kwh"
-          type="number"
-          min="0"
-          step="1"
-          placeholder="bijv. 2300 kWh"
-        >
-      </div>
-      <div>
-        <label style="font-size:0.78rem; color:var(--muted);
-                      font-weight:400; margin-bottom:4px; display:block;">
-          Nachtverbruik (23:00–07:00)
-        </label>
-        <input
-          id="nighttime-kwh"
-          type="number"
-          min="0"
-          step="1"
-          placeholder="bijv. 1200 kWh"
-        >
+<!-- PROBLEM -->
+<section class="problem">
+  <div class="problem-inner">
+    <div>
+      <div class="section-overline">Het probleem</div>
+      <h2 class="section-title">UW PROSPECT WEET NIET WAT HEM TE WACHTEN STAAT</h2>
+      <div class="section-body">
+        <p>Vanaf 2027 verdwijnt de salderingsregeling volledig. Huishoudens met zonnepanelen gaan <strong>honderden euro's meer betalen</strong>, tenzij ze een batterij hebben.</p>
+        <p>Als verkoper weet u dit. Maar zonder concrete cijfers voor die specifieke klant blijft het abstract. Eco Metric maakt het tastbaar: in 5 minuten een volledige analyse, ter plekke in het gesprek.</p>
       </div>
     </div>
-    <div id="daytime-split-preview"
-         style="margin-top:6px; font-size:0.8rem; color:var(--muted);">
-    </div>
-  </div>
-
-  <div class="field" id="monthly-load-field">
-    <label>
-      Maandelijks verbruik (kWh per maand)
-      <span class="info-icon"
-            data-tooltip="Staat in het portaal van uw netbeheerder
-            (Mijn Enexis, Mijn Liander, Fluvius) als grafiek of
-            tabel per maand. Vul alle 12 maanden in voor de
-            nauwkeurigste berekening.">
-        ℹ
-      </span>
-      <span style="font-weight:400; font-size:0.8rem;
-                   color:var(--muted); margin-left:8px;">
-        — optioneel, maar sterk aanbevolen
-      </span>
-    </label>
-
-    <div id="monthly-inputs-toggle" style="margin-bottom:8px;">
-      <button type="button" class="btn-secondary"
-              id="btn-toggle-monthly"
-              style="font-size:0.8rem; padding:6px 12px;">
-        + Maandwaarden invoeren
-      </button>
-    </div>
-
-    <div id="monthly-inputs-grid" style="display:none;">
-      <div style="display:grid;
-                  grid-template-columns: repeat(3, 1fr);
-                  gap:8px; margin-bottom:8px;">
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Jan
-          </label>
-          <input class="monthly-kwh-input" data-month="0"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Feb
-          </label>
-          <input class="monthly-kwh-input" data-month="1"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Mrt
-          </label>
-          <input class="monthly-kwh-input" data-month="2"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Apr
-          </label>
-          <input class="monthly-kwh-input" data-month="3"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Mei
-          </label>
-          <input class="monthly-kwh-input" data-month="4"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Jun
-          </label>
-          <input class="monthly-kwh-input" data-month="5"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Jul
-          </label>
-          <input class="monthly-kwh-input" data-month="6"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Aug
-          </label>
-          <input class="monthly-kwh-input" data-month="7"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Sep
-          </label>
-          <input class="monthly-kwh-input" data-month="8"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Okt
-          </label>
-          <input class="monthly-kwh-input" data-month="9"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Nov
-          </label>
-          <input class="monthly-kwh-input" data-month="10"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
-        <div>
-          <label style="font-size:0.78rem; color:var(--muted);">
-            Dec
-          </label>
-          <input class="monthly-kwh-input" data-month="11"
-                 type="number" min="0" step="1" placeholder="kWh">
-        </div>
+    <div class="problem-cards">
+      <div class="problem-card">
+        <div class="problem-card-num">€440</div>
+        <div class="problem-card-label">gemiddelde extra jaarkost zonder batterij na 2027</div>
       </div>
-
-      <div id="monthly-load-preview"
-           style="font-size:0.8rem; color:var(--muted);
-                  margin-top:4px;">
+      <div class="problem-card">
+        <div class="problem-card-num">2027</div>
+        <div class="problem-card-label">volledige afbouw salderingsregeling Nederland</div>
       </div>
-
-      <button type="button" class="btn-secondary"
-              id="btn-clear-monthly"
-              style="font-size:0.78rem; padding:4px 10px;
-                     margin-top:6px;">
-        Wissen
-      </button>
+      <div class="problem-card">
+        <div class="problem-card-num">3x</div>
+        <div class="problem-card-label">tarieftypen vergeleken: enkel, dag/nacht, dynamisch</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-num">5 min</div>
+        <div class="problem-card-label">voor een complete analyse op maat in het gesprek</div>
+      </div>
     </div>
   </div>
+</section>
 
-  <div id="profile-status" class="status">Vul jaarverbruik en jaaropwek in om door te gaan.</div>
-
-  <br>
-  <button class="btn-secondary" id="to-step-2">Volgende</button>
-</div>
-
-<!-- ======================= -->
-<!--    STEP 2 · HUISHOUD    -->
-<!-- ======================= -->
-<div id="step-2" style="display:none;">
-  <h2>Huishoudprofiel</h2>
-
-  <div class="field">
-    <label>Woning/huishoudprofiel<span class="required">*</span></label>
-    <select id="household-profile">
-      <option value="" selected>Kies een profiel</option>
-      <option value="alleenstaand_werkend">Alleenstaand</option>
-      <option value="samenwonend_werkend">Samenwonend</option>
-      <option value="gezin_kinderen">Gezin met kinderen</option>
-      <option value="gepensioneerd">
-        Gepensioneerd / voornamelijk thuis
-      </option>
-    </select>
-  </div>
-
-  <div class="field" id="home-during-day-field">
-    <label>
-      Overdag iemand thuis?
-      <span class="info-icon"
-            data-tooltip="Dit is de belangrijkste factor voor
-            batterijpotentieel. Als niemand overdag thuis is,
-            is de kloof tussen zonneopwek en verbruik het grootst
-            — een batterij heeft dan de meeste toegevoegde waarde.">
-        ℹ
-      </span>
-    </label>
-    <select id="home-during-day">
-      <option value="" selected>Kies een optie</option>
-      <option value="never">
-        Niemand overdag thuis (beiden werkend buitenshuis)
-      </option>
-      <option value="partial">
-        Wisselend (deels thuiswerk, parttime)
-      </option>
-      <option value="always">
-        Altijd iemand thuis overdag
-      </option>
-    </select>
-  </div>
-
-  <!-- EXTRA ENERGIEVERBRUIKERS -->
-  <div class="field">
-    <label>
-      Warmtepomp
-      <span class="info-icon"
-            data-tooltip="Een warmtepomp beïnvloedt het
-            verbruiksprofiel significant, vooral in de winter.">
-        ℹ
-      </span>
-    </label>
-    <select id="has-heatpump">
-      <option value="unknown" selected>Kies een optie</option>
-      <option value="no">Nee</option>
-      <option value="yes">Ja</option>
-    </select>
-  </div>
-
-  <!-- Warmtepomp type — alleen zichtbaar als has-heatpump = yes -->
-  <div class="field" id="heatpump-type-field" style="display:none;">
-    <label>
-      Type warmtepomp
-      <span class="info-icon"
-            data-tooltip="Een buffervat slaat warmte op waardoor
-            de pomp minder vaak hoeft te starten. Dit geeft een
-            vlakker en beter voorspelbaar verbruiksprofiel.">
-        ℹ
-      </span>
-    </label>
-    <select id="heatpump-type">
-      <option value="air_water" selected>
-        Lucht/water zonder buffervat
-      </option>
-      <option value="air_water_buffer">
-        Lucht/water met buffervat
-      </option>
-    </select>
-  </div>
-
-  <!-- Warmtepomp schema — alleen zichtbaar als has-heatpump = yes -->
-  <div class="field" id="heatpump-schedule-field"
-       style="display:none;">
-    <label>
-      Wanneer verwarmt de warmtepomp voornamelijk?
-      <span class="info-icon"
-            data-tooltip="Dit bepaalt wanneer het extra verbruik
-            van de warmtepomp in het dagprofiel terechtkomt.
-            Kies wat het beste past bij de instelling van de
-            klant.">
-        ℹ
-      </span>
-    </label>
-    <select id="heatpump-schedule">
-      <option value="day_night" selected>
-        Ochtend en avond (meest voorkomend)
-      </option>
-      <option value="night">
-        Voornamelijk 's nachts
-      </option>
-      <option value="day">
-        Voornamelijk overdag
-      </option>
-    </select>
-  </div>
-
-  <div class="field">
-    <label>
-      Elektrische auto (thuis laden)
-      <span class="info-icon"
-            data-tooltip="EV-laden beïnvloedt vooral het profiel (meer verbruik in avond/nacht).">
-        ℹ
-      </span>
-    </label>
-    <select id="has-ev">
-      <option value="unknown" selected>Kies een optie</option>
-      <option value="no">Nee</option>
-      <option value="yes">Ja</option>
-    </select>
-  </div>
-
-  <!-- EV-LAADMOMENT (alleen relevant als EV = Ja) -->
-  <div class="field" id="ev-charge-window-field" style="display:none;">
-    <label>
-      EV-laadmoment
-      <span class="info-icon"
-            data-tooltip="Dit bepaalt wanneer het extra EV-verbruik in het dagprofiel terechtkomt. Kies wat meestal klopt bij de klant.">
-        ℹ
-      </span>
-    </label>
-    <select id="ev-charge-window">
-      <option value="evening_night" selected>Avond + nacht (meest voorkomend)</option>
-      <option value="night">Alleen nacht</option>
-      <option value="midday">Overdag (bijv. thuis laden / zonnepanelen)</option>
-      <option value="spread">Verspreid</option>
-    </select>
-  </div>
-
-  <div id="huishoud-status" class="status">Kies een huishoudprofiel om door te gaan.</div>
-
-  <br>
-  <button class="btn-secondary" id="back-to-1">Vorige</button>
-  <button class="btn-primary" id="to-step-3">Volgende</button>
-</div>
-
-<!-- ======================= -->
-<!--    STEP 3 · BATTERIJ    -->
-<!-- ======================= -->
-<div id="step-3" style="display:none;">
-  <h2>Stap 3 · Batterij</h2>
-  <p style="font-size:0.86rem;color:var(--muted);margin:-6px 0 16px;line-height:1.45;max-width:52rem;">
-    Let op: bij zeer lage capaciteit (E) en/of vermogen (P) kan de server dit als <strong>geen effectieve thuisbatterij</strong> behandelen — dan vallen de scenario’s B1 en C1 samen. Dat is geen fout in de app.
-  </p>
-
-  <!-- OPSLAGCAPACITEIT -->
-  <div class="field">
-    <label>
-      Opslagcapaciteit | E (kWh)
-      <span class="info-icon"
-            data-tooltip="De totale hoeveelheid energie die de batterij kan opslaan. 1 kWh = ongeveer 1 uur lang 1000 watt. Een hogere capaciteit betekent meer opslag voor later gebruik.">
-        ℹ
-      </span>
-    </label>
-    <input id="E" type="number" min="0" step="0.1">
-  </div>
-
-  <!-- VERMOGEN -->
-  <div class="field">
-    <label>
-      Laad/ontlaadvermogen | P (kW)
-      <span class="info-icon"
-            data-tooltip="Het maximale vermogen waarmee de batterij kan laden of ontladen. Een hoger vermogen betekent sneller reageren. Voor België is dit belangrijk voor peak-shaving.">
-        ℹ
-      </span>
-    </label>
-    <input id="P" type="number" min="0" step="0.1">
-  </div>
-
-  <!-- DOD -->
-  <div class="field">
-    <label>
-      Diepte van Ontlading | DoD (%)
-      <span class="info-icon"
-            data-tooltip="Het percentage van de batterijcapaciteit dat je veilig kunt gebruiken. Bij 90% DoD kun je 90% van de totale capaciteit benutten.">
-        ℹ
-      </span>
-    </label>
-    <input id="DoD" type="number" min="0" max="100">
-  </div>
-
-  <!-- ROUND TRIP EFFICIENCY -->
-  <div class="field">
-    <label>
-      Round-Trip Efficiëntie | η_rt (%)
-      <span class="info-icon"
-            data-tooltip="Als η_rt niet bekend is, kan je dit op 'niet bekend' zetten. Dan wordt efficiëntieverlies niet meegenomen in de berekening.">
-        ℹ
-      </span>
-    </label>
-
-    <select id="eta-known" style="margin-bottom:8px;">
-      <option value="unknown" selected>Niet bekend (niet meenemen)</option>
-      <option value="known">Bekend (invullen)</option>
-    </select>
-
-    <div id="eta-rt-wrap" style="display:none;">
-      <input id="eta_rt" type="number" min="0" max="100" placeholder="bijv. 90">
+<!-- HOW -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="how-header">
+      <div class="section-overline">Hoe het werkt</div>
+      <h2 class="section-title" style="color:var(--bg);">DRIE STAPPEN. EEN OVERTUIGEND GESPREK.</h2>
     </div>
-
-  </div>
-
-  <!-- CAPACITEITSTARIEF — WORDT BIJ NL AUTOMATISCH VERBORGEN VIA updateCountryUI() -->
-  <div class="field">
-    <label>
-      Capaciteitstarief (€/kW/jaar)
-      <span class="info-icon"
-            data-tooltip="Alleen België (Fluvius). Kosten per kW maandpiek. Een batterij kan pieken verlagen en zo besparen op dit tarief.">
-        ℹ
-      </span>
-    </label>
-    <input id="capacity-tariff" type="number" min="0" step="0.1" value="0">
-  </div>
-  
-  <!-- INVESTERING -->
-  <div class="field">
-    <label>
-      Investering Batterij (€)
-      <span class="info-icon"
-            data-tooltip="De totale aankoopprijs inclusief installatie en omvormer. Dit wordt gebruikt om de terugverdientijd te berekenen.">
-        ℹ
-      </span>
-    </label>
-    <input id="battery-cost" type="number" min="0" step="1">
-  </div>
-
-  <!-- NETLADEN BIJ DYNAMISCH TARIEF -->
-<div class="field" id="grid-charge-field">
-  <label>
-    Batterij laden vanuit net toestaan?
-    <span class="info-icon"
-          data-tooltip="Bij dynamisch tarief kan de batterij goedkoop stroom inkopen en later gebruiken. Dit verhoogt vaak het rendement maar is niet altijd toegestaan door contract of netbeheerder.">
-      ℹ
-    </span>
-  </label>
-
-  <select id="allow-grid-charge">
-    <option value="no" selected>Nee (alleen laden met zonnepanelen)</option>
-    <option value="yes">Ja (ook laden vanuit net)</option>
-  </select>
-</div>
-  
-  <!-- LEVENSDUUR BATTERIJ -->
-  <div class="field">
-    <label>
-      Levensduur batterij (jaar)
-      <span class="info-icon"
-          data-tooltip="De periode waarover de batterij economisch wordt beoordeeld. Dit beïnvloedt de totale besparing, ROI en terugverdientijd.">
-        ℹ
-      </span>
-    </label>
-    <select id="battery-lifetime">
-      <option value="10">10 jaar</option>
-      <option value="15" selected>15 jaar</option>
-      <option value="20">20 jaar</option>
-      <option value="25">25 jaar</option>
-    </select>
-  </div>
-  
-  <!-- DEGRADATIE -->
-  <div class="field">
-    <label>
-      Degradatie per jaar (%)
-      <span class="info-icon"
-        data-tooltip="Als degradatie niet bekend is, wordt een standaard van 2% per jaar gebruikt (realistisch voor Li-ion).">
-        ℹ
-      </span>
-    </label>
-
-    <select id="degradation-known" style="margin-bottom:8px;">
-      <option value="unknown" selected>Niet bekend (2% standaard)</option>
-      <option value="known">Bekend (invullen)</option>
-    </select>
-
-    <div id="battery-degradation-wrap" style="display:none;">
-      <input id="battery-degradation" type="number" min="0" max="10" step="0.1" placeholder="bijv. 2">
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">01</div>
+        <div class="how-step-icon">📋</div>
+        <div class="how-step-title">KLANTDATA INVOEREN</div>
+        <p class="how-step-desc">Jaarverbruik, opwek en teruglevering van de jaarafrekening. Warmtepomp of EV? Gewoon aanvinken. In minder dan 2 minuten klaar.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">02</div>
+        <div class="how-step-icon">🔋</div>
+        <div class="how-step-title">BATTERIJ CONFIGUREREN</div>
+        <p class="how-step-desc">Kies capaciteit, vermogen en investering. De tool berekent direct de exacte besparing per jaar voor deze specifieke klant.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">03</div>
+        <div class="how-step-icon">📊</div>
+        <div class="how-step-title">RESULTAAT TONEN</div>
+        <p class="how-step-desc">Een overzichtelijk dashboard met kosten per scenario, besparing, terugverdientijd en een AI-gegenereerd adviesrapport.</p>
+      </div>
     </div>
-
-    </div> <!-- 👈 SLUIT .field (degradatie) -->
-
-  <button class="btn-secondary" id="back-to-2">Vorige</button>
-  <button class="btn-primary" id="to-step-4">Volgende</button>
-  </div>  
-
-<!-- ======================= -->
-<!--    STEP 4 · TARIEVEN    -->
-<!-- ======================= -->
-<div id="step-4" style="display:none;">
-  <h2>Stap 4 · Tarieven</h2>
-
-  <h3>Enkel tarief</h3>
-  <div class="field">
-    <label>Importprijs (€/kWh)</label>
-    <input id="p_enkel_imp" type="number" step="0.01">
   </div>
-  <div class="field">
-    <label>Exportprijs (€/kWh)</label>
-    <input id="p_enkel_exp" type="number" step="0.01">
-  </div>
+</section>
 
-  <h3>Dag/Nacht tarief</h3>
-  <div class="field">
-    <label>Dagprijs (€/kWh)</label>
-    <input id="p_dag" type="number" step="0.01">
-  </div>
-  <div class="field">
-    <label>Nachtprijs (€/kWh)</label>
-    <input id="p_nacht" type="number" step="0.01">
-  </div>
-  <div class="field">
-    <label>Exportprijs (€/kWh)</label>
-    <input id="p_exp_dn" type="number" step="0.01">
-  </div>
-
-  <h3>Dynamisch tarief</h3>
-  
-  <div class="field">
-    <label>Importprijs (€/kWh)</label>
-    <input id="p_dyn_imp" type="number" step="0.01" value="0.28">
-  </div>
-  
-  <div class="field">
-    <label>Exportprijs (€/kWh)</label>
-    <input id="p_export_dyn" type="number" step="0.01" value="0.07">
-  </div>
-
-  <div id="dyn-fallback-note-historic" class="status" style="display:none;">
-    Dynamische prijzen werden gesimuleerd op basis van historische marktdata (APX-profiel).
-  </div>
-
-  <button class="btn-secondary" id="back-to-3">Vorige</button>
-  <button class="btn-primary" id="to-step-5">Volgende</button>
-</div>
-
-  <!-- ======================= -->
-  <!--    STEP 5 · CONTRACTKOSTEN -->
-  <!-- ======================= -->
-<div id="step-5" style="display:none;">
-  <h2>Stap 5 · Contractkosten</h2>
-
-  <h3>Vaste contractkosten</h3>
-
-  <div class="field">
-    <label>
-      Vastrecht (€/jaar)
-      <span class="info-icon"
-            data-tooltip="Vaste jaarlijkse kosten van uw energieleverancier.">
-        ℹ
-      </span>
-    </label>
-    <input id="fixed-cost" type="number" min="0" step="0.01" value="200">
-  </div>
-
-  <div class="field">
-    <label>Terugleverkosten per maand (€/maand)</label>
-    <input id="tlv_monthly_fee" type="number" step="0.01" value="0">
-  </div>
-
-  <button class="btn-secondary" id="back-to-4">Vorige</button>
-  <button class="btn-primary" id="btn-compute">Berekenen</button>
-  
-  <div id="compute-status" class="status" style="margin-top:10px;"></div>
-</div>
-
-<!-- ======================= -->
-<!--    STEP 6 · RESULTATEN  -->
-<!-- ======================= -->
-<div id="step-6" style="display:none;">
-  <h2>Stap 6 · Resultaten</h2>
-
-  <div class="step5-typography-preview-bar" role="group" aria-label="Typografie preview">
-    <span class="step5-typography-preview-label">Typografie</span>
-    <button type="button" class="btn-secondary step5-typo-btn" data-step5-typo="classic" id="step5-typo-classic" aria-pressed="true">Standaard</button>
-    <button type="button" class="btn-secondary step5-typo-btn" data-step5-typo="premium" id="step5-typo-premium" aria-pressed="false" title="Zet eventueel ?step5typo=premium of ?step5typo=classic in de URL">Premium (preview)</button>
-  </div>
-
-  <div class="results-container">
-
-    <div class="results-summary">
-  <div id="profile-warning"
-       style="display:none;
-              background:#fef3c7;
-              border:1px solid #f59e0b;
-              border-radius:8px;
-              padding:12px 16px;
-              margin-bottom:16px;
-              font-size:0.85rem;
-              color:#92400e;
-              grid-column: 1 / -1;">
-  </div>
-  <div class="result-tile">
-    <div class="label result-title">
-      Huidige situatie
-      <br>
-      <small class="result-sub">
-        Met saldering — uw energiekosten nu
-      </small>
-    </div>
-    <div class="value result-value" id="res-A1">–</div>
-  </div>
-  <div class="result-tile">
-    <div class="label result-title">
-      Toekomst zonder batterij
-      <br>
-      <small id="res-B1-tariff-label" class="result-sub">
-        Zonder saldering — wat u straks betaalt
-      </small>
-    </div>
-    <div class="value result-value" id="res-B1">–</div>
-  </div>
-  <div class="result-tile">
-    <div class="label result-title">
-      Toekomst met batterij
-      <br>
-      <small id="res-C1-tariff-label" class="result-sub">
-        Zonder saldering — met eigen opslag
-      </small>
-    </div>
-    <div class="value result-value" id="res-C1">–</div>
-  </div>
-
-  <!-- NIEUW: BESPARING / PAYBACK / ROI -->
-  <div class="result-tile">
-    <div class="label result-title">
-      Besparing per jaar
-      <br>
-      <small id="res-savings-sub" class="result-sub">
-        verschil tussen toekomst zonder en met batterij
-      </small>
-    </div>
-    <div class="value result-value result-highlight"
-         id="res-savings">–</div>
-  </div>
-  <div class="result-tile">
-    <div class="label result-title">
-      Terugverdientijd<br>
-      <small class="result-sub">incl. batterijdegradatie</small>
-    </div>
-    <div class="value result-value" id="res-payback"><span class="result-payback">–</span></div>
-  </div>
-  <div class="result-tile">
-    <div class="label result-title">
-      ROI (%) 
-      <span class="info-icon"
-            data-tooltip="ROI = netto rendement over de volledige levensduur van de batterij, inclusief jaarlijkse degradatie.">
-        ℹ
-      </span>
-      <br>
-      <small class="result-sub">over volledige levensduur</small>
-    </div>
-    <div class="value result-value result-muted" id="res-roi">–</div>
-  </div>
-  <div class="result-tile">
-  <div class="label result-title">Piek zonder batterij (kW)</div>
-  <div class="value result-value" id="res-peak-no">–</div>
-</div>
-
-  
-
-<div class="result-tile">
-  <div class="label result-title">Piek met batterij (kW)</div>
-  <div class="value result-value" id="res-peak-yes">–</div>
-</div>
-
-<div class="result-tile">
-  <div class="label result-title">Besparing capaciteitstarief / jaar</div>
-  <div class="value result-value" id="res-peak-saving">–</div>
-</div>
-</div>
-
-  <h3>Tariefmatrix (jaarlijkse kosten)</h3>
-
-  <div class="table-card">
-    <table class="table-card tariff-matrix">
-    <tr>
-      <th class="table-header">Scenario</th>
-      <th class="table-header">Enkel</th>
-      <th class="table-header">Dag/Nacht</th>
-      <th class="table-header">Dynamisch</th>
-    </tr>
-    <tr>
-      <td class="table-label">Huidige situatie (met saldering)</td>
-      <td class="table-value" id="A1-enkel">–</td>
-      <td class="table-value" id="A1-dn">–</td>
-      <td class="table-value" id="A1-dyn">–</td>
-    </tr>
-    <tr>
-      <td class="table-label">Toekomst zonder batterij</td>
-      <td class="table-value" id="B1-enkel">–</td>
-      <td class="table-value" id="B1-dn">–</td>
-      <td class="table-value" id="B1-dyn">–</td>
-    </tr>
-    <tr>
-      <td class="table-label">Toekomst met batterij</td>
-      <td class="table-value" id="C1-enkel">–</td>
-      <td class="table-value" id="C1-dn">–</td>
-      <td class="table-value" id="C1-dyn">–</td>
-    </tr>
-  </table>
-  </div>
-
-  <h3>Grafiek — Kosten & rendement over levensduur</h3>
-
-  <div class="card" style="margin-top:16px;">
-    <canvas id="chart" height="180"></canvas>
-  </div>
-  
-  <h3>Energie-inzichten (kWh)</h3>
-
-  <div class="table-card">
-    <table class="table-card energy-table">
-    <tr>
-      <th></th>
-      <th>Enkel</th>
-      <th>Dag/Nacht</th>
-      <th>Dynamisch</th>
-    </tr>
-    <tr>
-      <td>B1 Import</td>
-      <td id="B1-imp-enkel">–</td>
-      <td id="B1-imp-dn">–</td>
-      <td id="B1-imp-dyn">–</td>
-    </tr>
-    <tr>
-      <td>B1 Export</td>
-      <td id="B1-exp-enkel">–</td>
-      <td id="B1-exp-dn">–</td>
-      <td id="B1-exp-dyn">–</td>
-    </tr>
-    <tr>
-      <td>C1 Import</td>
-      <td id="C1-imp-enkel">–</td>
-      <td id="C1-imp-dn">–</td>
-      <td id="C1-imp-dyn">–</td>
-    </tr>
-    <tr>
-      <td>C1 Export</td>
-      <td id="C1-exp-enkel">–</td>
-      <td id="C1-exp-dn">–</td>
-      <td id="C1-exp-dyn">–</td>
-    </tr>
-  </table>
-  </div>
-
-  <br>
-  <button class="btn-primary" id="btn-download-pdf" style="display:none;">
-    📄 Download PDF
-  </button>
-
-  <button class="btn-secondary" id="to-step-7" style="margin-left:8px;">
-    Persoonlijk advies bekijken
-  </button>
-
-  </div> <!-- results-container -->
-  </div>
-
-<!-- ======================= -->
-<!--    STEP 7 · ADVIES      -->
-<!-- ======================= -->
-<div id="step-7" style="display:none;">
-  <h2>Stap 7 · Persoonlijk advies</h2>
-
-  <p class="status" id="advice-status">
-    Klik op “Genereer advies” om een professioneel adviesrapport te maken.
-  </p>
-
-  <!-- ===== ADVIESRAPPORT (READ-ONLY WEERGAVE) ===== -->
-  <div class="advice-report-wrapper">
-    <div class="advice-report">
-      <h1 class="report-title">Thuisbatterij Adviesrapport</h1>
-      <p class="report-subtitle">
-        Besluitondersteunend energieadvies op basis van uw verbruiksdata en batterijconfiguratie
+<!-- MOCKUP -->
+<section class="mockup-section">
+  <div class="mockup-inner">
+    <div>
+      <div class="section-overline">De tool in actie</div>
+      <h2 class="section-title">ZO ZIET EEN KLANT HET IN HET GESPREK</h2>
+      <p class="section-body" style="margin-top:16px;">
+        Dit zijn echte berekeningen voor een gezin met 10 zonnepanelen, enkeltarief en een 10 kWh batterij. <strong>Geen gemiddelden, exacte cijfers</strong> op basis van hun jaarafrekening.
       </p>
-
-      <div id="advice-rendered"></div>
-
-      <div id="advice-results"></div>
-
-      <div id="advice-tariff-matrix-section" class="advice-section" style="display:none;">
-      
     </div>
-
-  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;">
-    <button class="btn-secondary" id="back-to-6">Terug naar resultaten</button>
-    <button class="btn-primary" id="btn-generate-advice">Genereer advies</button>
+    <div class="mockup-frame">
+      <div class="mockup-topbar">
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-dot"></div>
+        <div class="mockup-url">app.ecometric.nl, Stap 5 · Resultaten</div>
+      </div>
+      <div class="mockup-tiles">
+        <div class="mockup-tile">
+          <div class="mockup-tile-label">Huidige situatie<br>Met saldering</div>
+          <div class="mockup-tile-val">€577</div>
+        </div>
+        <div class="mockup-tile">
+          <div class="mockup-tile-label">Toekomst zonder<br>batterij</div>
+          <div class="mockup-tile-val red">€1.017</div>
+        </div>
+        <div class="mockup-tile">
+          <div class="mockup-tile-label">Toekomst met<br>batterij</div>
+          <div class="mockup-tile-val green">€643</div>
+        </div>
+      </div>
+      <div class="mockup-saving">
+        <div class="mockup-saving-label">
+          <strong>Besparing per jaar</strong>
+          Saldering kost €440/jr extra, batterij compenseert €374/jr
+        </div>
+        <div class="mockup-saving-val">€374</div>
+      </div>
+      <div class="mockup-table">
+        <div class="mockup-row header">
+          <span>Scenario</span><span>Enkel</span><span>Dag/Nacht</span><span>Dynamisch</span>
+        </div>
+        <div class="mockup-row data">
+          <span>Huidige situatie</span><span>€577</span><span>€538</span><span>€564</span>
+        </div>
+        <div class="mockup-row data">
+          <span>Zonder batterij</span><span>€1017</span><span>€918</span><span>€984</span>
+        </div>
+        <div class="mockup-row data">
+          <span>Met batterij</span><span>€643</span><span class="hl">€595</span><span>€627</span>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+</section>
 
-</div> <!-- wizard end -->
+<!-- FEATURES -->
+<section class="features">
+  <div class="features-inner">
+    <div class="features-header">
+      <div class="section-overline">Wat u krijgt</div>
+      <h2 class="section-title">ALLES WAT U NODIG HEEFT IN EEN GESPREK</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <div class="feature-title">EXACTE SALDERINGSIMPACT</div>
+        <p class="feature-desc">Berekend op basis van de werkelijke cijfers van de klant. A1, B1 en C1 kloppen altijd met de jaarafrekening, geen schattingen.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">📊</span>
+        <div class="feature-title">VOLLEDIGE TARIEFMATRIX</div>
+        <p class="feature-desc">Enkel, dag/nacht en dynamisch tarief naast elkaar. U ziet direct welk tarief het voordeligst is voor deze klant met een batterij.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🔋</span>
+        <div class="feature-title">REALISTISCHE BESPARING</div>
+        <p class="feature-desc">Geen overdreven beloftes. De besparing wordt analytisch berekend op basis van PV-overschot, batterijcapaciteit en seizoenspatronen.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🌡️</span>
+        <div class="feature-title">WARMTEPOMP & EV</div>
+        <p class="feature-desc">Specifiek verbruiksprofiel voor warmtepompen en elektrische auto's. Het systeem past de berekening automatisch aan.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">📄</span>
+        <div class="feature-title">AI ADVIESRAPPORT</div>
+        <p class="feature-desc">Een volledig rapport met managementsamenvatting, financiële analyse en aanbeveling, gegenereerd door AI, klaar in seconden.</p>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🇳🇱</span>
+        <div class="feature-title">NEDERLAND & BELGIË</div>
+        <p class="feature-desc">Ondersteuning voor zowel de Nederlandse als de Belgische energiemarkt, inclusief de lokale tariefstructuren.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-</div> <!-- content-container -->
+<!-- PRICING -->
+<section class="pricing">
+  <div class="pricing-inner">
+    <div class="section-overline" style="text-align:center;">Prijzen</div>
+    <h2 class="section-title" style="text-align:center;">ÉÉN PRIJS. ALLES INBEGREPEN.</h2>
+    <div class="pricing-card">
+      <div class="pricing-glow"></div>
+      <div class="pricing-badge">Per gebruiker per maand</div>
+      <div class="pricing-amount"><sup>€</sup>99</div>
+      <div class="pricing-period">per maand &middot; maandelijks opzegbaar</div>
+      <ul class="pricing-list">
+        <li>Onbeperkt berekeningen</li>
+        <li>Volledige tariefmatrix (enkel, dag/nacht, dynamisch)</li>
+        <li>Exacte salderingsimpact per klant</li>
+        <li>AI-gegenereerd adviesrapport</li>
+        <li>Warmtepomp & EV ondersteuning</li>
+        <li>Nederland én België</li>
+        <li>Maandelijks opzegbaar &middot; geen contract</li>
+      </ul>
+      <a href="https://app.ecometric.nl/signup" class="btn-cta">
+        Nu aanmelden &rarr;
+      </a>
+      <p class="pricing-note">Directe toegang na betaling &middot; Geen setup kosten</p>
+    </div>
+  </div>
+</section>
 
-</div> <!-- page -->
+<!-- FAQ -->
+<section class="faq">
+  <div class="faq-inner">
+    <div class="faq-header">
+      <div class="section-overline">Veelgestelde vragen</div>
+      <h2 class="section-title">FAQ</h2>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Voor wie is Eco Metric bedoeld?</div>
+      <div class="faq-a">Eco Metric is ontwikkeld voor verkopers bij installatiebedrijven die thuisbatterijen verkopen. De tool helpt u in salesgesprekken om de financiële impact van de salderingsafbouw direct en op maat te berekenen.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Hoe nauwkeurig zijn de berekeningen?</div>
+      <div class="faq-a">De berekeningen zijn gebaseerd op de door u ingevoerde klantdata (jaarverbruik, opwek, teruglevering) en kloppen altijd met de jaarafrekening van de klant. We gebruiken geen gemiddelden, elke berekening is op maat.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Kan ik de tool ook voor Belgische klanten gebruiken?</div>
+      <div class="faq-a">Ja, Eco Metric ondersteunt zowel de Nederlandse als de Belgische energiemarkt, inclusief de lokale tariefstructuren en regelgeving rondom zonnepanelen.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Wat is de opzegtermijn?</div>
+      <div class="faq-a">Eco Metric is maandelijks opzegbaar, zonder contract of opzegtermijn. U betaalt alleen voor de maanden dat u de tool gebruikt.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Hoe snel kan ik aan de slag?</div>
+      <div class="faq-a">Direct na betaling heeft u toegang tot de tool. Er is geen installatie of setup nodig, u logt in via uw browser en kunt meteen beginnen.</div>
+    </div>
+  </div>
+</section>
 
-  <!-- ========================================================= -->
-<!-- ===================  PDF HELPER FUNCTIES  ================ -->
-<!-- ========================================================= -->
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Eco<span>Metric</span></div>
+  <div class="footer-copy">&copy; 2026 Eco Metric &middot; Alle rechten voorbehouden</div>
+</footer>
+
 <script>
-function pdfDrawTable(doc, startX, startY, rows, colWidths) {
-  let y = startY;
-  const rowHeight = 18;
-
-  doc.setFont("helvetica", "bold");
-  for (let i = 0; i < rows[0].length; i++) {
-    const offset = colWidths.slice(0, i).reduce((a,b)=>a+b,0);
-    doc.text(String(rows[0][i]), startX + offset + 4, y);
-  }
-  y += rowHeight;
-
-  doc.setFont("helvetica","normal");
-
-  for (let r = 1; r < rows.length; r++) {
-    let x = startX;
-    for (let c = 0; c < rows[r].length; c++) {
-      doc.text(String(rows[r][c]), x + 4, y);
-      x += colWidths[c];
-    }
-    y += rowHeight;
-  }
-
-  const totalWidth = colWidths.reduce((a,b)=>a+b,0);
-  const totalHeight = rowHeight * rows.length;
-  doc.rect(startX, startY - rowHeight, totalWidth, totalHeight);
-
-  return y + 10;
-}
-
-function pdfHeader(doc) {
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text("Thuisbatterij Adviesrapport", 40, 60);
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica","normal");
-  doc.text("Gegenereerd op: " + new Date().toLocaleDateString("nl-NL"), 40, 82);
-}
-
-function pdfRenderFullAdvice(doc, adviceText) {
-  if (!adviceText || adviceText.trim() === "") return;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-
-  const lines = doc.splitTextToSize(adviceText, 520);
-
-  let y = 120;
-
-  for (let i = 0; i < lines.length; i++) {
-    if (y > 780) {
-      doc.addPage();
-      y = 60;
-    }
-    doc.text(lines[i], 40, y);
-    y += 14;
-  }
-}  
-
-function pdfIntro(doc) {
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(16);
-  doc.text("1. Inleiding", 40, 120);
-
-  doc.setFont("helvetica","normal");
-  doc.setFontSize(12);
-
-  const intro =
-    "Dit rapport bevat een volledige financiële en energetische analyse van uw woning " +
-    "onder drie tariefstructuren (Enkel, Dag/Nacht, Dynamisch) en in drie scenario’s: " +
-    "huidige situatie, toekomst zonder thuisbatterij en toekomst met thuisbatterij.";
-
-  const lines = doc.splitTextToSize(intro, 520);
-  doc.text(lines, 40, 145);
-}
-
-function pdfTariffMatrix(doc) {
-  doc.addPage();
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(16);
-  doc.text("2. Tarievenoverzicht", 40, 60);
-
-  const rows = [
-    ["Tarief", "Importprijs", "Exportprijs"],
-    [
-      "Enkel",
-      document.getElementById("p_enkel_imp").value + " €/kWh",
-      document.getElementById("p_enkel_exp").value + " €/kWh"
-    ],
-    [
-      "Dag/Nacht",
-      document.getElementById("p_dag").value + " / " +
-      document.getElementById("p_nacht").value + " €/kWh",
-      document.getElementById("p_exp_dn").value + " €/kWh"
-    ],
-    [
-      "Dynamisch",
-      "Gemiddelde prijsmodel",
-      document.getElementById("p_export_dyn").value + " €/kWh"
-    ]
-  ];
-
-  pdfDrawTable(doc, 40, 100, rows, [160, 180, 180]);
-}
-
-function pdfCostMatrix(doc, data) {
-  doc.addPage();
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(16);
-  doc.text("3. Kostenmatrix (jaarlijkse kosten)", 40, 60);
-
-  const rows = [
-    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
-    ["Huidige situatie",
-      fmtEuro(data.A1_per_tariff.enkel),
-      fmtEuro(data.A1_per_tariff.dag_nacht),
-      fmtEuro(data.A1_per_tariff.dynamisch)
-    ],
-    ["Toekomst zonder batterij",
-      fmtEuro(data.S2_enkel.total_cost),
-      fmtEuro(data.S2_dn.total_cost),
-      fmtEuro(data.S2_dyn.total_cost)
-    ],
-    ["Toekomst met batterij",
-      fmtEuro(data.S3_enkel.total_cost),
-      fmtEuro(data.S3_dn.total_cost),
-      fmtEuro(data.S3_dyn.total_cost)
-    ]
-  ];
-
-  pdfDrawTable(doc, 40, 100, rows, [160, 140, 140, 140]);
-}
-
-function pdfEnergyTables(doc, data) {
-  doc.addPage();
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(16);
-  doc.text("4. Energie-inzichten (kWh)", 40, 60);
-
-  const imports = [
-    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
-    ["B1 Import",
-      data.S2_enkel.import.toFixed(1),
-      data.S2_dn.import.toFixed(1),
-      data.S2_dyn.import.toFixed(1)
-    ],
-    ["C1 Import",
-      data.S3_enkel.import.toFixed(1),
-      data.S3_dn.import.toFixed(1),
-      data.S3_dyn.import.toFixed(1)
-    ]
-  ];
-
-  let y = pdfDrawTable(doc, 40, 100, imports, [160, 140, 140, 140]);
-
-  const exports = [
-    ["Scenario", "Enkel", "Dag/Nacht", "Dynamisch"],
-    ["B1 Export",
-      data.S2_enkel.export.toFixed(1),
-      data.S2_dn.export.toFixed(1),
-      data.S2_dyn.export.toFixed(1)
-    ],
-    ["C1 Export",
-      data.S3_enkel.export.toFixed(1),
-      data.S3_dn.export.toFixed(1),
-      data.S3_dyn.export.toFixed(1)
-    ]
-  ];
-
-  pdfDrawTable(doc, 40, y + 20, exports, [160, 140, 140, 140]);
-}
-
-function pdfBatteryStats(doc, data) {
-  doc.addPage();
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(16);
-  doc.text("5. Batterijprestaties", 40, 60);
-
-  const s3 = data.S3_enkel || {import:0, export:0};
-
-  const E   = parseFloat(document.getElementById("E").value || "0");
-  const P   = parseFloat(document.getElementById("P").value || "0");
-  const DoD = parseFloat(document.getElementById("DoD").value || "0");
-  const eta = parseFloat(document.getElementById("eta_rt").value || "0");
-
-  const rows = [
-    ["Parameter", "Waarde"],
-    ["Import met batterij (kWh)", s3.import.toFixed(1)],
-    ["Export met batterij (kWh)", s3.export.toFixed(1)],
-    ["Batterijcapaciteit (kWh)", E || "–"],
-    ["Vermogen (kW)", P || "–"],
-    ["Depth of Discharge (%)", DoD || "–"],
-    ["Round-trip efficiëntie (%)", eta || "–"]
-  ];
-
-  pdfDrawTable(doc, 40, 100, rows, [260, 260]);
-}
-
-function pdfAdviceSection(doc, adviceText) {
-  // Geen advies? Dan geen extra pagina.
-  if (!adviceText || adviceText.trim() === "") return;
-
-  doc.addPage();
-  doc.setFont("helvetica","bold");
-  doc.setFontSize(16);
-  doc.text("6. Persoonlijk advies", 40, 60);
-
-  doc.setFont("helvetica","normal");
-  doc.setFontSize(11);
-
-  // Lange tekst netjes afbreken
-  const lines = doc.splitTextToSize(adviceText, 520);
-  doc.text(lines, 40, 90);
-}
-
-function pdfExport(data) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit:"pt", format:"a4" });
-
-  pdfHeader(doc);
-
-  // ✅ Adviestekst ophalen: eerst uit textarea, dan uit computedAdvice
-  const adviceText = window.computedAdvice || "";
-
-  doc.save("Thuisbatterij-adviesrapport.pdf");
-}
+  // FAQ toggle
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
 </script>
 
-  
-<!-- ========================================================= -->
-<!-- =============   HOOFDLOGICA / APP     =================== -->
-<!-- ========================================================= -->
-<script>
-// Donkere dashboard-layout is vast op <body class="dashboard-layout">; geen toggle meer.
-
-/** Stap 5: premium typografie alleen met body.step5-typography-premium (preview-knoppen of ?step5typo=). */
-const STEP5_TYPO_STORAGE = "eco_step5_typography_preview_v1";
-
-function getStep5TypoFromUrl() {
-  try {
-    const p = new URLSearchParams(window.location.search).get("step5typo");
-    if (p === "premium" || p === "1") return "premium";
-    if (p === "classic" || p === "0") return "classic";
-  } catch (_) {}
-  return null;
-}
-
-function applyStep5TypographyMode(mode) {
-  const usePremium = mode === "premium";
-  document.body.classList.toggle("step5-typography-premium", usePremium);
-  document.querySelectorAll(".step5-typo-btn").forEach((btn) => {
-    const m = btn.getAttribute("data-step5-typo");
-    const on = (m === "premium") === usePremium;
-    btn.classList.toggle("active", on);
-    btn.setAttribute("aria-pressed", String(on));
-  });
-}
-
-function initStep5TypographyPreview() {
-  const urlMode = getStep5TypoFromUrl();
-  let mode = urlMode;
-  if (mode === null) {
-    try {
-      mode = localStorage.getItem(STEP5_TYPO_STORAGE) || "classic";
-    } catch (_) {
-      mode = "classic";
-    }
-  } else {
-    try {
-      localStorage.setItem(STEP5_TYPO_STORAGE, mode);
-    } catch (_) {}
-  }
-  applyStep5TypographyMode(mode === "premium" ? "premium" : "classic");
-
-  document.querySelectorAll(".step5-typo-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const m = btn.getAttribute("data-step5-typo") || "classic";
-      applyStep5TypographyMode(m);
-      try {
-        localStorage.setItem(STEP5_TYPO_STORAGE, m);
-      } catch (_) {}
-    });
-  });
-}
-
-initStep5TypographyPreview();
-
-const API_BASE = "https://batteryengine-server.onrender.com";
-window.batteryEngineApiBase = API_BASE;
-
-/**
- * @typedef {number|string|null|undefined} PaybackYears
- * API: number (jaren), null (n.v.t.), of string bv. "> 10 jaar"
- */
-
-/** Lees backend-fout (plat object met error_code + message, of detail-wrapper). */
-function formatBatteryApiErrorMessage(data, status) {
-  if (data && typeof data === "object") {
-    if (typeof data.error_code === "string" && data.message != null) {
-      return String(data.message);
-    }
-    if (typeof data.detail === "string") return data.detail;
-    if (Array.isArray(data.detail) && data.detail[0]?.msg) return String(data.detail[0].msg);
-    if (data.detail?.msg) return String(data.detail.msg);
-    if (data.error != null) return typeof data.error === "string" ? data.error : JSON.stringify(data.error);
-    if (data.message != null) return String(data.message);
-  }
-  return status ? `Serverfout (${status})` : "Onbekende serverfout";
-}
-
-/**
- * Terugverdientijd uit roi-object: geen .toFixed op string/null.
- * @param {{ yearly_saving_eur?: number, payback_years?: PaybackYears }} roi
- * @returns {string}
- */
-function formatPaybackYearsDisplay(roi) {
-  if (!roi) return "–";
-  const py = roi.payback_years;
-  if (typeof py === "string" && py.length > 0) return py;
-  const ys = Number(roi.yearly_saving_eur);
-  if (isFinite(ys) && ys <= 0) return "Geen besparing";
-  if (py === null || py === undefined) return "–";
-  if (typeof py === "number" && isFinite(py)) return py.toFixed(1) + " jaar";
-  return "–";
-}
-
-let parsedData = {};
-let costChart = null;
-
-function getTariffLabel(code) {
-  switch (code) {
-    case "enkel":
-      return "Enkel tarief";
-    case "dag_nacht":
-      return "Dag/Nacht tarief";
-    case "dynamisch":
-      return "Dynamisch tarief";
-    default:
-      return code;
-  }
-}
-
-// 🔁 HERRENDER RESULTATEN BIJ TARIEFWISSEL
-document.getElementById("tariff-type").addEventListener("change", () => {
-
-  // Alleen her-renderen als er al een berekening is
-  if (!window.computedResult) return;
-
-  fillResults(window.computedResult);
-  updateCostChart(window.computedResult);
-});
-
-function updateCountryUI() {
-  const country = document.getElementById("country").value;
-
-  const capacityField = document.getElementById("capacity-tariff").parentElement;
-
-  const tilePeakNo  = document.getElementById("res-peak-no").parentElement;
-  const tilePeakYes = document.getElementById("res-peak-yes").parentElement;
-  const tilePeakSav = document.getElementById("res-peak-saving").parentElement;
-
-  if (country === "NL") {
-    capacityField.style.display = "none";
-    tilePeakNo.style.display  = "none";
-    tilePeakYes.style.display = "none";
-    tilePeakSav.style.display = "none";
-  } else {
-    capacityField.style.display = "block";
-    
-    tilePeakNo.style.display  = "block";
-    tilePeakYes.style.display = "block";
-    tilePeakSav.style.display = "block";
-  }
-}
-
-document.getElementById("country").addEventListener("change", updateCountryUI);
-
-function applyTariffDefaultsIfEmpty() {
-  const defaults = {
-    // Enkel
-    p_enkel_imp: "0.29",
-    p_enkel_exp: "0.07",
-  
-    // Dag/Nacht
-    p_dag: "0.31",
-    p_nacht: "0.26",
-    p_exp_dn: "0.07",
-  
-    // Dynamisch
-    p_dyn_imp: "0.28",
-    p_export_dyn: "0.07"
-  };
-
-  Object.entries(defaults).forEach(([id, value]) => {
-    const el = document.getElementById(id);
-    if (el && (el.value === "" || el.value === null)) {
-      el.value = value;
-    }
-  });
-}
-
-function wireEvChargeWindow() {
-  const evSel = document.getElementById("has-ev");
-  const field = document.getElementById("ev-charge-window-field");
-  const sel   = document.getElementById("ev-charge-window");
-
-  if (!evSel || !field || !sel) return;
-
-  const sync = () => {
-    const hasEv = evSel.value === "yes";
-    field.style.display = hasEv ? "block" : "none";
-    if (!hasEv) sel.value = "evening_night";
-  };
-
-  evSel.addEventListener("change", sync);
-  sync();
-}
-
-function wireHeatpumpFields() {
-  const hpSel       = document.getElementById("has-heatpump");
-  const typeField   = document.getElementById(
-    "heatpump-type-field"
-  );
-  const schedField  = document.getElementById(
-    "heatpump-schedule-field"
-  );
-
-  if (!hpSel || !typeField || !schedField) return;
-
-  const sync = () => {
-    const hasHp = hpSel.value === "yes";
-    typeField.style.display  = hasHp ? "block" : "none";
-    schedField.style.display = hasHp ? "block" : "none";
-  };
-
-  hpSel.addEventListener("change", sync);
-  sync();
-}
-  
-  
- function wireUnknownToggles() {
-  const etaSel  = document.getElementById("eta-known");
-  const etaInp  = document.getElementById("eta_rt");
-  const etaWrap = document.getElementById("eta-rt-wrap");
-
-  const degSel  = document.getElementById("degradation-known");
-  const degInp  = document.getElementById("battery-degradation");
-  const degWrap = document.getElementById("battery-degradation-wrap");
-
-  if (etaSel && etaInp && etaWrap) {
-    const syncEta = () => {
-      const known = etaSel.value === "known";
-      etaWrap.style.display = known ? "block" : "none";
-
-      if (!known) {
-        etaInp.value = "";
-      } else if (etaInp.value === "") {
-        etaInp.value = "90";
-      }
-    };
-
-    etaSel.addEventListener("change", syncEta);
-    syncEta();
-  }
-
-  if (degSel && degInp && degWrap) {
-    const syncDeg = () => {
-      const known = degSel.value === "known";
-      degWrap.style.display = known ? "block" : "none";
-
-      if (!known) {
-        degInp.value = "";
-      } else if (degInp.value === "") {
-        degInp.value = "2";
-      }
-    };
-
-    degSel.addEventListener("change", syncDeg);
-    syncDeg();
-  }
-}
-  
-/* ----------------------------- */
-/*       WIZARD STAPPEN          */
-/* ----------------------------- */
-function activateStep(n) {
-  for (let i = 0; i < 8; i++) {
-    const pill  = document.getElementById("step-pill-" + i);
-    const step  = document.getElementById("step-" + i);
-    const badge = pill ? pill.querySelector(".badge") : null;
-
-    if (pill) {
-      pill.classList.toggle("active", i === n);
-      pill.classList.toggle("completed", i < n);
-    }
-
-    // ✓ in badge bij voltooide stappen
-    if (badge) {
-      if (i < n) {
-        badge.textContent = "✓";
-      } else {
-        badge.textContent = i.toString();
-      }
-    }
-
-    if (step) {
-      step.style.display = (i === n) ? "block" : "none";
-    }
-  }
-}
-
-
-function fmtEuro(x) {
-  const v = Number(x);
-  if (!isFinite(v)) return "–";
-  return "€ " + v.toFixed(2).replace(".", ",");
-}
-
-
-/* ----------------------------- */
-/*      NAVIGATIE                */
-/* ----------------------------- */
-document.getElementById("to-step-0-next").addEventListener("click", () => {
-  // expliciet start wizard
-  activateStep(1);
-});
-
-document.getElementById("to-step-2").addEventListener("click", () => {
-  const status = document.getElementById("profile-status");
-
-  const annualLoad = parseFloat(document.getElementById("annual-load").value || "0");
-  const annualPv   = parseFloat(document.getElementById("annual-pv").value || "0");
-
-  if (!isFinite(annualLoad) || annualLoad <= 0) {
-    status.textContent = "Vul een geldig jaarverbruik in.";
-    status.className = "status error";
-    return;
-  }
-  if (!isFinite(annualPv) || annualPv < 0) {
-    status.textContent = "Vul een geldige jaaropwek in.";
-    status.className = "status error";
-    return;
-  }
-
-  status.textContent = "Energiedata opgeslagen ✔";
-  status.className = "status success";
-  activateStep(2);
-});
-
-document.getElementById("back-to-1").addEventListener("click", () => activateStep(1));
-
-document.getElementById("to-step-3").addEventListener("click", () => {
-  const status = document.getElementById("huishoud-status");
-  const profile = document.getElementById("household-profile").value || "";
-
-  if (!profile) {
-    status.textContent = "Kies een huishoudprofiel.";
-    status.className = "status error";
-    return;
-  }
-
-  status.textContent = "Profiel ingesteld ✔";
-  status.className = "status success";
-  activateStep(3);
-});
-
-document.getElementById("back-to-2").addEventListener("click", () => activateStep(2));
-document.getElementById("to-step-4").addEventListener("click", () => {
-  activateStep(4);
-  applyTariffDefaultsIfEmpty();
-});
-document.getElementById("back-to-3").addEventListener("click", () => activateStep(3));
-document.getElementById("to-step-5").addEventListener("click", () => activateStep(5));
-
-document.getElementById("back-to-4").addEventListener("click", () => activateStep(4));
-
-document.getElementById("to-step-7")?.addEventListener("click", () => {
-  if (!window.computedResult) {
-    alert("Voer eerst een berekening uit.");
-    return;
-  }
-  activateStep(7);
-});
-
-document.getElementById("back-to-6").addEventListener("click", () => activateStep(6));
-
-/* ----------------------------- */
-/*      COMPUTE                 */
-/* ----------------------------- */
-document.getElementById("btn-compute").addEventListener("click", async () => {
-  const btn = document.getElementById("btn-compute");
-  const status = document.getElementById("compute-status");
-
-  // UI feedback: start berekening
-  btn.disabled = true;
-  btn.textContent = "⏳ Bezig met berekenen...";
-  status.textContent = "Berekening wordt uitgevoerd, dit kan enkele seconden duren…";
-  status.className = "status";
-
-  // ===============================
-  // Batterij-investering (veilig)
-  // ===============================
-  const batteryCostRaw = document.getElementById("battery-cost").value || "";
-  const cleanedBatteryCost = batteryCostRaw
-    .replace("€", "")
-    .replace(",", ".")
-    .replace(/\s+/g, "");
-
-  const batteryCost = parseFloat(cleanedBatteryCost);
-
-  if (!cleanedBatteryCost || isNaN(batteryCost) || batteryCost <= 0) {
-    status.textContent = "Voer een geldige batterij-investering in.";
-    status.className = "status error";
-
-    // UI herstellen
-    btn.disabled = false;
-    btn.textContent = "Berekenen";
-
-    return;
-  }
-
-  // ===============================
-  // 🔧 Omvormerkosten
-  // UI = €/kW per maand
-  // ===============================
-  
-  // 🔧 Omvormerkosten (veilig — voorkomt 422)
-  const inverterPower =
-    parseFloat(document.getElementById("P").value || "0");
-
-  // ===============================
-  // REQUEST BODY
-  // ===============================
-  const etaKnown = document.getElementById("eta-known")?.value === "known";
-  const degKnown = document.getElementById("degradation-known")?.value === "known";
-
-  const etaRtPercent = parseFloat(document.getElementById("eta_rt").value || "");
-  const degPercent   = parseFloat(document.getElementById("battery-degradation").value || "");
-
-  // === Terugleverkosten (vereenvoudigd) ===
-  const tlv_monthly_fee =
-    parseFloat(document.getElementById("tlv_monthly_fee")?.value || "0");
-
-  const tlv_per_kwh = 0;
-  const tlv_free_kwh = 0;
-  
-  const body = {
-    // NIEUWE INPUT (profiel-based)
-    annual_load_kwh: parseFloat(document.getElementById("annual-load").value || "0"),
-    annual_pv_kwh: parseFloat(document.getElementById("annual-pv").value || "0"),
-    annual_feedin_kwh: (() => {
-      const v = parseFloat(
-        document.getElementById("annual-feedin").value || ""
-      );
-      return isFinite(v) && v > 0 ? v : null;
-    })(),
-    monthly_load_kwh: (() => {
-      const inputs = [
-        ...document.querySelectorAll(".monthly-kwh-input")
-      ];
-      const values = inputs.map(
-        el => parseFloat(el.value || "")
-      );
-      if (
-        values.length === 12 &&
-        values.every(v => isFinite(v) && v >= 0)
-      ) {
-        return values;
-      }
-      return null;
-    })(),
-    daytime_fraction: (() => {
-      const dag   = parseFloat(
-        document.getElementById("daytime-kwh").value || ""
-      );
-      const nacht = parseFloat(
-        document.getElementById("nighttime-kwh").value || ""
-      );
-      if (!isFinite(dag) || !isFinite(nacht)) return null;
-      if (dag < 0 || nacht < 0) return null;
-      const total = dag + nacht;
-      if (total <= 0) return null;
-      const fraction = dag / total;
-      // Clamp naar [0.05, 0.95] — zelfde grenzen als backend
-      return Math.min(0.95, Math.max(0.05, fraction));
-    })(),
-    household_profile: document.getElementById("household-profile").value,
-    home_during_day: (() => {
-      const val = document.getElementById(
-        "home-during-day"
-      )?.value || "";
-      return ["never", "partial", "always"].includes(val)
-        ? val
-        : null;
-    })(),
-  
-    has_heatpump: document.getElementById("has-heatpump")?.value === "yes",
-    heatpump_type: (() => {
-      const hasHp = document.getElementById(
-        "has-heatpump"
-      )?.value === "yes";
-      if (!hasHp) return null;
-      return document.getElementById(
-        "heatpump-type"
-      )?.value || "air_water";
-    })(),
-    heatpump_schedule: (() => {
-      const hasHp = document.getElementById(
-        "has-heatpump"
-      )?.value === "yes";
-      if (!hasHp) return null;
-      return document.getElementById(
-        "heatpump-schedule"
-      )?.value || "day_night";
-    })(),
-    has_ev: document.getElementById("has-ev")?.value === "yes",
-    ev_charge_window: document.getElementById("ev-charge-window")?.value || "evening_night",
-  
-    // Tarieven
-    p_enkel_imp: parseFloat(document.getElementById("p_enkel_imp").value || "0.29"),
-    p_enkel_exp: parseFloat(document.getElementById("p_enkel_exp").value || "0.07"),
-  
-    p_dag: parseFloat(document.getElementById("p_dag").value || "0.31"),
-    p_nacht: parseFloat(document.getElementById("p_nacht").value || "0.26"),
-    p_exp_dn: parseFloat(document.getElementById("p_exp_dn").value || "0.07"),
-  
-    // Dynamisch
-    p_dyn_imp: parseFloat(document.getElementById("p_dyn_imp").value || "0.28"),
-    p_export_dyn: parseFloat(document.getElementById("p_export_dyn").value || "0.07"),
-  
-    // Terugleverkosten
-    feedin_monthly_cost: tlv_monthly_fee,
-    feedin_cost_per_kwh: tlv_per_kwh,
-    feedin_free_kwh: tlv_free_kwh,
-    feedin_price_after_free: tlv_per_kwh,
-  
-    // Omvormer
-    inverter_power_kw: inverterPower,
-    inverter_cost_per_kw: 0,
-  
-    // Batterij
-    E: parseFloat(document.getElementById("E").value || "0"),
-    P: parseFloat(document.getElementById("P").value || "0"),
-    DoD: parseFloat(document.getElementById("DoD").value || "0") / 100,
-    allow_grid_charge: document.getElementById("allow-grid-charge")?.value === "yes",
-  
-    // RTE / Degradatie
-    eta_rt: etaKnown && isFinite(etaRtPercent) ? (etaRtPercent / 100) : null,
-    battery_degradation: degKnown && isFinite(degPercent) ? (degPercent / 100) : null,
-  
-    // Vastrecht
-    vastrecht_year: parseFloat(document.getElementById("fixed-cost").value || "0"),
-  
-    // Investering & levensduur
-    battery_cost: batteryCost,
-    battery_lifetime_years: parseInt(document.getElementById("battery-lifetime").value || "15"),
-  
-    // Capaciteitstarief
-    capacity_tariff_kw: parseFloat(document.getElementById("capacity-tariff").value || "0"),
-  
-    // Context
-    country: document.getElementById("country").value || "NL",
-    current_tariff: document.getElementById("tariff-type").value || "enkel"
-  };
-
-  try {
-    let res;
-    try {
-      res = await window.batteryEngineFetch("/compute_v3_profile", {
-        method: "POST",
-        body: JSON.stringify(body)
-      });
-    } catch (fetchErr) {
-      if (fetchErr && fetchErr.code === "SESSION_INVALID") {
-        btn.disabled = false;
-        btn.textContent = "Berekenen";
-        return;
-      }
-      throw fetchErr;
-    }
-
-    let data;
-    try {
-      data = await res.json();
-    } catch (parseErr) {
-      console.error("Backend returned invalid JSON:", parseErr);
-      status.textContent = "De server gaf geen geldige JSON terug. Probeer het later opnieuw.";
-      status.className = "status error";
-      btn.disabled = false;
-      btn.textContent = "Berekenen";
-      return;
-    }
-
-    // HTTP-fout (4xx, 5xx)
-    if (!res.ok) {
-      const msg = formatBatteryApiErrorMessage(data, res.status);
-      console.error("Backend error:", res.status, data);
-      status.textContent = "Serverfout: " + msg;
-      status.className = "status error";
-      btn.disabled = false;
-      btn.textContent = "Berekenen";
-      return;
-    }
-
-    // Controleer vereiste velden (B1_monthly/C1_monthly niet gebruikt in UI → optioneel)
-    const required = {
-      A1_per_tariff: data?.A1_per_tariff,
-      B1: data?.B1,
-      C1: data?.C1,
-      roi_per_tariff: data?.roi_per_tariff
-    };
-    const missing = Object.entries(required)
-      .filter(([, v]) => !v || (typeof v === "object" && Object.keys(v).length === 0))
-      .map(([k]) => k);
-
-    if (missing.length > 0) {
-      console.error("Backend response missing fields:", missing, data);
-      status.textContent =
-        "Onvolledig antwoord van de server (ontbreekt: " + missing.join(", ") + "). Probeer het later opnieuw.";
-      status.className = "status error";
-      btn.disabled = false;
-      btn.textContent = "Berekenen";
-      return;
-    }
-
-    window.computedResult = data;
-
-    status.textContent = "Berekening afgerond.";
-    status.className = "status success";
-    
-    activateStep(6);
-    fillResults(data);
-    updateCountryUI(); 
-    updateCostChart(data);
-
-    btn.disabled = false;
-    btn.textContent = "Berekenen";
-
-  } catch (err) {
-    status.textContent = "Fout: " + err.message;
-    status.className = "status error";
-
-    // UI herstellen
-    btn.disabled = false;
-    btn.textContent = "Berekenen";
-  }
-});
-
-  /** Alleen rij “Geen Saldering | Met Batterij” (C1): laagste jaarbedrag groen (zelfde als besparing). */
-  function highlightTariffMatrixMinimums(data) {
-    const allValueIds = [
-      "A1-enkel", "A1-dn", "A1-dyn",
-      "B1-enkel", "B1-dn", "B1-dyn",
-      "C1-enkel", "C1-dn", "C1-dyn",
-    ];
-    allValueIds.forEach((id) => {
-      document.getElementById(id)?.classList.remove("tariff-matrix-min");
-    });
-
-    const row = {
-      ids: ["C1-enkel", "C1-dn", "C1-dyn"],
-      vals: [
-        data.C1?.enkel?.total_cost_eur,
-        data.C1?.dag_nacht?.total_cost_eur,
-        data.C1?.dynamisch?.total_cost_eur,
-      ],
-    };
-    const nums = row.vals.map((v) => {
-      const n = Number(v);
-      return isFinite(n) ? n : NaN;
-    });
-    if (!nums.every((n) => isFinite(n))) return;
-    const minV = Math.min(...nums);
-    const eps = 0.005; /* € — gelijke bedragen / afronding */
-    row.ids.forEach((id, i) => {
-      if (isFinite(nums[i]) && Math.abs(nums[i] - minV) < eps) {
-        document.getElementById(id)?.classList.add("tariff-matrix-min");
-      }
-    });
-  }
-
-  function fillResults(data) {
-    // 🔑 huidig gekozen tarief
-    const tariff = document.getElementById("tariff-type").value || "enkel";
-
-    const A1 = data.A1_per_tariff[tariff]?.total_cost_eur;
-    const B1 = data.B1[tariff]?.total_cost_eur;
-    const C1 = data.C1[tariff]?.total_cost_eur;
-
-    // === Tiles ===
-    document.getElementById("res-A1").textContent = fmtEuro(A1);
-    document.getElementById("res-B1").textContent = fmtEuro(B1);
-    document.getElementById("res-C1").textContent = fmtEuro(C1);
-
-    // === Besparing ===
-    document.getElementById("res-savings").textContent =
-      isFinite(B1) && isFinite(C1) ? fmtEuro(B1 - C1) : "–";
-
-    const B1val = data.B1?.[tariff]?.total_cost_eur;
-    const A1val = data.A1_per_tariff?.[tariff]?.total_cost_eur;
-    const savingsSub = document.getElementById(
-      "res-savings-sub"
-    );
-    if (savingsSub && isFinite(B1val) && isFinite(A1val)) {
-      const saldImpact = B1val - A1val;
-      if (saldImpact > 50) {
-        savingsSub.textContent =
-          `Saldering kost u straks €${Math.round(saldImpact)}/jr extra — `
-          + `batterij compenseert €${Math.round(
-              isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
-            )}/jr`;
-      } else if (saldImpact < -50) {
-        savingsSub.textContent =
-          `Saldering levert u weinig op — `
-          + `batterij verhoogt zelfconsumptie met €${Math.round(
-              isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
-            )}/jr`;
-      } else {
-        savingsSub.textContent =
-          `Saldering heeft beperkte impact — `
-          + `batterij bespaart u €${Math.round(
-              isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
-            )}/jr`;
-      }
-    }
-
-    // === ROI & Payback (PER TARIEF!) ===
-    const roi = data.roi_per_tariff?.[tariff];
-    
-    const paybackEl = document.getElementById("res-payback");
-    const paybackTextEl = paybackEl.querySelector(".result-payback") || paybackEl;
-    const roiEl = document.getElementById("res-roi");
-    
-    // Default styling resetten
-    paybackEl.style.color = "";
-    roiEl.style.color = "";
-    
-    // Veiligheidsfallback als backend niets geeft
-    if (!roi) {
-      paybackTextEl.textContent = "–";
-      roiEl.textContent = "–";
-    } else {
-    
-      // ===== TERUGVERDIENTIJD (payback_years: number | null | string, API-leidend) =====
-      paybackTextEl.textContent = formatPaybackYearsDisplay(roi);
-    
-      // ===== ROI =====
-      const roiVal = Number(roi.roi_percent);
-    
-      if (isFinite(roiVal)) {
-        roiEl.textContent = roiVal.toFixed(1) + " %";
-      } else {
-        roiEl.textContent = "–";
-      }
-    }
-    
-    // =========================
-    // TARIEFMATRIX — JAARLIJKSE KOSTEN
-    // =========================
-
-    // A1 — huidige situatie (met saldering)
-    document.getElementById("A1-enkel").textContent =
-      fmtEuro(data.A1_per_tariff?.enkel?.total_cost_eur);
-
-    document.getElementById("A1-dn").textContent =
-      fmtEuro(data.A1_per_tariff?.dag_nacht?.total_cost_eur);
-
-    document.getElementById("A1-dyn").textContent =
-      fmtEuro(data.A1_per_tariff?.dynamisch?.total_cost_eur);
-
-
-    // B1 — toekomst zonder batterij
-    document.getElementById("B1-enkel").textContent =
-      fmtEuro(data.B1?.enkel?.total_cost_eur);
-
-    document.getElementById("B1-dn").textContent =
-      fmtEuro(data.B1?.dag_nacht?.total_cost_eur);
-
-    document.getElementById("B1-dyn").textContent =
-      fmtEuro(data.B1?.dynamisch?.total_cost_eur);
-
-
-    // C1 — toekomst met batterij
-    document.getElementById("C1-enkel").textContent =
-      fmtEuro(data.C1?.enkel?.total_cost_eur);
-
-    document.getElementById("C1-dn").textContent =
-      fmtEuro(data.C1?.dag_nacht?.total_cost_eur);
-
-    document.getElementById("C1-dyn").textContent =
-      fmtEuro(data.C1?.dynamisch?.total_cost_eur);
-
-    highlightTariffMatrixMinimums(data);
-
-    // =========================
-    // ENERGIE-INZICHTEN (kWh)
-    // =========================
-
-    const fmtKwh = (v) =>
-      (isFinite(v) ? v.toFixed(0) + " kWh" : "–");
-
-    // --- B1 ---
-    document.getElementById("B1-imp-enkel").textContent =
-      fmtKwh(data.B1?.enkel?.import_kwh);
-
-    document.getElementById("B1-exp-enkel").textContent =
-      fmtKwh(data.B1?.enkel?.export_kwh);
-
-    document.getElementById("B1-imp-dn").textContent =
-      fmtKwh(data.B1?.dag_nacht?.import_kwh);
-
-    document.getElementById("B1-exp-dn").textContent =
-      fmtKwh(data.B1?.dag_nacht?.export_kwh);
-
-    document.getElementById("B1-imp-dyn").textContent =
-      fmtKwh(data.B1?.dynamisch?.import_kwh);
-
-    document.getElementById("B1-exp-dyn").textContent =
-      fmtKwh(data.B1?.dynamisch?.export_kwh);
-
-    // --- C1 ---
-    document.getElementById("C1-imp-enkel").textContent =
-      fmtKwh(data.C1?.enkel?.import_kwh);
-
-    document.getElementById("C1-exp-enkel").textContent =
-      fmtKwh(data.C1?.enkel?.export_kwh);
-
-    document.getElementById("C1-imp-dn").textContent =
-      fmtKwh(data.C1?.dag_nacht?.import_kwh);
-
-    document.getElementById("C1-exp-dn").textContent =
-      fmtKwh(data.C1?.dag_nacht?.export_kwh);
-
-    document.getElementById("C1-imp-dyn").textContent =
-      fmtKwh(data.C1?.dynamisch?.import_kwh);
-
-    document.getElementById("C1-exp-dyn").textContent =
-      fmtKwh(data.C1?.dynamisch?.export_kwh);
-
-    // Profielwaarschuwing tonen als backend een mismatch meldt
-    const warning = data.profile_warning;
-    const warningEl = document.getElementById("profile-warning");
-    if (warningEl) {
-      if (warning && warning.type === "feedin_mismatch") {
-        warningEl.textContent = warning.message;
-        warningEl.style.display = "block";
-      } else {
-        warningEl.style.display = "none";
-        warningEl.textContent = "";
-      }
-    }
-  }
-
-  // ⚠️ UI-ONLY helper
-  // Deze functie mag uitsluitend gebruikt worden voor visualisaties of UI-inzichten.
-  // Resultaten uit deze functie mogen NIET worden gebruikt voor AI-advies of backend-context.
-  
-/* ----------------------------- */
-/*   ADVICE CONTEXT (FACTS)     */
-/* ----------------------------- */
-function buildAdviceContext(data) {
-  const country = document.getElementById("country").value || "NL";
-
-  return {
-    country,
-    current_tariff: document.getElementById("tariff-type").value || "enkel",
-
-    calculation_method: data.calculation_method || {},
-
-    profile_inputs: {
-      annual_load_kwh: parseFloat(document.getElementById("annual-load").value || "0"),
-      annual_pv_kwh: parseFloat(document.getElementById("annual-pv").value || "0"),
-      household_profile: document.getElementById("household-profile").value || ""
-    },
-    
-    energy_profile: data.energy_profile || {},
-
-    battery: {
-      E: parseFloat(document.getElementById("E").value || "0"),
-      P: parseFloat(document.getElementById("P").value || "0")
-    },
-
-    battery_assessment: data.battery_assessment || null,
-
-    extra_consumers: {
-      heat_pump: document.getElementById("has-heatpump")?.value === "yes",
-      ev: document.getElementById("has-ev")?.value === "yes"
-    },
-
-    tariff_matrix: data.tariff_matrix || data.A1_per_tariff || {},
-
-    roi_per_tariff: data.roi_per_tariff || {}
-  };
-}
-  
-function buildAdviceText(data) {
-  // Frontend levert GEEN eigen tekst meer
-  // Backend genereert het volledige advies
-  return "";
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
-
-function isTitleLine(line) {
-  // Sectietitels: "1. Managementsamenvatting" etc.
-  if (/^\d+\.\s+/.test(line)) return true;
-
-  // Bijlagen: "Bijlage A — ..." etc.
-  if (/^Bijlage\s+[A-D]\s+—\s+/.test(line)) return true;
-
-  return false;
-}
-
-function renderAdviceToHtml(adviceText) {
-  const el = document.getElementById("advice-rendered");
-  if (!el) return;
-
-  if (!adviceText || adviceText.trim() === "") {
-    el.innerHTML = "";
-    return;
-  }
-
-  // Split per newline en trim rechterkant
-  const lines = adviceText.split("\n").map(l => l.replace(/\s+$/, ""));
-
-  let html = "";
-  let buffer = [];
-
-  function flushParagraph() {
-    const text = buffer.join(" ").trim();
-    buffer = [];
-    if (!text) return;
-    html += `<div class="advice-paragraph">${escapeHtml(text)}</div>`;
-  }
-
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-
-    // Lege regel = alinea afsluiten
-    if (line === "") {
-      flushParagraph();
-      continue;
-    }
-
-    // Titelregel
-    if (isTitleLine(line)) {
-      flushParagraph();
-
-      // ✅ extra witruimte tussen einde vorige sectie en nieuwe titel
-      // (niet vóór de allereerste titel)
-      if (html !== "") {
-        html += `<div class="advice-section-gap"></div>`;
-      }
-
-  html += `<div class="advice-title">${escapeHtml(line)}</div>`;
-  continue;
-}
-
-    // Normale tekstregel -> toevoegen aan alinea buffer
-    buffer.push(line);
-  }
-
-  flushParagraph();
-
-  el.innerHTML = html;
-}
-
-  function injectResultsIntoAdvice() {
-    const target = document.getElementById("advice-results");
-    if (!target) return;
-    if (!window.computedResult) return;
-
-    // Leegmaken zodat opnieuw genereren netjes blijft
-    target.innerHTML = "";
-
-    // Helper om bestaande blokken exact te kopiëren
-    const clone = (selector) => {
-      const el = document.querySelector(selector);
-      return el ? el.cloneNode(true) : null;
-    };
-
-    // 1️⃣ Resultaat-tiles
-    const tiles = clone(".results-summary");
-    if (tiles) {
-      target.appendChild(tiles);
-    }
-
-    // 2️⃣ Tariefmatrix (alleen de tabel, opnieuw verpakt)
-    const tariffTable = clone(".table-card table");
-    if (tariffTable) {
-      const wrap = document.createElement("div");
-      wrap.className = "table-card";
-      wrap.appendChild(tariffTable);
-      target.appendChild(wrap);
-    }
-
-    // 3️⃣ Grafiek (canvas + card)
-    const chartCard = document.querySelector("#chart")?.closest(".card");
-    if (chartCard) {
-      const chartClone = chartCard.cloneNode(true);
-      target.appendChild(chartClone);
-    }
-
-    // 4️⃣ Energie-inzichten
-    const energyTable = clone(".energy-table");
-    if (energyTable) {
-      const wrap = document.createElement("div");
-      wrap.className = "table-card";
-      wrap.appendChild(energyTable);
-      target.appendChild(wrap);
-    }
-  }
-  
-document.getElementById("btn-generate-advice").addEventListener("click", async () => {
-  const statusEl = document.getElementById("advice-status");
-  const textEl   = document.getElementById("advice-text");
-
-  if (!window.computedResult) {
-    alert("Voer eerst een berekening uit.");
-    return;
-  }
-
-  statusEl.textContent = "Advies wordt gegenereerd op basis van uw gegevens…";
-
-  // 🧠 FEITENOBJECT (backend-leidend)
-  const context = buildAdviceContext(window.computedResult);
-
-  // ✏️ CONCEPTTEKST (frontend-draft)
-  const draftText = buildAdviceText(window.computedResult);
-
-  try {
-    let res;
-    try {
-      res = await window.batteryEngineFetch("/generate_advice", {
-        method: "POST",
-        body: JSON.stringify({
-          context: context,
-          draft_text: draftText
-        })
-      });
-    } catch (e) {
-      if (e && e.code === "SESSION_INVALID") {
-        statusEl.textContent = "";
-        return;
-      }
-      throw e;
-    }
-
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      statusEl.textContent = "Ongeldig antwoord van de server (geen JSON).";
-      return;
-    }
-
-    if (!res.ok) {
-      statusEl.textContent = formatBatteryApiErrorMessage(data, res.status);
-      return;
-    }
-
-    if (data.device_warning === true && data.device_count != null) {
-      /* optioneel: later zachte waarschuwing */
-    }
-
-    if (data.advice && !data.advice.includes("Bijlage A")) {
-      console.warn("⚠️ Advies gegenereerd zonder bijlagen");
-    }
-
-    console.log("GENERATE_ADVICE RESPONSE:", data);
-
-    if (!data || data.error) {
-      statusEl.textContent = data?.message
-        ? String(data.message)
-        : "Fout bij genereren van advies.";
-      return;
-    }
-
-    // Backend levert volledige tekst (incl. bijlagen)
-    window.computedAdvice = data.advice;
-
-    // 🔒 Exact weergeven — GEEN parsing
-    renderAdviceToHtml(data.advice);
-    injectResultsIntoAdvice();
-
-    // ✅ Grafiek ook renderen in advies
-    renderAdviceChart(window.computedResult);
-
-    statusEl.textContent = "Advies succesvol gegenereerd.";
-  } catch (err) {
-    statusEl.textContent = "Fout: " + err.message;
-  }
-});
-
-/* PDF EXPORT */
-document.getElementById("btn-download-pdf").addEventListener("click", () => {
-  if (!window.computedAdvice || window.computedAdvice.trim() === "") {
-  alert("Genereer eerst het advies voordat u de PDF downloadt.");
-  return;
-}
-  
-  if (!window.computedResult) {
-    alert("Geen berekening beschikbaar. Voer eerst een berekening uit.");
-    return;
-  }
-  
-  pdfExport(window.computedResult);
-});
-
-  /* ========================================================= */
-  /*        GRAFIEK — KOSTEN & RENDEMENT OVER LEVENSDUUR       */
-  /* ========================================================= */
-  function updateCostChart(result) {
-    const ctx = document.getElementById("chart").getContext("2d");
-
-    // Oude grafiek opruimen
-    if (costChart) {
-      costChart.destroy();
-    }
-
-    const lifetime =
-      parseInt(document.getElementById("battery-lifetime").value || "15");
-
-    const investment =
-      parseFloat(document.getElementById("battery-cost").value || "0");
-
-    // 🔑 huidig gekozen tarief
-    const tariff = document.getElementById("tariff-type").value || "enkel";
-
-    // ROI per tarief
-    const roi = result.roi_per_tariff[tariff];
-
-    // Jaarlijkse besparing (veilig)
-    const yearlySaving =
-      roi && isFinite(roi.yearly_saving_eur)
-      ? roi.yearly_saving_eur
-      : 0;
-
-    // Kosten zonder batterij (B1) en met batterij (C1) — PER TARIEF
-    const costWithoutBatt =
-      result.B1?.[tariff]?.total_cost_eur ?? 0;
-
-    const costWithBatt =
-      result.C1?.[tariff]?.total_cost_eur ?? 0;
-
-    // Dashboard theme: kleuren aanpassen zodat as/rooster zichtbaar blijft op een donkere achtergrond.
-    const isDashboard = document.body.classList.contains("dashboard-layout");
-    const axisColor = isDashboard ? "#9ca3af" : undefined;
-    const gridColor = isDashboard ? "rgba(148,163,184,0.18)" : undefined;
-
-    let labels = [];
-    let withoutBatt = [];
-    let withBatt = [];
-    let cumulative = [];
-
-    let cum = -investment;
-
-    for (let year = 0; year <= lifetime; year++) {
-      labels.push("Jaar " + year);
-
-      if (year === 0) {
-        withoutBatt.push(0);
-        withBatt.push(-investment);
-        cumulative.push(-investment);
-      } else {
-        withoutBatt.push(costWithoutBatt);
-        withBatt.push(costWithBatt);
-        cum += yearlySaving;
-        cumulative.push(cum);
-      }
-    }
-
-    costChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Kosten zonder batterij",
-            data: withoutBatt,
-            borderWidth: 2,
-            tension: 0.25
-          },
-          {
-            label: "Kosten met batterij",
-            data: withBatt,
-            borderWidth: 2,
-            tension: 0.25
-          },
-          {
-            label: "Cumulatieve besparing",
-            data: cumulative,
-            borderWidth: 3,
-            borderDash: [6, 6],
-            tension: 0.25
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: { color: axisColor }
-          },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => "€ " + ctx.parsed.y.toFixed(0)
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: axisColor
-            },
-            grid: {
-              color: gridColor
-            }
-          },
-          y: {
-            ticks: {
-              color: axisColor,
-              callback: (v) => "€ " + v
-            },
-            grid: {
-              color: gridColor
-            }
-          }
-        }
-      }
-    });
-  }
-
-function renderAdviceChart(result) {
-  const canvas = document.getElementById("chart-advice");
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-
-  // voorkom dubbele grafieken
-  if (window.adviceCostChart) {
-    window.adviceCostChart.destroy();
-  }
-
-  const lifetime =
-    parseInt(document.getElementById("battery-lifetime").value || "15");
-
-  const investment =
-    parseFloat(document.getElementById("battery-cost").value || "0");
-
-  const tariff =
-    document.getElementById("tariff-type").value || "enkel";
-
-  const roi = result.roi_per_tariff?.[tariff];
-
-  const yearlySaving =
-    roi && isFinite(roi.yearly_saving_eur)
-      ? roi.yearly_saving_eur
-      : 0;
-
-  const costWithoutBatt =
-    result.B1?.[tariff]?.total_cost_eur ?? 0;
-
-  const costWithBatt =
-    result.C1?.[tariff]?.total_cost_eur ?? 0;
-
-  // Dashboard theme: kleuren aanpassen zodat as/rooster zichtbaar blijft op een donkere achtergrond.
-  const isDashboard = document.body.classList.contains("dashboard-layout");
-  const axisColor = isDashboard ? "#9ca3af" : undefined;
-  const gridColor = isDashboard ? "rgba(148,163,184,0.18)" : undefined;
-
-  let labels = [];
-  let withoutBatt = [];
-  let withBatt = [];
-  let cumulative = [];
-
-  let cum = -investment;
-
-  for (let year = 0; year <= lifetime; year++) {
-    labels.push("Jaar " + year);
-
-    if (year === 0) {
-      withoutBatt.push(0);
-      withBatt.push(-investment);
-      cumulative.push(-investment);
-    } else {
-      withoutBatt.push(costWithoutBatt);
-      withBatt.push(costWithBatt);
-      cum += yearlySaving;
-      cumulative.push(cum);
-    }
-  }
-
-  window.adviceCostChart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Kosten zonder batterij",
-          data: withoutBatt,
-          borderWidth: 2,
-          tension: 0.25
-        },
-        {
-          label: "Kosten met batterij",
-          data: withBatt,
-          borderWidth: 2,
-          tension: 0.25
-        },
-        {
-          label: "Cumulatieve besparing",
-          data: cumulative,
-          borderWidth: 3,
-          borderDash: [6, 6],
-          tension: 0.25
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: { color: axisColor }
-        }
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: axisColor
-          },
-          grid: {
-            color: gridColor
-          }
-        },
-        y: {
-          ticks: {
-            color: axisColor,
-            callback: v => "€ " + v
-          },
-          grid: {
-            color: gridColor
-          }
-        }
-      }
-    }
-  });
-}
-  
-</script>
-  
-<!-- ======================================= -->
-<!--       STEPPER PILLS CLICKABLE           -->
-<!-- ======================================= -->
-<script>
-document.querySelectorAll(".stepper .step").forEach((pill, index) => {
-  pill.style.cursor = "pointer";
-
-  pill.addEventListener("click", () => {
-
-    if (index > 1) {
-      const annualLoad = parseFloat(document.getElementById("annual-load")?.value || "0");
-      const annualPv   = parseFloat(document.getElementById("annual-pv")?.value || "0");
-      if (!isFinite(annualLoad) || annualLoad <= 0 || !isFinite(annualPv) || annualPv < 0) {
-        alert("Vul eerst Stap 1 in (jaarverbruik en jaaropwek).");
-        return;
-      }
-    }
-
-    if (index > 2) {
-      const profile = document.getElementById("household-profile")?.value || "";
-      if (!profile) {
-        alert("Vul eerst Stap 2 in (huishoudprofiel).");
-        return;
-      }
-    }
-
-    if (index > 3) {
-      const E = document.getElementById("E")?.value;
-      if (!E) {
-        alert("Vul eerst de batterijgegevens in bij stap 3.");
-        return;
-      }
-    }
-
-    if (index === 6 && !window.computedResult) {
-      alert("Voer eerst een berekening uit bij stap 5.");
-      return;
-    }
-
-    activateStep(index);
-
-    if (index === 4) {
-      applyTariffDefaultsIfEmpty();
-    }
-  });
-});
-</script>  
-
-<script>  
-/* DEFAULTS */
-window.addEventListener("DOMContentLoaded", async () => {
-  const urlParams = new URLSearchParams(
-    window.location.search
-  );
-
-  const paymentSuccess =
-    urlParams.get("payment") === "success" ||
-    localStorage.getItem("pending_payment") === "true";
-
-  if (paymentSuccess) {
-    localStorage.removeItem("pending_payment");
-
-    setTimeout(async () => {
-      // Verberg alles eerst
-      document.getElementById("app-view")
-        .style.display = "none";
-      document.getElementById("login-container")
-        .style.display = "none";
-      document.getElementById("paywall-container")
-        .style.display = "none";
-
-      try {
-        const { data: wrap } =
-          await window.sb.auth.getSession();
-        const session = wrap?.session;
-
-        if (!session) {
-          document.getElementById("paywall-container")
-            .style.display = "none";
-          document.getElementById("login-container")
-            .style.display = "block";
-          window.history.replaceState(
-            {}, document.title, window.location.pathname
-          );
-          return;
-        }
-
-        try {
-          await registerActiveSessionForUser();
-        } catch (e) {
-          console.warn(
-            "Sessie herregistratie mislukt:", e
-          );
-        }
-
-        startSessionValidationLoop();
-
-        const hasSubscription =
-          await checkSubscription();
-
-        if (hasSubscription) {
-          document.getElementById("paywall-container")
-            .style.display = "none";
-          document.getElementById("login-container")
-            .style.display = "none";
-          document.getElementById(
-            "check-email-container"
-          ).style.display = "block";
-        } else {
-          document.getElementById("login-container")
-            .style.display = "none";
-          document.getElementById("paywall-container")
-            .style.display = "block";
-        }
-
-      } catch (err) {
-        console.error(
-          "Payment success handler fout:", err
-        );
-      }
-
-      window.history.replaceState(
-        {}, document.title, window.location.pathname
-      );
-    }, 3000);
-  }
-
-  const waitingForPayment = paymentSuccess;
-
-  if (!waitingForPayment) {
-    if (urlParams.get("payment") === "cancelled") {
-      const { data: wrap } = await window.sb.auth.getSession();
-      if (wrap?.session) {
-        const loginC = document.getElementById("login-container");
-        const signupC = document.getElementById("signup-container");
-        if (loginC) loginC.style.display = "none";
-        if (signupC) signupC.style.display = "none";
-        const paywall = document.getElementById(
-          "paywall-container"
-        );
-        if (paywall) {
-          paywall.style.display = "block";
-          const status = document.getElementById(
-            "paywall-status"
-          );
-          if (status) {
-            status.textContent =
-              "Betaling geannuleerd. " +
-              "Klik hieronder om het opnieuw te proberen.";
-            status.className = "status";
-          }
-        }
-      }
-      window.history.replaceState(
-        {}, document.title, window.location.pathname
-      );
-    }
-  }
-
-  activateStep(0);
-  updateCountryUI();
-  wireUnknownToggles();
-  wireEvChargeWindow();
-  wireHeatpumpFields();
-
-  function updateDaytimeSplitPreview() {
-    const dag   = parseFloat(
-      document.getElementById("daytime-kwh").value || ""
-    );
-    const nacht = parseFloat(
-      document.getElementById("nighttime-kwh").value || ""
-    );
-    const preview = document.getElementById("daytime-split-preview");
-    if (!preview) return;
-
-    if (!isFinite(dag) || !isFinite(nacht) || dag < 0 || nacht < 0) {
-      preview.textContent = "";
-      return;
-    }
-
-    const total = dag + nacht;
-    if (total <= 0) {
-      preview.textContent = "";
-      return;
-    }
-
-    const annual = parseFloat(
-      document.getElementById("annual-load").value || ""
-    );
-    const pct = Math.round((dag / total) * 100);
-
-    // Waarschuwing als som ver afwijkt van jaarverbruik
-    if (isFinite(annual) && annual > 0) {
-      const diff = Math.abs(total - annual);
-      const diffPct = (diff / annual) * 100;
-      if (diffPct > 15) {
-        preview.textContent =
-          `⚠ Som dag + nacht (${Math.round(total)} kWh) wijkt ${Math.round(diffPct)}% af van jaarverbruik (${Math.round(annual)} kWh). Controleer uw invoer.`;
-        preview.style.color = "#f59e0b";
-        return;
-      }
-    }
-
-    preview.textContent = `→ ${pct}% overdag / ${100 - pct}% 's nachts`;
-    preview.style.color = "var(--muted)";
-  }
-
-  document.getElementById("daytime-kwh")
-    .addEventListener("input", updateDaytimeSplitPreview);
-  document.getElementById("nighttime-kwh")
-    .addEventListener("input", updateDaytimeSplitPreview);
-  document.getElementById("annual-load")
-    .addEventListener("input", updateDaytimeSplitPreview);
-
-  // Toggle maandverbruik grid
-  document.getElementById("btn-toggle-monthly")
-    .addEventListener("click", () => {
-      const grid = document.getElementById(
-        "monthly-inputs-grid"
-      );
-      const btn = document.getElementById("btn-toggle-monthly");
-      const open = grid.style.display === "none";
-      grid.style.display = open ? "block" : "none";
-      btn.textContent = open
-        ? "− Maandwaarden verbergen"
-        : "+ Maandwaarden invoeren";
-    });
-
-  // Wis-knop
-  document.getElementById("btn-clear-monthly")
-    .addEventListener("click", () => {
-      document.querySelectorAll(".monthly-kwh-input")
-        .forEach(el => el.value = "");
-      document.getElementById("monthly-load-preview")
-        .textContent = "";
-    });
-
-  // Live preview
-  function updateMonthlyLoadPreview() {
-    const inputs = [
-      ...document.querySelectorAll(".monthly-kwh-input")
-    ];
-    const values = inputs.map(
-      el => parseFloat(el.value || "")
-    );
-    const filled = values.filter(v => isFinite(v) && v >= 0);
-    const preview = document.getElementById(
-      "monthly-load-preview"
-    );
-
-    if (filled.length === 0) {
-      preview.textContent = "";
-      return;
-    }
-
-    const sum = filled.reduce((a, b) => a + b, 0);
-    const annual = parseFloat(
-      document.getElementById("annual-load").value || "0"
-    );
-
-    if (filled.length < 12) {
-      preview.textContent =
-        `${filled.length}/12 maanden ingevuld — ` +
-        `som tot nu toe: ${Math.round(sum)} kWh`;
-      preview.style.color = "var(--muted)";
-      return;
-    }
-
-    const diff = Math.abs(sum - annual);
-    const pct = annual > 0 ? (diff / annual * 100) : 0;
-
-    if (pct > 15 && annual > 0) {
-      preview.textContent =
-        `⚠ Som maanden: ${Math.round(sum)} kWh — wijkt ` +
-        `${Math.round(pct)}% af van jaarverbruik ` +
-        `(${Math.round(annual)} kWh). Controleer uw invoer.`;
-      preview.style.color = "#f59e0b";
-    } else {
-      preview.textContent =
-        `✓ Som: ${Math.round(sum)} kWh ` +
-        `(jaarverbruik: ${Math.round(annual)} kWh)`;
-      preview.style.color = "#22c55e";
-    }
-  }
-
-  document.querySelectorAll(".monthly-kwh-input")
-    .forEach(el => {
-      el.addEventListener("input", updateMonthlyLoadPreview);
-    });
-  document.getElementById("annual-load")
-    .addEventListener("input", updateMonthlyLoadPreview);
-  updateDaytimeSplitPreview();
-});
-  
-</script>
-  
-<script>
-/* ===============================
-   SUPABASE LOGIN GATE
-   =============================== */
-
-const SUPABASE_URL = "https://sjnfzyvuhizpkziaxdtb.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqbmZ6eXZ1aGl6cGt6aWF4ZHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwODIwNTIsImV4cCI6MjA4MTY1ODA1Mn0.2TpBDRjKSbdyOX8hh1qG9Y2RqyUBZMb6D0PJGZl-EfQ";
-
-const sb = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-window.sb = sb;
-
-/* ---- BatteryEngine API: sessie, device-headers, fetch-wrapper ---- */
-const LS_SESSION_TOKEN = "session_token";
-const LS_DEVICE_ID = "device_id";
-const LS_DEVICE_FINGERPRINT = "device_fingerprint";
-
-function ensureDeviceId() {
-  try {
-    let id = localStorage.getItem(LS_DEVICE_ID);
-    if (!id) {
-      id = crypto.randomUUID();
-      localStorage.setItem(LS_DEVICE_ID, id);
-    }
-    return id;
-  } catch {
-    return "unknown-device";
-  }
-}
-
-async function sha256HexFromString(str) {
-  const enc = new TextEncoder().encode(str);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-async function ensureDeviceFingerprint() {
-  try {
-    let fp = localStorage.getItem(LS_DEVICE_FINGERPRINT);
-    if (fp) return fp;
-    const raw = [
-      navigator.userAgent || "",
-      navigator.language || "",
-      typeof screen !== "undefined" ? `${screen.width}x${screen.height}` : "",
-      Intl.DateTimeFormat().resolvedOptions().timeZone || ""
-    ].join("|");
-    fp = await sha256HexFromString(raw);
-    localStorage.setItem(LS_DEVICE_FINGERPRINT, fp);
-    return fp;
-  } catch {
-    return "na";
-  }
-}
-
-/** Registreert actieve sessie via backend endpoint /register-session. */
-async function registerActiveSessionForUser() {
-  const { data: wrap } = await sb.auth.getSession();
-  const session = wrap?.session;
-  const accessToken = session?.access_token;
-  if (!accessToken) {
-    throw new Error("AUTH_SESSION_MISSING");
-  }
-  const sessionToken = crypto.randomUUID();
-  try {
-    localStorage.setItem(LS_SESSION_TOKEN, sessionToken);
-  } catch (_) {}
-
-  const base =
-    typeof window.batteryEngineApiBase === "string"
-      ? window.batteryEngineApiBase
-      : "https://batteryengine-server.onrender.com";
-  const res = await fetch(base.replace(/\/$/, "") + "/register-session", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + accessToken
-    },
-    body: JSON.stringify({
-      session_token: sessionToken
-    })
-  });
-
-  if (!res.ok) {
-    let msg = `register-session failed (${res.status})`;
-    try {
-      const j = await res.json();
-      if (j?.message) msg = String(j.message);
-    } catch (_) {}
-    throw new Error(msg);
-  }
-}
-
-let sessionValidationIntervalId = null;
-let isHandlingInvalidSession = false;
-
-/** Force logout bij invalide actieve sessie (andere device login). */
-async function handleSessionInvalid() {
-  if (isHandlingInvalidSession) return;
-  isHandlingInvalidSession = true;
-  try {
-    localStorage.removeItem(LS_SESSION_TOKEN);
-  } catch (_) {}
-  try {
-    await sb.auth.signOut();
-  } catch (_) {}
-  alert("Je bent uitgelogd omdat je account op een ander apparaat is gebruikt.");
-  window.location.reload();
-}
-
-/** Actieve sessie valideren tegen backend. */
-async function validateSession() {
-  let token = "";
-  try {
-    token = localStorage.getItem(LS_SESSION_TOKEN) || "";
-  } catch (_) {}
-  if (!token) {
-    await handleSessionInvalid();
-    return;
-  }
-
-  try {
-    const { data: wrap } = await sb.auth.getSession();
-    const accessToken = wrap?.session?.access_token || "";
-    const deviceId = ensureDeviceId();
-    const deviceFp = await ensureDeviceFingerprint();
-    const base =
-      typeof window.batteryEngineApiBase === "string"
-        ? window.batteryEngineApiBase
-        : "https://batteryengine-server.onrender.com";
-    const res = await fetch(base.replace(/\/$/, "") + "/validate-session", {
-      method: "GET",
-      headers: {
-        ...(accessToken ? { Authorization: "Bearer " + accessToken } : {}),
-        "x-session-token": token,
-        "x-device-id": deviceId,
-        "x-device-fingerprint": deviceFp
-      }
-    });
-
-    let data = null;
-    try {
-      data = await res.clone().json();
-    } catch (_) {}
-
-    if (res.status === 401 || data?.error_code === "SESSION_INVALID") {
-      await handleSessionInvalid();
-    }
-  } catch (err) {
-    console.error("Session check failed", err);
-  }
-}
-
-/** Start checks op load + interval + tab terug in focus. */
-function startSessionValidationLoop() {
-  if (sessionValidationIntervalId != null) return;
-  validateSession();
-  sessionValidationIntervalId = window.setInterval(validateSession, 180000);
-  window.addEventListener("focus", validateSession);
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      validateSession();
-    }
-  });
-}
-
-window.batteryEngineFetch = async function (path, init) {
-  init = init || {};
-  const base =
-    typeof window.batteryEngineApiBase === "string"
-      ? window.batteryEngineApiBase
-      : "https://batteryengine-server.onrender.com";
-  const url = path.startsWith("http") ? path : base.replace(/\/$/, "") + path;
-
-  const { data: wrap } = await sb.auth.getSession();
-  const accessToken = wrap?.session?.access_token || "";
-  let sessionToken = "";
-  try {
-    sessionToken = localStorage.getItem(LS_SESSION_TOKEN) || "";
-  } catch (_) {}
-  if (!sessionToken) {
-    await handleSessionInvalid();
-    const err = new Error("SESSION_TOKEN_MISSING");
-    err.code = "SESSION_TOKEN_MISSING";
-    throw err;
-  }
-
-  const deviceId = ensureDeviceId();
-  const deviceFp = await ensureDeviceFingerprint();
-
-  const hdrs = new Headers(init.headers || {});
-  const body = init.body;
-  if (body != null && typeof body === "string" && !hdrs.has("Content-Type")) {
-    hdrs.set("Content-Type", "application/json");
-  }
-  if (accessToken) hdrs.set("Authorization", "Bearer " + accessToken);
-  hdrs.set("x-session-token", sessionToken);
-  hdrs.set("x-device-id", deviceId);
-  hdrs.set("x-device-fingerprint", deviceFp);
-
-  const { headers: _ignoreInitHeaders, ...restInit } = init;
-  const res = await fetch(url, { ...restInit, headers: hdrs });
-
-  if (res.status === 401) {
-    let j = null;
-    try {
-      j = await res.clone().json();
-    } catch (_) {}
-    if (j && j.error_code === "SESSION_INVALID") {
-      await handleSessionInvalid();
-      const err = new Error("SESSION_INVALID");
-      err.code = "SESSION_INVALID";
-      throw err;
-    }
-  }
-
-  return res;
-};
-
-async function checkSubscription() {
-  try {
-    const res = await window.batteryEngineFetch(
-      "/subscription/status",
-      { method: "GET" }
-    );
-    const data = await res.json();
-    return data.active === true;
-  } catch (e) {
-    return false;
-  }
-}
-
-const loginContainer = document.getElementById("login-container");
-const appView = document.getElementById("app-view");
-const loginStatus = document.getElementById("login-status");
-
-// ===== Signup scherm =====
-const signupContainer = document.getElementById("signup-container");
-const btnGoToSignup = document.getElementById("go-to-signup");
-const btnBackToLogin = document.getElementById("back-to-login");
-  
-const signupStatus = document.getElementById("signup-status");
-const signupFirstName = document.getElementById("signup-firstname");
-const signupLastName = document.getElementById("signup-lastname");
-const signupCompanyName = document.getElementById("signup-company");
-const signupPhone = document.getElementById("signup-phone");
-const signupEmail = document.getElementById("signup-email");
-const signupPassword = document.getElementById("signup-password");
-const signupPassword2 = document.getElementById("signup-password-confirm");
-const btnCreateAccount = document.getElementById("btn-signup-submit");
-
-// ============================
-// CHECK LOGIN BIJ LADEN
-// ============================
-sb.auth.getSession().then(async ({ data }) => {
-  ensureDeviceId();
-  const paywallEl = document.getElementById("paywall-container");
-  if (data && data.session) {
-    const user = data.session.user;
-
-    let st = null;
-    try {
-      st = localStorage.getItem(LS_SESSION_TOKEN);
-    } catch (_) {}
-    if (!st) {
-      await handleSessionInvalid();
-      return;
-    }
-
-    const hasSubscription = await checkSubscription();
-
-    if (hasSubscription) {
-      loginContainer.style.display = "none";
-      if (paywallEl) paywallEl.style.display = "none";
-      signupContainer.style.display = "none";
-      appView.style.display = "block";
-
-      const emailEl = document.getElementById("user-email");
-      if (emailEl) {
-        emailEl.textContent = user.email;
-      }
-      startSessionValidationLoop();
-    } else {
-      loginContainer.style.display = "none";
-      signupContainer.style.display = "none";
-      appView.style.display = "none";
-      if (paywallEl) paywallEl.style.display = "block";
-    }
-  } else {
-    loginContainer.style.display = "block";
-    signupContainer.style.display = "none";
-    appView.style.display = "none";
-    if (paywallEl) paywallEl.style.display = "none";
-  }
-});
-
-  // ============================
-  // SCHERM WISSELEN
-  // ============================
-
-  // Naar signup scherm
-  btnGoToSignup.addEventListener("click", () => {
-    loginContainer.style.display = "none";
-    const paywallEl = document.getElementById("paywall-container");
-    if (paywallEl) paywallEl.style.display = "none";
-    signupContainer.style.display = "block";
-  });
-
-  // Terug naar login scherm
-  btnBackToLogin.addEventListener("click", () => {
-    signupContainer.style.display = "none";
-    loginContainer.style.display = "block";
-    const paywallEl = document.getElementById("paywall-container");
-    if (paywallEl) paywallEl.style.display = "none";
-  });
-
-document.getElementById("btn-subscribe")
-  .addEventListener("click", async () => {
-    const btn = document.getElementById(
-      "btn-subscribe"
-    );
-    const status = document.getElementById(
-      "paywall-status"
-    );
-
-    btn.disabled = true;
-    btn.textContent = "Doorsturen naar betaling...";
-    status.textContent = "";
-
-    try {
-      const { data: wrap } = await sb.auth.getSession();
-      const user = wrap?.session?.user;
-
-      if (!user) {
-        status.textContent = "Niet ingelogd.";
-        status.className = "status error";
-        btn.disabled = false;
-        btn.textContent = "Abonnement starten — €99/maand";
-        return;
-      }
-
-      const apiBase = (typeof window.batteryEngineApiBase === "string"
-        ? window.batteryEngineApiBase
-        : "https://batteryengine-server.onrender.com"
-      ).replace(/\/$/, "");
-
-      const res = await fetch(
-        apiBase + "/stripe/create-checkout-session",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user_id: user.id,
-            email: user.email,
-            success_url: window.location.origin
-              + "?payment=success",
-            cancel_url: window.location.origin
-              + "?payment=cancelled",
-          })
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.checkout_url) {
-        localStorage.setItem("pending_payment", "true");
-        window.location.href = data.checkout_url;
-      } else {
-        throw new Error(
-          data.error || "Geen checkout URL ontvangen"
-        );
-      }
-
-    } catch (err) {
-      status.textContent = "Fout: " + err.message;
-      status.className = "status error";
-      btn.disabled = false;
-      btn.textContent = "Abonnement starten — €99/maand";
-    }
-  });
-
-document.getElementById("btn-logout-paywall")
-  .addEventListener("click", async () => {
-    try {
-      localStorage.removeItem(LS_SESSION_TOKEN);
-    } catch (_) {}
-    await sb.auth.signOut();
-    window.location.reload();
-  });
-
-const btnGotoLogin = document.getElementById(
-  "btn-goto-login-from-email"
-);
-if (btnGotoLogin) {
-  btnGotoLogin.addEventListener("click", () => {
-    document.getElementById("check-email-container")
-      .style.display = "none";
-    document.getElementById("login-container")
-      .style.display = "block";
-  });
-}
-
-// ============================
-// LOGIN
-// ============================
-document.getElementById("btn-login").addEventListener("click", async () => {
-  const emailEl = document.getElementById("login-email");
-  const passEl  = document.getElementById("login-password");
-
-  if (!emailEl || !passEl) {
-    loginStatus.textContent = "Loginvelden ontbreken.";
-    loginStatus.className = "status error";
-    return;
-  }
-
-  const email = emailEl.value.trim();
-  const password = passEl.value;
-
-  if (!email || !password) {
-    loginStatus.textContent = "Vul e-mailadres en wachtwoord in.";
-    loginStatus.className = "status error";
-    return;
-  }
-
-  loginStatus.textContent = "Inloggen…";
-  loginStatus.className = "status";
-
-  const { data, error } = await sb.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    loginStatus.textContent = error.message;
-    loginStatus.className = "status error";
-    return;
-  }
-
-  try {
-    await registerActiveSessionForUser();
-  } catch (e) {
-    loginStatus.textContent = "Sessie kon niet geregistreerd worden. Probeer opnieuw.";
-    loginStatus.className = "status error";
-    try {
-      localStorage.removeItem(LS_SESSION_TOKEN);
-    } catch (_) {}
-    await sb.auth.signOut();
-    return;
-  }
-  startSessionValidationLoop();
-
-  const hasSubscription = await checkSubscription();
-  const paywallEl = document.getElementById("paywall-container");
-
-  if (hasSubscription) {
-    loginContainer.style.display = "none";
-    if (paywallEl) paywallEl.style.display = "none";
-    appView.style.display = "block";
-    const userEmailBanner = document.getElementById("user-email");
-    if (userEmailBanner) {
-      userEmailBanner.textContent =
-        data?.user?.email || email;
-    }
-  } else {
-    loginContainer.style.display = "none";
-    if (paywallEl) paywallEl.style.display = "block";
-    appView.style.display = "none";
-  }
-});
-
-// ============================
-// SIGNUP
-// ============================
-// ============================
-// SIGNUP (apart scherm)
-// ============================
-btnCreateAccount.addEventListener("click", async () => {
-  signupStatus.textContent = "";
-  signupStatus.className = "status";
-
-  if (
-    !signupFirstName.value.trim() ||
-    !signupLastName.value.trim() ||
-    !signupCompanyName.value.trim() ||
-    !signupEmail.value.trim() ||
-    !signupPhone.value.trim()
-  ) {
-    signupStatus.textContent = "Alle velden zijn verplicht.";
-    signupStatus.className = "status error";
-    return;
-  }
-
-  if (!signupEmail.value.trim()) {
-    signupStatus.textContent = "Vul uw e-mailadres in.";
-    signupStatus.className = "status error";
-    return;
-  }
-
-  if (signupPassword.value.length < 6) {
-    signupStatus.textContent = "Wachtwoord moet minimaal 6 tekens zijn.";
-    signupStatus.className = "status error";
-    return;
-  }
-
-  if (signupPassword.value !== signupPassword2.value) {
-    signupStatus.textContent = "Wachtwoorden komen niet overeen.";
-    signupStatus.className = "status error";
-    return;
-  }
-
-  signupStatus.textContent = "Account aanmaken…";
-
-  const { data, error } = await sb.auth.signUp({
-    email: signupEmail.value.trim(),
-    password: signupPassword.value
-  });
-
-  if (error) {
-    signupStatus.textContent = error.message;
-    signupStatus.className = "status error";
-    return;
-  }
-
-  const userId = data?.user?.id;
-
-  if (userId) {
-    const { error: profileError } = await sb
-      .from("profiles")
-      .insert([{
-        id: userId,
-        full_name: `${signupFirstName.value.trim()} ${signupLastName.value.trim()}`,
-        company_name: signupCompanyName.value.trim(),
-      }]);
-
-    if (profileError) {
-      signupStatus.textContent =
-        "Account aangemaakt, maar profiel opslaan mislukt.";
-      signupStatus.className = "status error";
-      return;
-    }
-  } else {
-    signupStatus.textContent = "Account aangemaakt ✔ U kunt nu inloggen.";
-    signupStatus.className = "status success";
-    document.getElementById("login-email").value = signupEmail.value.trim();
-    document.getElementById("login-password").value = "";
-    setTimeout(() => {
-      signupContainer.style.display = "none";
-      loginContainer.style.display = "block";
-    }, 800);
-    return;
-  }
-
-  signupStatus.textContent =
-    "Account aangemaakt ✔ Doorsturen naar betaling...";
-  signupStatus.className = "status success";
-
-  const { data: loginData, error: loginError } =
-    await sb.auth.signInWithPassword({
-      email: signupEmail.value.trim(),
-      password: signupPassword.value,
-    });
-
-  if (loginError) {
-    signupStatus.textContent =
-      "Account aangemaakt maar inloggen mislukt. " +
-      "Probeer handmatig in te loggen.";
-    signupStatus.className = "status error";
-    setTimeout(() => {
-      signupContainer.style.display = "none";
-      loginContainer.style.display = "block";
-    }, 2000);
-    return;
-  }
-
-  try {
-    await registerActiveSessionForUser();
-  } catch (e) {
-    signupStatus.textContent =
-      "Sessie registratie mislukt. Probeer opnieuw.";
-    signupStatus.className = "status error";
-    return;
-  }
-
-  try {
-    const user = loginData?.user;
-    const apiBase = (typeof window.batteryEngineApiBase === "string"
-      ? window.batteryEngineApiBase
-      : "https://batteryengine-server.onrender.com"
-    ).replace(/\/$/, "");
-    const res = await fetch(
-      apiBase + "/stripe/create-checkout-session",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          user_id: user.id,
-          email: user.email,
-          success_url: window.location.origin
-            + "?payment=success",
-          cancel_url: window.location.origin
-            + "?payment=cancelled",
-        })
-      }
-    );
-
-    const data = await res.json();
-
-    if (data.checkout_url) {
-      window.location.href = data.checkout_url;
-    } else {
-      throw new Error(
-        data.error || "Geen checkout URL ontvangen"
-      );
-    }
-
-  } catch (err) {
-    signupStatus.textContent =
-      "Betaling starten mislukt: " + err.message;
-    signupStatus.className = "status error";
-  }
-});
-
-// ============================
-// LOGOUT HANDLER
-// ============================
-document
-  .getElementById("btn-logout")
-  .addEventListener("click", async () => {
-
-    try {
-      localStorage.removeItem(LS_SESSION_TOKEN);
-    } catch (_) {}
-
-    await sb.auth.signOut();
-
-    // ✅ harde reset zodat login weer altijd werkt (ook mobiel)
-    window.location.reload();
-
-  });
-  
-</script>
 </body>
 </html>

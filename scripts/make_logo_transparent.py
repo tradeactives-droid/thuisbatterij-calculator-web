@@ -30,7 +30,7 @@ def is_neutral_background(r: int, g: int, b: int) -> bool:
         if mx >= 218 and mx - mn <= 65:
             return True
         return False
-    # Te donker = geen typische rastercel (behalve zwart in lijnwerk — blijft staan)
+    # Te donker = geen typische rastercel (zwart in lijnwerk blijft wel staan)
     if mx < 72:
         return False
     return True
@@ -38,7 +38,7 @@ def is_neutral_background(r: int, g: int, b: int) -> bool:
 
 def is_chromatic(r: int, g: int, b: int) -> bool:
     """
-    Logo-inkt: blauw, oranje, geel, groen, donkere contouren — moet beschermd blijven.
+    Logo-inkt (blauw, oranje, geel, groen, donkere contouren) moet beschermd blijven.
     """
     mx, mn = max(r, g, b), min(r, g, b)
     if mx - mn >= 34:
@@ -109,7 +109,7 @@ def exterior_reachable_low_alpha(
     """
     Pixels met alpha < threshold die via alleen zulke pixels met de beeldrand verbonden zijn.
     Afgesloten transparantie (bv. midden van een 'o' waar stap 2 al doorheen heeft gehaald)
-    telt niet mee als 'buiten' — anders blijft de witte anti-alias-ring rond het gat staan.
+    telt niet mee als 'buiten', anders blijft de witte anti-alias-ring rond het gat staan.
     """
     ext = [[False] * h for _ in range(w)]
     q: deque[tuple[int, int]] = deque()
