@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aanmelden · Eco Metric</title>
+  <meta name="description" content="Vraag toegang aan tot Eco Metric voor uw verkoopteam.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0e12;
+      --bg2: #13161c;
+      --accent: #e8622a;
+      --accent2: #f28c5e;
+      --white: #ffffff;
+      --muted: #8a8f9e;
+      --border: rgba(255,255,255,0.07);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    nav {
+      padding: 20px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(12,14,18,0.85);
+      backdrop-filter: blur(16px);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-ghost {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .nav-ghost:hover { color: var(--white); }
+    main {
+      flex: 1;
+      padding: 80px 60px 100px;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .tag {
+      display: inline-block;
+      border: 1px solid rgba(232,98,42,0.4);
+      background: rgba(232,98,42,0.08);
+      color: var(--accent2);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 7px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 3.5rem);
+      letter-spacing: 0.02em;
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+    p {
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 20px;
+    }
+    p strong { color: var(--white); font-weight: 500; }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--accent);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 16px 36px;
+      border-radius: 100px;
+      text-decoration: none;
+      box-shadow: 0 8px 32px rgba(232,98,42,0.45);
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background: #c44d18;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(232,98,42,0.55);
+    }
+    footer {
+      padding: 28px 60px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.2);
+    }
+    @media (max-width: 640px) {
+      nav { padding: 16px 24px; }
+      main { padding: 48px 24px 80px; }
+      footer { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">Eco<span>Metric</span></a>
+  <a href="/" class="nav-ghost">← Terug naar home</a>
+</nav>
+<main>
+  <span class="tag">Aanmelden</span>
+  <h1>TOEGANG TOT DE TOOL</h1>
+  <p>
+    Eco Metric kost <strong>€99 per maand per gebruiker</strong>, maandelijks opzegbaar.
+    Stuur ons een kort bericht met uw bedrijfsnaam en het aantal verkopers; wij nemen contact op om uw account te activeren.
+  </p>
+  <p>
+    Liever direct iets afspreken? Gebruik de knop hieronder; u kunt het onderwerp al laten invullen.
+  </p>
+  <div class="actions">
+    <a class="btn-primary" href="mailto:hallo@ecometric.nl?subject=Aanmelding%20Eco%20Metric">Mail hallo@ecometric.nl →</a>
+  </div>
+</main>
+<footer>&copy; 2026 Eco Metric · Alle rechten voorbehouden</footer>
+</body>
+</html>
