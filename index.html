@@ -398,13 +398,13 @@
       margin-bottom:4px;
     }
     .result-tile .value {
-      font-size:1.35rem;
+      font-size:1.30625rem;
       font-weight:700;
     }
 
     /* Ondertitelregels in resultaat-tegels (zelfde opmaak als voorheen inline #64748b) */
     .result-tile .label .result-sub {
-      font-size: 0.88rem;
+      font-size: 0.890625rem;
       font-weight: 400;
       color: var(--muted);
     }
@@ -493,6 +493,11 @@
     /* Energie-inzichten tabel */
     .energy-table {
       margin-bottom: 32px;
+    }
+
+    /* Stap 6: tabeltekst en -cijfers zelfde schaalfactor als result-tegels (0,85→1,01 rem) */
+    #step-6 .table-card table {
+      font-size: 1.009375rem;
     }
 
     /* =============================== */
@@ -933,7 +938,7 @@
     }
 
     body.step5-typography-premium #step-6 .result-title {
-      font-size: 14px;
+      font-size: 16.625px;
       font-weight: 500;
       color: rgba(255, 255, 255, 0.7);
       letter-spacing: 0.3px;
@@ -941,7 +946,7 @@
 
     /* Standaard hoofdwaarden (A1/B1/C1, pieken, terugverdientijd): iets kleiner */
     body.step5-typography-premium #step-6 .result-value {
-      font-size: 20px;
+      font-size: 23.75px;
       font-weight: 600;
       color: #ffffff;
       letter-spacing: -0.25px;
@@ -950,13 +955,13 @@
 
     /* ROI: nog iets subtieler t.o.v. kosten/tegels */
     body.step5-typography-premium #step-6 .result-value.result-muted {
-      font-size: 19px;
+      font-size: 22.5625px;
       font-weight: 600;
     }
 
     /* Besparing per jaar: duidelijk de grootste waarde */
     body.step5-typography-premium #step-6 .result-value.result-highlight {
-      font-size: 30px;
+      font-size: 35.625px;
       font-weight: 600;
       color: #4ade80;
       letter-spacing: -0.4px;
@@ -965,7 +970,7 @@
 
     /* Terugverdientijd: zelfde schaal als overige witte waarden */
     body.step5-typography-premium #step-6 .result-value .result-payback {
-      font-size: 20px;
+      font-size: 23.75px;
       font-weight: 600;
       letter-spacing: -0.25px;
       color: #ffffff;
@@ -973,13 +978,13 @@
     }
 
     body.step5-typography-premium #step-6 .result-sub {
-      font-size: 12px;
+      font-size: 14.25px;
       font-weight: 400;
       color: rgba(255, 255, 255, 0.5);
     }
 
     body.step5-typography-premium #step-6 .tariff-matrix th.table-header {
-      font-size: 12px;
+      font-size: 14.25px;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: rgba(255, 255, 255, 0.5);
