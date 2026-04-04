@@ -132,12 +132,21 @@
     }
 
     .advice-title {
-      font-family: "Source Serif 4", serif;
-      font-size: 1.25rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 2rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .advice-subtitle {
+      font-size: 0.95rem;
       font-weight: 600;
-      margin-top: 22px;
-      margin-bottom: 12px;
-      color: #f3f4f6;
+      color: #94a3b8;
+      margin-top: 1.2rem;
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
     .advice-section-gap { height: 20px; }
     .advice-paragraph {
@@ -695,8 +704,12 @@ Vergelijk B1 met C1. Leg uit wat de batterij concreet doet voor dit profiel en z
   }
 
   function isTitleLine(line) {
-    if (/^\d+\.\s+/.test(line)) return true;
-    if (/^Bijlage\s+[A-D]\s+—\s+/.test(line)) return true;
+    // Blok 1 / 2 / 3 hoofdkopjes
+    if (/^Blok\s+\d+\s+—\s+/.test(line)) return true;
+
+    // Subkopje berekeningsuitleg
+    if (/^Hoe is dit berekend\?/.test(line)) return true;
+
     return false;
   }
 
@@ -729,7 +742,8 @@ Vergelijk B1 met C1. Leg uit wat de batterij concreet doet voor dit profiel en z
         if (html !== "") {
           html += `<div class="advice-section-gap"></div>`;
         }
-        html += `<div class="advice-title">${escapeHtml(line)}</div>`;
+        const isSubtitle = /^Hoe is dit berekend\?/.test(line);
+        html += `<div class="${isSubtitle ? 'advice-subtitle' : 'advice-title'}">${escapeHtml(line)}</div>`;
         continue;
       }
       buffer.push(line);
