@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Uitgebreide analyse · Eco Metric</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ea580c;
+      --primary-dark: #c2410c;
+      --danger: #ef4444;
+      --success: #22c55e;
+    }
+
+    * { box-sizing: border-box; }
+    body.analyse-page.dashboard-layout.step5-typography-premium {
+      --bg: #0b1220;
+      --card-bg: #0f172a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #334155;
+      --ui-border-strong: #475569;
+      --highlight: rgba(234, 88, 12, 0.22);
+      --accent-orange: #fb923c;
+
+      margin: 0;
+      font-family: "Inter", system-ui, sans-serif;
+      background: #0b1220;
+      color: var(--text);
+    }
+
+    .page {
+      --page-pad-x: clamp(16px, 3vw, 32px);
+      --header-extra-inset-x: 20px;
+      width: 100%;
+      max-width: none;
+      margin: 0 auto;
+      padding: 10px var(--page-pad-x) 48px;
+    }
+
+    .header-inner {
+      max-width: 100%;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .top-header.header-full {
+      width: calc(100% + 2 * var(--page-pad-x));
+      max-width: none;
+      margin-left: calc(-1 * var(--page-pad-x));
+      margin-right: calc(-1 * var(--page-pad-x));
+      margin-bottom: 24px;
+      box-sizing: border-box;
+      padding: 10px calc(var(--page-pad-x) + var(--header-extra-inset-x));
+      border-radius: 18px;
+      overflow: hidden;
+      background: #0f172a;
+      border: 1px solid #1f2937;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .brand-logo {
+      width: auto;
+      height: 72px;
+      max-height: 72px;
+      max-width: min(320px, 55vw);
+      object-fit: contain;
+    }
+
+    .btn-primary, .btn-secondary {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      border: 1.5px solid #475569;
+    }
+    .btn-secondary:hover {
+      background: rgba(17, 24, 39, 0.95);
+      border-color: var(--accent-orange);
+    }
+
+    .analyse-content {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    #analyse-error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fecaca;
+      padding: 16px 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    #analyse-loading {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    #analyse-api-error {
+      color: #fecaca;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      padding: 14px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    #advice-rendered {
+      white-space: normal;
+      margin-bottom: 36px;
+    }
+
+    .advice-title {
+      font-family: "Source Serif 4", serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 22px;
+      margin-bottom: 12px;
+      color: #f3f4f6;
+    }
+    .advice-section-gap { height: 20px; }
+    .advice-paragraph {
+      font-family: "Source Sans 3", sans-serif;
+      font-size: 1rem;
+      line-height: 1.75;
+      margin-bottom: 12px;
+      color: #d1d5db;
+    }
+
+    .results-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 900px) {
+      .results-summary { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .results-summary { grid-template-columns: 1fr; }
+    }
+
+    .result-tile {
+      border-radius: 12px;
+      border: 1.5px solid var(--ui-border-strong);
+      padding: 12px 14px;
+      background: rgba(15, 23, 42, 0.75);
+    }
+    .result-tile .label {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .result-tile .label.result-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .result-tile .value {
+      font-size: 1.30625rem;
+      font-weight: 700;
+    }
+    .result-tile .label .result-sub {
+      font-size: 0.890625rem;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    body.step5-typography-premium #step-6 {
+      font-family: "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+    body.step5-typography-premium #step-6 .result-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 0.3px;
+    }
+    body.step5-typography-premium #step-6 .result-value {
+      font-size: 23.75px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -0.25px;
+      font-variant-numeric: tabular-nums;
+    }
+    body.step5-typography-premium #step-6 .result-value.result-muted {
+      font-size: 22.5625px;
+      font-weight: 600;
+    }
+    body.step5-typography-premium #step-6 .result-value.result-highlight {
+      font-size: 35.625px;
+      font-weight: 600;
+      color: #4ade80;
+      letter-spacing: -0.4px;
+      font-variant-numeric: tabular-nums;
+    }
+    body.step5-typography-premium #step-6 .result-value .result-payback {
+      font-size: 23.75px;
+      font-weight: 600;
+      letter-spacing: -0.25px;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+    body.step5-typography-premium #step-6 .result-sub {
+      font-size: 14.25px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .info-icon {
+      cursor: help;
+      margin-left: 6px;
+      color: #60a5fa;
+      font-weight: bold;
+      position: relative;
+    }
+    .info-icon:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: 22px;
+      left: 0;
+      background: #1f2937;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      width: 260px;
+      z-index: 999;
+      font-size: 13px;
+      font-weight: 400;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    h3.analyse-section-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 32px 0 12px;
+      color: #f3f4f6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      border: 1.5px solid var(--ui-border-strong);
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: right;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: rgba(148, 163, 184, 0.12); font-weight: 600; color: var(--text); }
+    td { color: var(--text); }
+
+    .table-card {
+      background: #0f172a;
+      border-radius: 16px;
+      border: 1px solid #334155;
+      padding: 12px;
+      margin-top: 8px;
+      margin-bottom: 24px;
+    }
+
+    body.step5-typography-premium #step-6 .tariff-matrix th.table-header {
+      font-size: 14.25px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 500;
+    }
+    body.step5-typography-premium #step-6 .tariff-matrix td.table-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 400;
+    }
+    body.step5-typography-premium #step-6 .tariff-matrix td.table-value {
+      font-weight: 500;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+    body.step5-typography-premium #step-6 .tariff-matrix td.table-value.tariff-matrix-min {
+      color: #4ade80;
+      font-weight: 600;
+    }
+
+    .peak-tiles-hidden .peak-tile { display: none !important; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="analyse-page dashboard-layout step5-typography-premium">
+
+<div class="page">
+  <div class="top-header header-full">
+    <div class="header-inner">
+      <a href="/" class="brand" aria-label="Eco Metric home">
+        <img src="/ecometric-logo.png" alt="EcoMetric logo" class="brand-logo">
+      </a>
+      <button type="button" class="btn-secondary" id="btn-back">Terug</button>
+    </div>
+  </div>
+
+  <div class="analyse-content">
+    <div id="analyse-error" style="display:none;"></div>
+    <div id="analyse-loading" style="display:none;">Analyse wordt opgesteld…</div>
+    <div id="analyse-api-error"></div>
+
+    <div id="analyse-main" style="display:none;">
+      <div id="advice-rendered"></div>
+
+      <div id="step-6">
+        <h3 class="analyse-section-title">Resultaten</h3>
+        <div class="results-summary" id="analyse-results-summary">
+          <div class="result-tile">
+            <div class="label result-title">
+              Huidige situatie<br>
+              <small class="result-sub">Met saldering</small>
+            </div>
+            <div class="value result-value" id="res-A1">–</div>
+          </div>
+          <div class="result-tile">
+            <div class="label result-title">
+              Toekomst zonder batterij<br>
+              <small class="result-sub">Zonder saldering</small>
+            </div>
+            <div class="value result-value" id="res-B1">–</div>
+          </div>
+          <div class="result-tile">
+            <div class="label result-title">
+              Toekomst met batterij<br>
+              <small class="result-sub">Zonder saldering</small>
+            </div>
+            <div class="value result-value" id="res-C1">–</div>
+          </div>
+          <div class="result-tile">
+            <div class="label result-title">
+              Besparing per jaar<br>
+              <small class="result-sub" id="res-savings-sub">verschil tussen toekomst zonder en met batterij</small>
+            </div>
+            <div class="value result-value result-highlight" id="res-savings">–</div>
+          </div>
+          <div class="result-tile">
+            <div class="label result-title">
+              Terugverdientijd<br>
+              <small class="result-sub">incl. batterijdegradatie en wegvallende saldering</small>
+            </div>
+            <div class="value result-value" id="res-payback"><span class="result-payback">–</span></div>
+          </div>
+          <div class="result-tile">
+            <div class="label result-title">
+              ROI (%)
+              <span class="info-icon" data-tooltip="ROI = netto rendement over de volledige levensduur van de batterij, inclusief jaarlijkse degradatie.">ℹ</span>
+              <br>
+              <small class="result-sub">na wegvallen salderingsregeling</small>
+            </div>
+            <div class="value result-value result-muted" id="res-roi">–</div>
+          </div>
+          <div class="result-tile peak-tile">
+            <div class="label result-title">Piek zonder batterij (kW)</div>
+            <div class="value result-value" id="res-peak-no">–</div>
+          </div>
+          <div class="result-tile peak-tile">
+            <div class="label result-title">Piek met batterij (kW)</div>
+            <div class="value result-value" id="res-peak-yes">–</div>
+          </div>
+          <div class="result-tile peak-tile">
+            <div class="label result-title">Besparing capaciteitstarief / jaar</div>
+            <div class="value result-value" id="res-peak-saving">–</div>
+          </div>
+        </div>
+
+        <h3 class="analyse-section-title">Tariefmatrix (jaarlijkse kosten)</h3>
+        <div class="table-card">
+          <table class="table-card tariff-matrix">
+            <tr>
+              <th class="table-header">Scenario</th>
+              <th class="table-header">Enkel</th>
+              <th class="table-header">Dag/Nacht</th>
+              <th class="table-header">Dynamisch</th>
+            </tr>
+            <tr>
+              <td class="table-label">Huidige situatie (met saldering)</td>
+              <td class="table-value" id="A1-enkel">–</td>
+              <td class="table-value" id="A1-dn">–</td>
+              <td class="table-value" id="A1-dyn">–</td>
+            </tr>
+            <tr>
+              <td class="table-label">Toekomst zonder batterij</td>
+              <td class="table-value" id="B1-enkel">–</td>
+              <td class="table-value" id="B1-dn">–</td>
+              <td class="table-value" id="B1-dyn">–</td>
+            </tr>
+            <tr>
+              <td class="table-label">Toekomst met batterij</td>
+              <td class="table-value" id="C1-enkel">–</td>
+              <td class="table-value" id="C1-dn">–</td>
+              <td class="table-value" id="C1-dyn">–</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const DRAFT_INSTRUCTION = `Schrijf een uitgebreide analyse in drie blokken. Gebruik "u" als aanspreekvorm.
+
+Blok 1 — De situatie van uw huishouden
+Beschrijf het energieprofiel van deze klant op basis van de invoer: jaarverbruik, zonnepanelen, teruglevering, tarieftype, warmtepomp en EV indien van toepassing. Leg daarna onder het kopje "Hoe is dit berekend?" uit hoe scenario A1 (huidige jaarkosten met saldering) tot stand komt: welk verbruik van het net, welke teruglevering, welk tarief, welke vaste kosten.
+
+Blok 2 — Wat het wegvallen van de saldering betekent
+Leg uit wat de overgang van A1 naar B1 financieel betekent voor deze klant. Noem de exacte bedragen. Leg daarna onder het kopje "Hoe is dit berekend?" uit hoe B1 berekend is: zelfde verbruik maar teruglevering wordt vergoed tegen het lage teruglevertarief in plaats van het importtarief. Noem het exacte verschil in kWh teruglevering en tariefverschil dat dit veroorzaakt.
+
+Blok 3 — Wat de batterij voor u doet
+Vergelijk B1 met C1. Leg uit wat de batterij concreet doet voor dit profiel en zet de terugverdientijd en ROI in context. Leg daarna onder het kopje "Hoe is dit berekend?" uit hoe C1 berekend is: batterijabsorptie van teruglevering, toename zelfverbruik, afname netimport, en hoe de ROI en terugverdientijd berekend zijn inclusief jaarlijkse degradatie.`;
+
+  const SUPABASE_URL = "https://sjnfzyvuhizpkziaxdtb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqbmZ6eXZ1aGl6cGt6aWF4ZHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwODIwNTIsImV4cCI6MjA4MTY1ODA1Mn0.2TpBDRjKSbdyOX8hh1qG9Y2RqyUBZMb6D0PJGZl-EfQ";
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const LS_SESSION_TOKEN = "session_token";
+  const LS_DEVICE_ID = "device_id";
+  const LS_DEVICE_FINGERPRINT = "device_fingerprint";
+
+  function ensureDeviceId() {
+    try {
+      let id = localStorage.getItem(LS_DEVICE_ID);
+      if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem(LS_DEVICE_ID, id);
+      }
+      return id;
+    } catch (_) {
+      return "unknown-device";
+    }
+  }
+
+  async function sha256HexFromString(str) {
+    const enc = new TextEncoder().encode(str);
+    const buf = await crypto.subtle.digest("SHA-256", enc);
+    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function ensureDeviceFingerprint() {
+    try {
+      let fp = localStorage.getItem(LS_DEVICE_FINGERPRINT);
+      if (fp) return fp;
+      const raw = [
+        navigator.userAgent || "",
+        navigator.language || "",
+        typeof screen !== "undefined" ? `${screen.width}x${screen.height}` : "",
+        Intl.DateTimeFormat().resolvedOptions().timeZone || ""
+      ].join("|");
+      fp = await sha256HexFromString(raw);
+      localStorage.setItem(LS_DEVICE_FINGERPRINT, fp);
+      return fp;
+    } catch (_) {
+      return "na";
+    }
+  }
+
+  async function batteryEngineFetch(path, init) {
+    init = init || {};
+    const base =
+      typeof window.batteryEngineApiBase === "string"
+        ? window.batteryEngineApiBase
+        : "https://batteryengine-server.onrender.com";
+    const url = path.startsWith("http") ? path : base.replace(/\/$/, "") + path;
+
+    const { data: wrap } = await sb.auth.getSession();
+    const accessToken = wrap?.session?.access_token || "";
+    let sessionToken = "";
+    try {
+      sessionToken = localStorage.getItem(LS_SESSION_TOKEN) || "";
+    } catch (_) {}
+
+    if (!sessionToken) {
+      const err = new Error("SESSION_TOKEN_MISSING");
+      err.code = "SESSION_TOKEN_MISSING";
+      throw err;
+    }
+
+    const deviceId = ensureDeviceId();
+    const deviceFp = await ensureDeviceFingerprint();
+
+    const hdrs = new Headers(init.headers || {});
+    const body = init.body;
+    if (body != null && typeof body === "string" && !hdrs.has("Content-Type")) {
+      hdrs.set("Content-Type", "application/json");
+    }
+    if (accessToken) hdrs.set("Authorization", "Bearer " + accessToken);
+    hdrs.set("x-session-token", sessionToken);
+    hdrs.set("x-device-id", deviceId);
+    hdrs.set("x-device-fingerprint", deviceFp);
+
+    const { headers: _h, ...rest } = init;
+    return fetch(url, { ...rest, headers: hdrs });
+  }
+
+  function formatBatteryApiErrorMessage(data, status) {
+    if (data && typeof data === "object") {
+      if (typeof data.error_code === "string" && data.message != null) {
+        return String(data.message);
+      }
+      if (typeof data.detail === "string") return data.detail;
+      if (Array.isArray(data.detail) && data.detail[0]?.msg) return String(data.detail[0].msg);
+      if (data.detail?.msg) return String(data.detail.msg);
+      if (data.error != null) return typeof data.error === "string" ? data.error : JSON.stringify(data.error);
+      if (data.message != null) return String(data.message);
+    }
+    return status ? `Serverfout (${status})` : "Onbekende serverfout";
+  }
+
+  function fmtEuro(x) {
+    const v = Number(x);
+    if (!isFinite(v)) return "–";
+    return "€ " + v.toFixed(2).replace(".", ",");
+  }
+
+  function formatPaybackYearsDisplay(roi) {
+    if (!roi) return "–";
+    const py = roi.payback_years;
+    if (typeof py === "string" && py.length > 0) return py;
+    const ys = Number(roi.yearly_saving_eur);
+    if (isFinite(ys) && ys <= 0) return "Geen besparing";
+    if (py === null || py === undefined) return "–";
+    if (typeof py === "number" && isFinite(py)) return py.toFixed(1) + " jaar";
+    return "–";
+  }
+
+  function buildAnalyseAdviceContext(data, inputs) {
+    const country = inputs.country || "NL";
+    return {
+      country,
+      current_tariff: inputs.tariff || "enkel",
+      calculation_method: data.calculation_method || {},
+      profile_inputs: {
+        annual_load_kwh: parseFloat(String(inputs.annual_load_kwh || "0")),
+        annual_pv_kwh: parseFloat(String(inputs.annual_pv_kwh || "0")),
+        household_profile: inputs.household_profile || ""
+      },
+      energy_profile: data.energy_profile || {},
+      battery: {
+        E: parseFloat(String(inputs.battery_E || "0")),
+        P: parseFloat(String(inputs.battery_P || "0"))
+      },
+      battery_assessment: data.battery_assessment || null,
+      extra_consumers: {
+        heat_pump: inputs.has_heatpump === "yes",
+        ev: inputs.has_ev === "yes"
+      },
+      tariff_matrix: data.tariff_matrix || data.A1_per_tariff || {},
+      roi_per_tariff: data.roi_per_tariff || {}
+    };
+  }
+
+  function highlightTariffMatrixMinimums(data) {
+    const allValueIds = [
+      "A1-enkel", "A1-dn", "A1-dyn",
+      "B1-enkel", "B1-dn", "B1-dyn",
+      "C1-enkel", "C1-dn", "C1-dyn"
+    ];
+    allValueIds.forEach((id) => {
+      document.getElementById(id)?.classList.remove("tariff-matrix-min");
+    });
+    const row = {
+      ids: ["C1-enkel", "C1-dn", "C1-dyn"],
+      vals: [
+        data.C1?.enkel?.total_cost_eur,
+        data.C1?.dag_nacht?.total_cost_eur,
+        data.C1?.dynamisch?.total_cost_eur
+      ]
+    };
+    const nums = row.vals.map((v) => {
+      const n = Number(v);
+      return isFinite(n) ? n : NaN;
+    });
+    if (!nums.every((n) => isFinite(n))) return;
+    const minV = Math.min(...nums);
+    const eps = 0.005;
+    row.ids.forEach((id, i) => {
+      if (isFinite(nums[i]) && Math.abs(nums[i] - minV) < eps) {
+        document.getElementById(id)?.classList.add("tariff-matrix-min");
+      }
+    });
+  }
+
+  function fillResults(data, inputs) {
+    const tariff = inputs.tariff || "enkel";
+    const A1 = data.A1_per_tariff?.[tariff]?.total_cost_eur;
+    const B1 = data.B1?.[tariff]?.total_cost_eur;
+    const C1 = data.C1?.[tariff]?.total_cost_eur;
+
+    document.getElementById("res-A1").textContent = fmtEuro(A1);
+    document.getElementById("res-B1").textContent = fmtEuro(B1);
+    document.getElementById("res-C1").textContent = fmtEuro(C1);
+
+    document.getElementById("res-savings").textContent =
+      isFinite(B1) && isFinite(C1) ? fmtEuro(B1 - C1) : "–";
+
+    const B1val = data.B1?.[tariff]?.total_cost_eur;
+    const A1val = data.A1_per_tariff?.[tariff]?.total_cost_eur;
+    const savingsSub = document.getElementById("res-savings-sub");
+    if (savingsSub && isFinite(B1val) && isFinite(A1val)) {
+      const saldImpact = B1val - A1val;
+      if (saldImpact > 50) {
+        savingsSub.textContent =
+          `Saldering kost u straks €${Math.round(saldImpact)}/jr extra`;
+      } else if (saldImpact < -50) {
+        savingsSub.textContent =
+          `Saldering levert u weinig op, batterij verhoogt zelfconsumptie met €${Math.round(
+            isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
+          )}/jr`;
+      } else {
+        savingsSub.textContent =
+          `Saldering heeft beperkte impact, batterij bespaart u €${Math.round(
+            isFinite(B1) && isFinite(C1) ? B1 - C1 : 0
+          )}/jr`;
+      }
+    }
+
+    const roi = data.roi_per_tariff?.[tariff];
+    const paybackEl = document.getElementById("res-payback");
+    const paybackTextEl = paybackEl.querySelector(".result-payback") || paybackEl;
+    const roiEl = document.getElementById("res-roi");
+
+    if (!roi) {
+      paybackTextEl.textContent = "–";
+      roiEl.textContent = "–";
+    } else {
+      paybackTextEl.textContent = formatPaybackYearsDisplay(roi);
+      const roiVal = Number(roi.roi_percent);
+      roiEl.textContent = isFinite(roiVal) ? roiVal.toFixed(1) + " %" : "–";
+    }
+
+    document.getElementById("A1-enkel").textContent =
+      fmtEuro(data.A1_per_tariff?.enkel?.total_cost_eur);
+    document.getElementById("A1-dn").textContent =
+      fmtEuro(data.A1_per_tariff?.dag_nacht?.total_cost_eur);
+    document.getElementById("A1-dyn").textContent =
+      fmtEuro(data.A1_per_tariff?.dynamisch?.total_cost_eur);
+
+    document.getElementById("B1-enkel").textContent =
+      fmtEuro(data.B1?.enkel?.total_cost_eur);
+    document.getElementById("B1-dn").textContent =
+      fmtEuro(data.B1?.dag_nacht?.total_cost_eur);
+    document.getElementById("B1-dyn").textContent =
+      fmtEuro(data.B1?.dynamisch?.total_cost_eur);
+
+    document.getElementById("C1-enkel").textContent =
+      fmtEuro(data.C1?.enkel?.total_cost_eur);
+    document.getElementById("C1-dn").textContent =
+      fmtEuro(data.C1?.dag_nacht?.total_cost_eur);
+    document.getElementById("C1-dyn").textContent =
+      fmtEuro(data.C1?.dynamisch?.total_cost_eur);
+
+    highlightTariffMatrixMinimums(data);
+
+    const summary = document.getElementById("analyse-results-summary");
+    if (summary) {
+      if (inputs.country === "NL") {
+        summary.classList.add("peak-tiles-hidden");
+      } else {
+        summary.classList.remove("peak-tiles-hidden");
+      }
+    }
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;");
+  }
+
+  function isTitleLine(line) {
+    if (/^\d+\.\s+/.test(line)) return true;
+    if (/^Bijlage\s+[A-D]\s+—\s+/.test(line)) return true;
+    return false;
+  }
+
+  function renderAdviceToHtml(adviceText) {
+    const el = document.getElementById("advice-rendered");
+    if (!el) return;
+    if (!adviceText || adviceText.trim() === "") {
+      el.innerHTML = "";
+      return;
+    }
+    const lines = adviceText.split("\n").map((l) => l.replace(/\s+$/, ""));
+    let html = "";
+    let buffer = [];
+
+    function flushParagraph() {
+      const text = buffer.join(" ").trim();
+      buffer = [];
+      if (!text) return;
+      html += `<div class="advice-paragraph">${escapeHtml(text)}</div>`;
+    }
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (line === "") {
+        flushParagraph();
+        continue;
+      }
+      if (isTitleLine(line)) {
+        flushParagraph();
+        if (html !== "") {
+          html += `<div class="advice-section-gap"></div>`;
+        }
+        html += `<div class="advice-title">${escapeHtml(line)}</div>`;
+        continue;
+      }
+      buffer.push(line);
+    }
+    flushParagraph();
+    el.innerHTML = html;
+  }
+
+  document.getElementById("btn-back").addEventListener("click", () => {
+    window.close();
+  });
+
+  window.batteryEngineApiBase = "https://batteryengine-server.onrender.com";
+
+  async function run() {
+    const errEl = document.getElementById("analyse-error");
+    const loadEl = document.getElementById("analyse-loading");
+    const apiErr = document.getElementById("analyse-api-error");
+    const mainEl = document.getElementById("analyse-main");
+
+    let rawResult = null;
+    let rawInputs = null;
+    try {
+      rawResult = sessionStorage.getItem("analyseResult");
+      rawInputs = sessionStorage.getItem("analyseInputs");
+    } catch (_) {}
+
+    if (!rawResult || !rawInputs) {
+      errEl.textContent =
+        "Geen berekening beschikbaar. Ga terug en voer eerst een berekening uit.";
+      errEl.style.display = "block";
+      return;
+    }
+
+    let data;
+    let inputs;
+    try {
+      data = JSON.parse(rawResult);
+      inputs = JSON.parse(rawInputs);
+    } catch (e) {
+      errEl.textContent =
+        "Opgeslagen gegevens zijn ongeldig. Ga terug en voer de berekening opnieuw uit.";
+      errEl.style.display = "block";
+      return;
+    }
+
+    loadEl.style.display = "block";
+
+    const context = buildAnalyseAdviceContext(data, inputs);
+
+    try {
+      const res = await batteryEngineFetch("/generate_advice", {
+        method: "POST",
+        body: JSON.stringify({
+          context: context,
+          draft_text: DRAFT_INSTRUCTION
+        })
+      });
+
+      let respData;
+      try {
+        respData = await res.json();
+      } catch (_) {
+        loadEl.style.display = "none";
+        apiErr.textContent = "Ongeldig antwoord van de server (geen JSON).";
+        apiErr.style.display = "block";
+        mainEl.style.display = "block";
+        fillResults(data, inputs);
+        return;
+      }
+
+      if (!res.ok) {
+        loadEl.style.display = "none";
+        apiErr.textContent = formatBatteryApiErrorMessage(respData, res.status);
+        apiErr.style.display = "block";
+        mainEl.style.display = "block";
+        fillResults(data, inputs);
+        return;
+      }
+
+      if (respData && respData.error) {
+        loadEl.style.display = "none";
+        apiErr.textContent =
+          respData.message != null ? String(respData.message) : "Fout bij genereren van analyse.";
+        apiErr.style.display = "block";
+        mainEl.style.display = "block";
+        fillResults(data, inputs);
+        return;
+      }
+
+      if (respData.advice) {
+        renderAdviceToHtml(respData.advice);
+      }
+
+      loadEl.style.display = "none";
+      mainEl.style.display = "block";
+      fillResults(data, inputs);
+    } catch (e) {
+      loadEl.style.display = "none";
+      if (e && e.code === "SESSION_TOKEN_MISSING") {
+        apiErr.textContent =
+          "Geen actieve sessie. Sluit dit venster en log opnieuw in via de hoofdapplicatie.";
+      } else {
+        apiErr.textContent = "Fout: " + (e && e.message ? e.message : String(e));
+      }
+      apiErr.style.display = "block";
+      mainEl.style.display = "block";
+      fillResults(data, inputs);
+    }
+  }
+
+  run();
+})();
+</script>
+</body>
+</html>
