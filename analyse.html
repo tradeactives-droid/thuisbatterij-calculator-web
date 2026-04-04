@@ -781,7 +781,7 @@ Vergelijk B1 met C1. Leg uit wat de batterij concreet doet voor dit profiel en z
     const context = buildAnalyseAdviceContext(data, inputs);
 
     try {
-      const res = await batteryEngineFetch("/generate_advice", {
+      const res = await batteryEngineFetch("/generate_analyse", {
         method: "POST",
         body: JSON.stringify({
           context: context,
