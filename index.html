@@ -297,6 +297,17 @@
       background:#fafbfc;
     }
 
+    /* Ademruimte onder invulvelden t.o.v. volgende label / sectie */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="image"]),
+    select,
+    textarea {
+      margin-bottom: 1.125rem;
+    }
+
+    #monthly-inputs-grid input.monthly-kwh-input {
+      margin-bottom: 0;
+    }
+
     input:focus, select:focus {
       outline:none;
       border-color:var(--primary);
