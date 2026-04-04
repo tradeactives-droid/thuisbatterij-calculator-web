@@ -2063,6 +2063,10 @@
     📄 Download PDF
   </button>
 
+  <button class="btn-primary" id="btn-open-analyse" style="margin-top:16px; width:100%;">
+    Bekijk uitgebreide analyse
+  </button>
+
   <button class="btn-secondary" id="to-step-7" style="margin-left:8px;">
     Persoonlijk advies bekijken
   </button>
@@ -2694,6 +2698,28 @@ document.getElementById("to-step-7")?.addEventListener("click", () => {
     return;
   }
   activateStep(7);
+});
+
+document.getElementById("btn-open-analyse").addEventListener("click", () => {
+  if (!window.computedResult) {
+    alert("Voer eerst een berekening uit.");
+    return;
+  }
+  sessionStorage.setItem("analyseResult", JSON.stringify(window.computedResult));
+  sessionStorage.setItem("analyseInputs", JSON.stringify({
+    country: document.getElementById("country").value,
+    tariff: document.getElementById("tariff-type").value,
+    annual_load_kwh: document.getElementById("annual-load").value,
+    annual_pv_kwh: document.getElementById("annual-pv").value,
+    household_profile: document.getElementById("household-profile").value,
+    battery_E: document.getElementById("E").value,
+    battery_P: document.getElementById("P").value,
+    has_heatpump: document.getElementById("has-heatpump")?.value,
+    has_ev: document.getElementById("has-ev")?.value,
+    battery_cost: document.getElementById("battery-cost").value,
+    battery_lifetime: document.getElementById("battery-lifetime").value
+  }));
+  window.open("analyse.html", "_blank");
 });
 
 document.getElementById("back-to-6").addEventListener("click", () => activateStep(6));
