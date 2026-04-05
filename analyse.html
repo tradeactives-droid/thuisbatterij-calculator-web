@@ -580,7 +580,10 @@ Vergelijk B1 met C1. Leg uit wat de batterij concreet doet voor dit profiel en z
         ev: inputs.has_ev === "yes"
       },
       tariff_matrix: data.tariff_matrix || data.A1_per_tariff || {},
-      roi_per_tariff: data.roi_per_tariff || {}
+      roi_per_tariff: data.roi_per_tariff || {},
+
+      saldering_context: data.saldering_context || {},
+      cost_components: data.cost_components || {}
     };
   }
 
