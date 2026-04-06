@@ -584,7 +584,16 @@ Vergelijk B1 met C1. Leg uit wat de batterij concreet doet voor dit profiel en z
       },
 
       saldering_context: data.saldering_context || {},
-      cost_components: data.cost_components || {}
+      cost_components: {
+        ...(data.cost_components || {}),
+        p_enkel_imp: parseFloat(inputs.p_enkel_imp || 0),
+        p_enkel_exp: parseFloat(inputs.p_enkel_exp || 0),
+        p_dag: parseFloat(inputs.p_dag || 0),
+        p_nacht: parseFloat(inputs.p_nacht || 0),
+        p_exp_dn: parseFloat(inputs.p_exp_dn || 0),
+        p_dyn_imp: parseFloat(inputs.p_dyn_imp || 0),
+        p_export_dyn: parseFloat(inputs.p_export_dyn || 0),
+      }
     };
   }
 
