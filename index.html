@@ -1516,7 +1516,10 @@
   <h2>Huishoudprofiel</h2>
 
   <div class="field">
-    <label>Woning/huishoudprofiel<span class="required">*</span></label>
+    <label>Woning/huishoudprofiel</label>
+    <small style="color: var(--color-text-secondary, #94a3b8); font-size: 0.8rem; display: block; margin-bottom: 6px;">
+      Alleen invullen wanneer de jaarlijkse teruglevering niet beschikbaar is.
+    </small>
     <select id="household-profile">
       <option value="" selected>Kies een profiel</option>
       <option value="alleenstaand_werkend">Alleenstaand</option>
@@ -1539,6 +1542,9 @@
         ℹ
       </span>
     </label>
+    <small style="color: var(--color-text-secondary, #94a3b8); font-size: 0.8rem; display: block; margin-bottom: 6px;">
+      Alleen invullen wanneer de jaarlijkse teruglevering niet beschikbaar is.
+    </small>
     <select id="home-during-day">
       <option value="" selected>Kies een optie</option>
       <option value="never">
@@ -2704,13 +2710,6 @@ document.getElementById("back-to-1").addEventListener("click", () => activateSte
 
 document.getElementById("to-step-3").addEventListener("click", () => {
   const status = document.getElementById("huishoud-status");
-  const profile = document.getElementById("household-profile").value || "";
-
-  if (!profile) {
-    status.textContent = "Kies een huishoudprofiel.";
-    status.className = "status error";
-    return;
-  }
 
   status.textContent = "Profiel ingesteld ✔";
   status.className = "status success";
@@ -3744,14 +3743,6 @@ document.querySelectorAll(".stepper .step").forEach((pill, index) => {
       const annualPv   = parseFloat(document.getElementById("annual-pv")?.value || "0");
       if (!isFinite(annualLoad) || annualLoad <= 0 || !isFinite(annualPv) || annualPv < 0) {
         alert("Vul eerst Stap 1 in (jaarverbruik en jaaropwek).");
-        return;
-      }
-    }
-
-    if (index > 2) {
-      const profile = document.getElementById("household-profile")?.value || "";
-      if (!profile) {
-        alert("Vul eerst Stap 2 in (huishoudprofiel).");
         return;
       }
     }
