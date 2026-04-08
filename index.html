@@ -1031,6 +1031,17 @@
 </head>
 
 <body class="dashboard-layout">
+<div id="opslaan-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:#1e293b; border-radius:12px; padding:2rem; width:360px; max-width:90%;">
+    <h3 style="margin:0 0 1rem; color:#fff;">Opslaan als prospect</h3>
+    <input id="prospect-naam-input" type="text" placeholder="Naam prospect" style="width:100%; padding:0.6rem; border-radius:6px; border:1px solid #334155; background:#0f172a; color:#fff; font-size:1rem; margin-bottom:1rem; box-sizing:border-box;">
+    <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+      <button id="btn-opslaan-annuleren" class="btn-secondary">Annuleren</button>
+      <button id="btn-opslaan-bevestigen" class="btn-primary">Opslaan</button>
+    </div>
+    <p id="opslaan-status" style="margin:0.5rem 0 0; font-size:0.85rem; color:#94a3b8;"></p>
+  </div>
+</div>
 <div class="page">
 
 <div id="login-container" style="max-width:420px; margin:80px auto;">
@@ -2060,6 +2071,10 @@
   </table>
   </div>
 
+  <div style="margin-top:1.5rem; text-align:center;">
+    <button id="btn-opslaan" class="btn-primary">Opslaan als prospect</button>
+  </div>
+
   <h3>Grafiek: Kosten & rendement over levensduur</h3>
 
   <div class="card" style="margin-top:16px;">
@@ -2150,6 +2165,15 @@
 </div> <!-- wizard end -->
 
 </div> <!-- content-container -->
+
+<div id="prospects-sectie" style="max-width:900px; margin:2rem auto; padding:0 1rem;">
+  <h2 style="color:#fff; font-size:1.2rem; margin-bottom:1rem;">Opgeslagen prospects</h2>
+  <div id="prospects-lijst" style="display:flex; flex-direction:column; gap:0.75rem;">
+    <p style="color:#94a3b8;">Nog geen opgeslagen prospects.</p>
+  </div>
+</div>
+
+</div> <!-- app-view -->
 
 </div> <!-- page -->
 
@@ -4670,7 +4694,152 @@ document
     window.location.reload();
 
   });
-  
+
+// ============================
+// PROSPECTS OPSLAAN & LADEN
+// ============================
+
+document.getElementById("btn-opslaan")?.addEventListener("click", () => {
+  const modal = document.getElementById("opslaan-modal");
+  modal.style.display = "flex";
+  document.getElementById("prospect-naam-input").value = "";
+  document.getElementById("opslaan-status").textContent = "";
+});
+
+document.getElementById("btn-opslaan-annuleren")?.addEventListener("click", () => {
+  document.getElementById("opslaan-modal").style.display = "none";
+});
+
+document.getElementById("btn-opslaan-bevestigen")?.addEventListener("click", async () => {
+  const naam = document.getElementById("prospect-naam-input").value.trim();
+  const status = document.getElementById("opslaan-status");
+  if (!naam) { status.textContent = "Voer een naam in."; return; }
+  if (!window.computedResult) { status.textContent = "Geen berekening beschikbaar."; return; }
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { status.textContent = "Niet ingelogd."; return; }
+
+  // Verzamel alle inputs
+  const inputs = {
+    annual_load_kwh: document.getElementById("annual-load")?.value,
+    annual_pv_kwh: document.getElementById("annual-pv")?.value,
+    annual_feedin_kwh: document.getElementById("annual-feedin")?.value,
+    tariff_type: document.getElementById("tariff-type")?.value,
+    country: document.getElementById("country")?.value,
+    household_profile: document.getElementById("household-profile")?.value,
+    home_during_day: document.getElementById("home-during-day")?.value,
+    has_heatpump: document.getElementById("has-heatpump")?.value,
+    has_ev: document.getElementById("has-ev")?.value,
+    E: document.getElementById("E")?.value,
+    P: document.getElementById("P")?.value,
+    battery_cost: document.getElementById("battery-cost")?.value,
+    battery_lifetime: document.getElementById("battery-lifetime")?.value,
+    p_enkel_imp: document.getElementById("p_enkel_imp")?.value,
+    p_enkel_exp: document.getElementById("p_enkel_exp")?.value,
+    p_dag: document.getElementById("p_dag")?.value,
+    p_nacht: document.getElementById("p_nacht")?.value,
+    p_exp_dn: document.getElementById("p_exp_dn")?.value,
+    p_dyn_imp: document.getElementById("p_dyn_imp")?.value,
+    p_export_dyn: document.getElementById("p_export_dyn")?.value,
+    vastrecht_year: document.getElementById("fixed-cost")?.value,
+    allow_grid_charge: document.getElementById("allow-grid-charge")?.value,
+  };
+
+  const { error } = await sb.from("calculations").insert([{
+    user_id: session.user.id,
+    prospect_naam: naam,
+    inputs: inputs,
+    results: window.computedResult,
+  }]);
+
+  if (error) {
+    status.textContent = "Fout bij opslaan: " + error.message;
+  } else {
+    status.textContent = "Opgeslagen!";
+    setTimeout(() => {
+      document.getElementById("opslaan-modal").style.display = "none";
+      laadProspects();
+    }, 800);
+  }
+});
+
+async function laadProspects() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+
+  const { data, error } = await sb.from("calculations")
+    .select("id, prospect_naam, created_at, inputs, results")
+    .eq("user_id", session.user.id)
+    .order("created_at", { ascending: false });
+
+  const lijst = document.getElementById("prospects-lijst");
+  if (!lijst) return;
+
+  if (!data || data.length === 0) {
+    lijst.innerHTML = "<p style='color:#94a3b8;'>Nog geen opgeslagen prospects.</p>";
+    return;
+  }
+
+  lijst.innerHTML = data.map(c => `
+    <div style="background:#1e293b; border-radius:8px; padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="color:#fff; font-weight:600;">${c.prospect_naam}</div>
+        <div style="color:#94a3b8; font-size:0.8rem;">${new Date(c.created_at).toLocaleDateString("nl-NL")}</div>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn-primary btn-laden" data-id="${c.id}" style="font-size:0.85rem; padding:0.4rem 0.9rem;">Laden</button>
+        <button class="btn-secondary btn-verwijderen" data-id="${c.id}" style="font-size:0.85rem; padding:0.4rem 0.9rem;">Verwijderen</button>
+      </div>
+    </div>
+  `).join("");
+
+  // Laden
+  lijst.querySelectorAll(".btn-laden").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const calc = data.find(c => c.id === btn.dataset.id);
+      if (!calc) return;
+      const inp = calc.inputs;
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+      set("annual-load", inp.annual_load_kwh);
+      set("annual-pv", inp.annual_pv_kwh);
+      set("annual-feedin", inp.annual_feedin_kwh);
+      set("tariff-type", inp.tariff_type);
+      set("country", inp.country);
+      set("household-profile", inp.household_profile);
+      set("home-during-day", inp.home_during_day);
+      set("has-heatpump", inp.has_heatpump);
+      set("has-ev", inp.has_ev);
+      set("E", inp.E);
+      set("P", inp.P);
+      set("battery-cost", inp.battery_cost);
+      set("battery-lifetime", inp.battery_lifetime);
+      set("p_enkel_imp", inp.p_enkel_imp);
+      set("p_enkel_exp", inp.p_enkel_exp);
+      set("p_dag", inp.p_dag);
+      set("p_nacht", inp.p_nacht);
+      set("p_exp_dn", inp.p_exp_dn);
+      set("p_dyn_imp", inp.p_dyn_imp);
+      set("p_export_dyn", inp.p_export_dyn);
+      set("fixed-cost", inp.vastrecht_year);
+      set("allow-grid-charge", inp.allow_grid_charge);
+      window.computedResult = calc.results;
+      activateStep(1);
+    });
+  });
+
+  // Verwijderen
+  lijst.querySelectorAll(".btn-verwijderen").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if (!confirm("Prospect verwijderen?")) return;
+      await sb.from("calculations").delete().eq("id", btn.dataset.id);
+      laadProspects();
+    });
+  });
+}
+
+// Laad prospects bij opstarten
+laadProspects();
+
 </script>
 </body>
 </html>
