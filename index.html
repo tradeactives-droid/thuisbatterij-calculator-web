@@ -1953,7 +1953,10 @@
 <!--    STEP 6 · RESULTATEN  -->
 <!-- ======================= -->
 <div id="step-6" style="display:none;">
-  <h2>Stap 6 · Resultaten</h2>
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
+    <h2>Stap 6 · Resultaten</h2>
+    <button id="btn-opslaan" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan als prospect</button>
+  </div>
 
   <div class="results-container">
 
@@ -2070,10 +2073,6 @@
       <td class="table-value" id="C1-dyn">–</td>
     </tr>
   </table>
-  </div>
-
-  <div style="margin-top:1.5rem; text-align:center;">
-    <button id="btn-opslaan" class="btn-primary">Opslaan als prospect</button>
   </div>
 
   <h3>Grafiek: Kosten & rendement over levensduur</h3>
@@ -4867,7 +4866,9 @@ if (_savedInputs && _savedResults) {
     window.computedResult = res;
     sessionStorage.removeItem("em_laden_inputs");
     sessionStorage.removeItem("em_laden_results");
-    activateStep(1);
+    const _stap = parseInt(sessionStorage.getItem("em_laden_stap") || "1");
+    sessionStorage.removeItem("em_laden_stap");
+    activateStep(_stap);
   } catch(_) {}
 }
 

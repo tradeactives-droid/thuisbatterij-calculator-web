@@ -14,23 +14,10 @@
       color: #e2e8f0;
       min-height: 100vh;
     }
-    .header {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 0 2rem;
-      height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .header img { height: 48px; }
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      color: #94a3b8;
-      font-size: 0.9rem;
-    }
+    .top-header { background: #1e293b; border-bottom: 1px solid #334155; }
+    .header-inner { display:flex; align-items:center; justify-content:space-between; padding:0 2rem; height:70px; position:relative; }
+    .brand-logo { height:48px; }
+    .user-actions { display:flex; align-items:center; gap:1rem; color:#94a3b8; font-size:0.9rem; }
     .btn-secondary {
       background: transparent;
       border: 1px solid #475569;
@@ -130,11 +117,18 @@
 </head>
 <body>
 
-<div class="header">
-  <a href="/"><img src="/ecometric-logo.png" alt="EcoMetric"></a>
-  <div class="header-right">
-    <span id="user-email"></span>
-    <button class="btn-secondary" id="btn-logout">Uitloggen</button>
+<div class="top-header header-full">
+  <div class="header-inner">
+    <div class="brand">
+      <img src="/ecometric-logo.png" alt="EcoMetric logo" class="brand-logo">
+    </div>
+    <div style="position:absolute; left:50%; transform:translateX(-50%); color:#ffffff; font-size:1.8rem; font-weight:700; font-family:inherit; white-space:nowrap;">
+      <span id="user-welcome"></span>
+    </div>
+    <div class="user-actions">
+      <span id="user-email"></span>
+      <button id="btn-logout" class="btn-secondary">Uitloggen</button>
+    </div>
   </div>
 </div>
 
@@ -152,7 +146,7 @@
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqbmZ6eXZ1aGl6cGt6aWF4ZHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwODIwNTIsImV4cCI6MjA4MTY1ODA1Mn0.2TpBDRjKSbdyOX8hh1qG9Y2RqyUBZMb6D0PJGZl-EfQ";
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  sb.auth.getSession().then(({ data }) => {
+  sb.auth.getSession().then(async ({ data }) => {
     if (!data?.session) {
       window.location.href = "/";
       return;
@@ -160,6 +154,11 @@
     const user = data.session.user;
     const emailEl = document.getElementById("user-email");
     if (emailEl) emailEl.textContent = user.email;
+    const welcomeEl = document.getElementById("user-welcome");
+    if (welcomeEl) {
+      const { data: prof } = await sb.from("profiles").select("full_name").eq("id", user.id).single();
+      if (prof?.full_name) welcomeEl.textContent = `Welkom ${prof.full_name.split(" ")[0]}.`;
+    }
     laadProspects(user.id);
   });
 
@@ -201,6 +200,7 @@
         if (!calc) return;
         sessionStorage.setItem("em_laden_inputs", JSON.stringify(calc.inputs));
         sessionStorage.setItem("em_laden_results", JSON.stringify(calc.results));
+        sessionStorage.setItem("em_laden_stap", "5");
         window.location.href = "/";
       });
     });
