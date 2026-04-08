@@ -1225,7 +1225,7 @@
         <img src="/ecometric-logo.png" alt="EcoMetric logo" class="brand-logo">
       </div>
 
-      <div style="position:absolute; left:50%; transform:translateX(-50%); color:#ffffff; font-size:1.5rem; font-weight:700; letter-spacing:0.04em; font-family:'Bebas Neue', 'Inter', sans-serif; white-space:nowrap;">
+      <div style="position:absolute; left:50%; transform:translateX(-50%); color:#ffffff; font-size:1.8rem; font-weight:700; font-family:inherit; white-space:nowrap;">
         <span id="user-welcome" style="font-weight:600; font-size:1.2rem; color:#ffffff; margin-right:4px;"></span>
       </div>
 
@@ -4302,7 +4302,7 @@ sb.auth.getSession().then(async ({ data }) => {
         const { data: prof } = await sb.from("profiles").select("full_name").eq("id", user.id).single();
         console.log("profile:", JSON.stringify(prof));
         const naam = prof?.full_name?.split(" ")[0] || user?.user_metadata?.first_name || "";
-        welcomeEl.textContent = naam ? `Welkom ${naam} |` : "";
+        welcomeEl.textContent = naam ? `Welkom ${naam}.` : "";
       }
       startSessionValidationLoop();
     } else {
@@ -4490,7 +4490,7 @@ document.getElementById("btn-login").addEventListener("click", async () => {
       const naam = u?.user_metadata?.first_name
         || u?.user_metadata?.full_name?.split(" ")[0]
         || "";
-      if (naam) welcomeBanner.textContent = `Welkom ${naam} |`;
+      if (naam) welcomeBanner.textContent = `Welkom ${naam}.`;
     }
   } else {
     loginContainer.style.display = "none";
