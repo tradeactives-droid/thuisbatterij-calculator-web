@@ -1225,7 +1225,7 @@
       </div>
 
       <div class="user-actions">
-        <span id="user-welcome" style="font-weight:600; margin-right:8px;"></span>
+        <span id="user-welcome" style="font-weight:600; margin-right:4px;"></span>
         <span id="user-email"></span>
         <button id="btn-logout" class="btn-secondary">Uitloggen</button>
       </div>
@@ -4289,22 +4289,13 @@ sb.auth.getSession().then(async ({ data }) => {
       appView.style.display = "block";
 
       const emailEl = document.getElementById("user-email");
-      if (emailEl) {
-        emailEl.textContent = user.email;
-      }
-      // Haal voornaam op uit profiles tabel
+      if (emailEl) emailEl.textContent = user.email;
+
       const welcomeEl = document.getElementById("user-welcome");
       if (welcomeEl) {
         try {
-          const { data: profile } = await sb
-            .from("profiles")
-            .select("full_name")
-            .eq("id", user.id)
-            .single();
-          if (profile && profile.full_name) {
-            const voornaam = profile.full_name.split(" ")[0];
-            welcomeEl.textContent = `Welkom ${voornaam}`;
-          }
+          const { data: prof } = await sb.from("profiles").select("full_name").eq("id", user.id).single();
+          if (prof && prof.full_name) welcomeEl.textContent = `Welkom ${prof.full_name.split(" ")[0]} |`;
         } catch (_) {}
       }
       startSessionValidationLoop();
@@ -4485,23 +4476,14 @@ document.getElementById("btn-login").addEventListener("click", async () => {
     if (paywallEl) paywallEl.style.display = "none";
     appView.style.display = "block";
     const userEmailBanner = document.getElementById("user-email");
-    const welcomeElLogin = document.getElementById("user-welcome");
-    if (welcomeElLogin) {
+    if (userEmailBanner) userEmailBanner.textContent = data?.user?.email || email;
+
+    const welcomeBanner = document.getElementById("user-welcome");
+    if (welcomeBanner && data?.user?.id) {
       try {
-        const { data: profileLogin } = await sb
-          .from("profiles")
-          .select("full_name")
-          .eq("id", data?.user?.id)
-          .single();
-        if (profileLogin && profileLogin.full_name) {
-          const voornaamLogin = profileLogin.full_name.split(" ")[0];
-          welcomeElLogin.textContent = `Welkom ${voornaamLogin}`;
-        }
+        const { data: prof } = await sb.from("profiles").select("full_name").eq("id", data.user.id).single();
+        if (prof && prof.full_name) welcomeBanner.textContent = `Welkom ${prof.full_name.split(" ")[0]} |`;
       } catch (_) {}
-    }
-    if (userEmailBanner) {
-      userEmailBanner.textContent =
-        data?.user?.email || email;
     }
   } else {
     loginContainer.style.display = "none";
