@@ -4834,43 +4834,45 @@ async function laadProspects() {
 laadProspects();
 
 // Laad opgeslagen prospect als die er is
-const _savedInputs = sessionStorage.getItem("em_laden_inputs");
-const _savedResults = sessionStorage.getItem("em_laden_results");
-if (_savedInputs && _savedResults) {
-  try {
-    const inp = JSON.parse(_savedInputs);
-    const res = JSON.parse(_savedResults);
-    const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
-    set("annual-load", inp.annual_load_kwh);
-    set("annual-pv", inp.annual_pv_kwh);
-    set("annual-feedin", inp.annual_feedin_kwh);
-    set("tariff-type", inp.tariff_type);
-    set("country", inp.country);
-    set("household-profile", inp.household_profile);
-    set("home-during-day", inp.home_during_day);
-    set("has-heatpump", inp.has_heatpump);
-    set("has-ev", inp.has_ev);
-    set("E", inp.E);
-    set("P", inp.P);
-    set("battery-cost", inp.battery_cost);
-    set("battery-lifetime", inp.battery_lifetime);
-    set("p_enkel_imp", inp.p_enkel_imp);
-    set("p_enkel_exp", inp.p_enkel_exp);
-    set("p_dag", inp.p_dag);
-    set("p_nacht", inp.p_nacht);
-    set("p_exp_dn", inp.p_exp_dn);
-    set("p_dyn_imp", inp.p_dyn_imp);
-    set("p_export_dyn", inp.p_export_dyn);
-    set("fixed-cost", inp.vastrecht_year);
-    set("allow-grid-charge", inp.allow_grid_charge);
-    window.computedResult = res;
-    sessionStorage.removeItem("em_laden_inputs");
-    sessionStorage.removeItem("em_laden_results");
-    const _stap = parseInt(sessionStorage.getItem("em_laden_stap") || "1");
-    sessionStorage.removeItem("em_laden_stap");
-    activateStep(_stap);
-  } catch(_) {}
-}
+setTimeout(() => {
+  const _savedInputs = sessionStorage.getItem("em_laden_inputs");
+  const _savedResults = sessionStorage.getItem("em_laden_results");
+  if (_savedInputs && _savedResults) {
+    try {
+      const inp = JSON.parse(_savedInputs);
+      const res = JSON.parse(_savedResults);
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+      set("annual-load", inp.annual_load_kwh);
+      set("annual-pv", inp.annual_pv_kwh);
+      set("annual-feedin", inp.annual_feedin_kwh);
+      set("tariff-type", inp.tariff_type);
+      set("country", inp.country);
+      set("household-profile", inp.household_profile);
+      set("home-during-day", inp.home_during_day);
+      set("has-heatpump", inp.has_heatpump);
+      set("has-ev", inp.has_ev);
+      set("E", inp.E);
+      set("P", inp.P);
+      set("battery-cost", inp.battery_cost);
+      set("battery-lifetime", inp.battery_lifetime);
+      set("p_enkel_imp", inp.p_enkel_imp);
+      set("p_enkel_exp", inp.p_enkel_exp);
+      set("p_dag", inp.p_dag);
+      set("p_nacht", inp.p_nacht);
+      set("p_exp_dn", inp.p_exp_dn);
+      set("p_dyn_imp", inp.p_dyn_imp);
+      set("p_export_dyn", inp.p_export_dyn);
+      set("fixed-cost", inp.vastrecht_year);
+      set("allow-grid-charge", inp.allow_grid_charge);
+      window.computedResult = res;
+      sessionStorage.removeItem("em_laden_inputs");
+      sessionStorage.removeItem("em_laden_results");
+      const _stap = parseInt(sessionStorage.getItem("em_laden_stap") || "1");
+      sessionStorage.removeItem("em_laden_stap");
+      activateStep(_stap);
+    } catch(_) {}
+  }
+}, 300);
 
 </script>
 </body>
