@@ -4485,6 +4485,20 @@ document.getElementById("btn-login").addEventListener("click", async () => {
     if (paywallEl) paywallEl.style.display = "none";
     appView.style.display = "block";
     const userEmailBanner = document.getElementById("user-email");
+    const welcomeElLogin = document.getElementById("user-welcome");
+    if (welcomeElLogin) {
+      try {
+        const { data: profileLogin } = await sb
+          .from("profiles")
+          .select("full_name")
+          .eq("id", data?.user?.id)
+          .single();
+        if (profileLogin && profileLogin.full_name) {
+          const voornaamLogin = profileLogin.full_name.split(" ")[0];
+          welcomeElLogin.textContent = `Welkom ${voornaamLogin}`;
+        }
+      } catch (_) {}
+    }
     if (userEmailBanner) {
       userEmailBanner.textContent =
         data?.user?.email || email;
