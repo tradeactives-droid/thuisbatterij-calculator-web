@@ -90,6 +90,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: relative;
     }
     
     .top-header {
@@ -1224,8 +1225,11 @@
         <img src="/ecometric-logo.png" alt="EcoMetric logo" class="brand-logo">
       </div>
 
+      <div style="position:absolute; left:50%; transform:translateX(-50%); color:#ffffff; font-size:1.2rem; font-weight:600;">
+        <span id="user-welcome" style="font-weight:600; font-size:1.2rem; color:#ffffff; margin-right:4px;"></span>
+      </div>
+
       <div class="user-actions">
-        <span id="user-welcome" style="font-weight:600; margin-right:4px;"></span>
         <span id="user-email"></span>
         <button id="btn-logout" class="btn-secondary">Uitloggen</button>
       </div>
