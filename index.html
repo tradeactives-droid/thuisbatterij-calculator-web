@@ -4293,10 +4293,12 @@ sb.auth.getSession().then(async ({ data }) => {
 
       const welcomeEl = document.getElementById("user-welcome");
       if (welcomeEl) {
-        const naam = user?.user_metadata?.first_name
-          || user?.user_metadata?.full_name?.split(" ")[0]
-          || "";
-        if (naam) welcomeEl.textContent = `Welkom ${naam} |`;
+        console.log("user_metadata:", JSON.stringify(user?.user_metadata));
+        console.log("profiles query...");
+        const { data: prof } = await sb.from("profiles").select("full_name").eq("id", user.id).single();
+        console.log("profile:", JSON.stringify(prof));
+        const naam = prof?.full_name?.split(" ")[0] || user?.user_metadata?.first_name || "";
+        welcomeEl.textContent = naam ? `Welkom ${naam} |` : "";
       }
       startSessionValidationLoop();
     } else {
