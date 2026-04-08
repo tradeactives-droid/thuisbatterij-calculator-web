@@ -4293,10 +4293,10 @@ sb.auth.getSession().then(async ({ data }) => {
 
       const welcomeEl = document.getElementById("user-welcome");
       if (welcomeEl) {
-        try {
-          const { data: prof } = await sb.from("profiles").select("full_name").eq("id", user.id).single();
-          if (prof && prof.full_name) welcomeEl.textContent = `Welkom ${prof.full_name.split(" ")[0]} |`;
-        } catch (_) {}
+        const naam = user?.user_metadata?.first_name
+          || user?.user_metadata?.full_name?.split(" ")[0]
+          || "";
+        if (naam) welcomeEl.textContent = `Welkom ${naam} |`;
       }
       startSessionValidationLoop();
     } else {
@@ -4479,11 +4479,12 @@ document.getElementById("btn-login").addEventListener("click", async () => {
     if (userEmailBanner) userEmailBanner.textContent = data?.user?.email || email;
 
     const welcomeBanner = document.getElementById("user-welcome");
-    if (welcomeBanner && data?.user?.id) {
-      try {
-        const { data: prof } = await sb.from("profiles").select("full_name").eq("id", data.user.id).single();
-        if (prof && prof.full_name) welcomeBanner.textContent = `Welkom ${prof.full_name.split(" ")[0]} |`;
-      } catch (_) {}
+    if (welcomeBanner) {
+      const u = data?.user;
+      const naam = u?.user_metadata?.first_name
+        || u?.user_metadata?.full_name?.split(" ")[0]
+        || "";
+      if (naam) welcomeBanner.textContent = `Welkom ${naam} |`;
     }
   } else {
     loginContainer.style.display = "none";
