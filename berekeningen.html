@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Berekeningen · EcoMetric</title>
+  <link rel="icon" href="/ecometric-logo.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .header {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 0 2rem;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header img { height: 48px; }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid #475569;
+      color: #e2e8f0;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-secondary:hover { background: #334155; }
+    .btn-primary {
+      background: #f97316;
+      border: none;
+      color: #fff;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: #ea6c0a; }
+    .btn-danger {
+      background: transparent;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-danger:hover { background: #ef444422; }
+    .container {
+      max-width: 860px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .page-sub {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 2rem;
+    }
+    .prospect-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .prospect-naam {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .prospect-datum {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .prospect-acties {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .lijst {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .leeg {
+      color: #64748b;
+      font-size: 0.95rem;
+      padding: 1.5rem 0;
+    }
+    .terug-knop {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .terug-knop:hover { color: #fff; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <a href="/"><img src="/ecometric-logo.png" alt="EcoMetric"></a>
+  <div class="header-right">
+    <span id="user-email"></span>
+    <button class="btn-secondary" id="btn-logout">Uitloggen</button>
+  </div>
+</div>
+
+<div class="container">
+  <button class="terug-knop" onclick="window.location.href='/'">&#8592; Terug naar tool</button>
+  <div class="page-title">Opgeslagen berekeningen</div>
+  <div class="page-sub">Klik op "Laden" om een berekening te hervatten in de tool.</div>
+  <div class="lijst" id="prospects-lijst">
+    <p class="leeg">Laden...</p>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://sjnfzyvuhizpkziaxdtb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqbmZ6eXZ1aGl6cGt6aWF4ZHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwODIwNTIsImV4cCI6MjA4MTY1ODA1Mn0.2TpBDRjKSbdyOX8hh1qG9Y2RqyUBZMb6D0PJGZl-EfQ";
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  sb.auth.getSession().then(({ data }) => {
+    if (!data?.session) {
+      window.location.href = "/";
+      return;
+    }
+    const user = data.session.user;
+    const emailEl = document.getElementById("user-email");
+    if (emailEl) emailEl.textContent = user.email;
+    laadProspects(user.id);
+  });
+
+  document.getElementById("btn-logout").addEventListener("click", async () => {
+    await sb.auth.signOut();
+    window.location.href = "/";
+  });
+
+  async function laadProspects(userId) {
+    const lijst = document.getElementById("prospects-lijst");
+
+    const { data, error } = await sb
+      .from("calculations")
+      .select("id, prospect_naam, created_at, inputs, results")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      lijst.innerHTML = "<p class='leeg'>Nog geen opgeslagen berekeningen.</p>";
+      return;
+    }
+
+    lijst.innerHTML = data.map(c => `
+      <div class="prospect-card">
+        <div>
+          <div class="prospect-naam">${c.prospect_naam}</div>
+          <div class="prospect-datum">${new Date(c.created_at).toLocaleDateString("nl-NL", { day:"numeric", month:"long", year:"numeric" })}</div>
+        </div>
+        <div class="prospect-acties">
+          <button class="btn-primary btn-laden" data-id="${c.id}">Laden</button>
+          <button class="btn-danger btn-verwijderen" data-id="${c.id}">Verwijderen</button>
+        </div>
+      </div>
+    `).join("");
+
+    lijst.querySelectorAll(".btn-laden").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const calc = data.find(c => c.id === btn.dataset.id);
+        if (!calc) return;
+        sessionStorage.setItem("em_laden_inputs", JSON.stringify(calc.inputs));
+        sessionStorage.setItem("em_laden_results", JSON.stringify(calc.results));
+        window.location.href = "/";
+      });
+    });
+
+    lijst.querySelectorAll(".btn-verwijderen").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        if (!confirm(`Berekening verwijderen?`)) return;
+        await sb.from("calculations").delete().eq("id", btn.dataset.id);
+        laadProspects(userId);
+      });
+    });
+  }
+</script>
+</body>
+</html>
