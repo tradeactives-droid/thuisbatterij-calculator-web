@@ -1225,6 +1225,7 @@
       </div>
 
       <div class="user-actions">
+        <span id="user-welcome" style="font-weight:600; margin-right:8px;"></span>
         <span id="user-email"></span>
         <button id="btn-logout" class="btn-secondary">Uitloggen</button>
       </div>
@@ -4290,6 +4291,21 @@ sb.auth.getSession().then(async ({ data }) => {
       const emailEl = document.getElementById("user-email");
       if (emailEl) {
         emailEl.textContent = user.email;
+      }
+      // Haal voornaam op uit profiles tabel
+      const welcomeEl = document.getElementById("user-welcome");
+      if (welcomeEl) {
+        try {
+          const { data: profile } = await sb
+            .from("profiles")
+            .select("full_name")
+            .eq("id", user.id)
+            .single();
+          if (profile && profile.full_name) {
+            const voornaam = profile.full_name.split(" ")[0];
+            welcomeEl.textContent = `Welkom ${voornaam}`;
+          }
+        } catch (_) {}
       }
       startSessionValidationLoop();
     } else {
