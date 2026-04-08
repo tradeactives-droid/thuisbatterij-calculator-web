@@ -4360,7 +4360,12 @@ sb.auth.getSession().then(async ({ data }) => {
         sessionStorage.removeItem("em_laden_inputs");
         sessionStorage.removeItem("em_laden_results");
         sessionStorage.removeItem("em_laden_stap");
-        activateStep(parseInt(_lStap));
+        activateStep(6);
+        if (window.computedResult) {
+          const _tariff = document.getElementById("tariff-type")?.value || "enkel";
+          fillResults(window.computedResult, { tariff: _tariff });
+          highlightTariffMatrixMinimums(window.computedResult);
+        }
       }
     } else {
       loginContainer.style.display = "none";
