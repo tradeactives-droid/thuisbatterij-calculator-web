@@ -1241,6 +1241,8 @@
       </div>
 
       <div class="user-actions">
+        <span id="prospect-naam-header" style="color:#94a3b8; font-size:0.85rem;"></span>
+        <button id="btn-opslaan-header" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
         <span id="user-email"></span>
         <button id="btn-logout" class="btn-secondary">Uitloggen</button>
       </div>
@@ -4325,6 +4327,8 @@ sb.auth.getSession().then(async ({ data }) => {
       // Herstel geladen prospect stap
       const _lStap = sessionStorage.getItem("em_laden_stap");
       if (_lStap) {
+        window._geladen_prospect_naam = sessionStorage.getItem("em_laden_naam") || "";
+        sessionStorage.removeItem("em_laden_naam");
         const _savedInputs = sessionStorage.getItem("em_laden_inputs");
         const _savedResults = sessionStorage.getItem("em_laden_results");
         if (_savedInputs && _savedResults) {
@@ -4361,6 +4365,8 @@ sb.auth.getSession().then(async ({ data }) => {
         sessionStorage.removeItem("em_laden_results");
         sessionStorage.removeItem("em_laden_stap");
         activateStep(6);
+        const naamHeader = document.getElementById("prospect-naam-header");
+        if (naamHeader && window._geladen_prospect_naam) naamHeader.textContent = window._geladen_prospect_naam;
         if (window.computedResult) {
           const _tariff = document.getElementById("tariff-type")?.value || "enkel";
           fillResults(window.computedResult, { tariff: _tariff });
@@ -4743,6 +4749,9 @@ document.getElementById("btn-opslaan")?.addEventListener("click", () => {
   document.getElementById("prospect-naam-input").value = "";
   document.getElementById("opslaan-status").textContent = "";
 });
+document.getElementById("btn-opslaan-header")?.addEventListener("click", () => {
+  document.getElementById("btn-opslaan")?.click();
+});
 
 document.getElementById("btn-opslaan-annuleren")?.addEventListener("click", () => {
   document.getElementById("opslaan-modal").style.display = "none";
@@ -4796,6 +4805,8 @@ document.getElementById("btn-opslaan-bevestigen")?.addEventListener("click", asy
     status.textContent = "Opgeslagen!";
     setTimeout(() => {
       document.getElementById("opslaan-modal").style.display = "none";
+      const naamHeader = document.getElementById("prospect-naam-header");
+      if (naamHeader) naamHeader.textContent = naam;
       laadProspects();
     }, 800);
   }

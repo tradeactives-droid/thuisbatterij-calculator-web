@@ -8,16 +8,69 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --page-pad-x: clamp(16px, 3vw, 32px);
+      --header-extra-inset-x: 20px;
+    }
     body {
       font-family: 'Inter', sans-serif;
       background: #0f172a;
       color: #e2e8f0;
       min-height: 100vh;
     }
-    .top-header { background: #1e293b; border-bottom: 1px solid #334155; }
-    .header-inner { display:flex; align-items:center; justify-content:space-between; padding:0 2rem; height:70px; position:relative; }
-    .brand-logo { height:48px; }
-    .user-actions { display:flex; align-items:center; gap:1rem; color:#94a3b8; font-size:0.9rem; }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .brand-logo{
+      width: auto;
+      height: 118px;
+      max-height: 118px;
+      max-width: min(480px, 88vw);
+      object-fit: contain;
+      border-radius: 8px;
+      background: transparent;
+      background-color: transparent;
+    }
+    .header-inner {
+      max-width: 100%;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+    .top-header {
+      padding: 4px 0;
+      margin-bottom: 4px;
+    }
+    .top-header.header-full {
+      width: calc(100% + 2 * var(--page-pad-x));
+      max-width: none;
+      margin-left: calc(-1 * var(--page-pad-x));
+      margin-right: calc(-1 * var(--page-pad-x));
+      margin-bottom: 0;
+      box-sizing: border-box;
+      padding: 6px calc(var(--page-pad-x) + var(--header-extra-inset-x));
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid #94a3b8;
+      box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.07),
+        0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: #475569;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
     .btn-secondary {
       background: transparent;
       border: 1px solid #475569;
@@ -122,10 +175,12 @@
     <div class="brand">
       <img src="/ecometric-logo.png" alt="EcoMetric logo" class="brand-logo">
     </div>
-    <div style="position:absolute; left:50%; transform:translateX(-50%); color:#ffffff; font-size:1.8rem; font-weight:700; font-family:inherit; white-space:nowrap;">
-      <span id="user-welcome"></span>
+    <div style="position:absolute; left:50%; transform:translateX(-50%); color:#ffffff; font-size:1.8rem; font-weight:900; font-family:inherit; white-space:nowrap;">
+      <span id="user-welcome" style="font-weight:900; font-size:1.2rem; color:#ffffff; margin-right:4px;"></span>
     </div>
     <div class="user-actions">
+      <span id="prospect-naam-header" style="color:#94a3b8; font-size:0.85rem;"></span>
+      <button id="btn-opslaan-header" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
       <span id="user-email"></span>
       <button id="btn-logout" class="btn-secondary">Uitloggen</button>
     </div>
@@ -200,6 +255,7 @@
         if (!calc) return;
         sessionStorage.setItem("em_laden_inputs", JSON.stringify(calc.inputs));
         sessionStorage.setItem("em_laden_results", JSON.stringify(calc.results));
+        sessionStorage.setItem("em_laden_naam", calc.prospect_naam);
         sessionStorage.setItem("em_laden_stap", "6");
         window.location.href = "/";
       });
