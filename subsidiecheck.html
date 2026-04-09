@@ -12,9 +12,16 @@
 
     /* HEADER */
     .top-header { background: #0f172a; border-bottom: 1px solid #1e293b; }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 70px; position: relative; }
-    .brand-logo { height: 48px; }
-    .user-actions { display: flex; align-items: center; gap: 1rem; color: #94a3b8; font-size: 0.9rem; }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 calc(var(--page-pad-x, 2rem) + var(--header-extra-inset-x, 20px));
+      height: 72px;
+      position: relative;
+    }
+    .brand-logo { height: 54px; }
+    .user-actions { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; }
     .btn-secondary { background: transparent; border: 1px solid #475569; color: #e2e8f0; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
     .btn-secondary:hover { background: #334155; }
     .btn-primary { background: #f97316; border: none; color: #fff; padding: 0.75rem 2rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; width: 100%; margin-top: 1rem; }
