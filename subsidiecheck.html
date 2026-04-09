@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subsidie Check · EcoMetric</title>
+  <link rel="icon" href="/ecometric-logo.png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+    /* HEADER */
+    .top-header { background: #0f172a; border-bottom: 1px solid #1e293b; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 70px; position: relative; }
+    .brand-logo { height: 48px; }
+    .user-actions { display: flex; align-items: center; gap: 1rem; color: #94a3b8; font-size: 0.9rem; }
+    .btn-secondary { background: transparent; border: 1px solid #475569; color: #e2e8f0; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+    .btn-secondary:hover { background: #334155; }
+    .btn-primary { background: #f97316; border: none; color: #fff; padding: 0.75rem 2rem; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; width: 100%; margin-top: 1rem; }
+    .btn-primary:hover { background: #ea6c0a; }
+
+    /* CONTENT */
+    .container { max-width: 680px; margin: 2.5rem auto; padding: 0 1.5rem; }
+    .terug-knop { display: inline-flex; align-items: center; gap: 0.4rem; color: #94a3b8; font-size: 0.9rem; cursor: pointer; background: none; border: none; padding: 0; margin-bottom: 1.5rem; }
+    .terug-knop:hover { color: #fff; }
+
+    .wizard-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; }
+    .card-title { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
+    .card-sub { color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.4rem; }
+    .form-group select, .form-group input { width: 100%; padding: 0.6rem 0.75rem; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #e2e8f0; font-size: 0.95rem; }
+    .form-group select:focus, .form-group input:focus { outline: none; border-color: #f97316; }
+    .form-group .hint { font-size: 0.8rem; color: #64748b; margin-top: 0.3rem; }
+
+    /* RESULTATEN */
+    #resultaten { display: none; }
+    .resultaat-card { border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 1rem; }
+    .resultaat-card.groen { background: #052e16; border: 1px solid #16a34a; }
+    .resultaat-card.oranje { background: #1c1003; border: 1px solid #d97706; }
+    .resultaat-card.rood { background: #1c0505; border: 1px solid #dc2626; }
+    .resultaat-card.blauw { background: #0c1a2e; border: 1px solid #3b82f6; }
+    .resultaat-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .resultaat-titel { font-weight: 700; color: #fff; font-size: 1rem; margin-bottom: 0.25rem; }
+    .resultaat-tekst { color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; }
+    .resultaat-tekst a { color: #f97316; text-decoration: none; }
+    .resultaat-tekst a:hover { text-decoration: underline; }
+    .resultaat-bedrag { font-size: 1.1rem; font-weight: 700; color: #4ade80; margin-top: 0.4rem; }
+
+    .sectie-titel { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
+    .disclaimer { font-size: 0.8rem; color: #64748b; margin-top: 1.5rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<div class="top-header">
+  <div class="header-inner">
+    <div class="brand">
+      <a href="/"><img src="/ecometric-logo.png" alt="EcoMetric logo" class="brand-logo"></a>
+    </div>
+    <div style="position:absolute; left:50%; transform:translateX(-50%); color:#ffffff; font-size:1.8rem; font-weight:700; font-family:inherit; white-space:nowrap;">
+      <span id="user-welcome"></span>
+    </div>
+    <div class="user-actions">
+      <span id="user-email" style="color:#ffffff;"></span>
+      <button id="btn-logout" class="btn-secondary">Uitloggen</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <button class="terug-knop" onclick="window.location.href='/'">&#8592; Terug naar tool</button>
+
+  <div class="wizard-card" id="formulier-sectie">
+    <div class="card-title">Subsidie Check</div>
+    <div class="card-sub">Vul de gegevens van de klant in om te checken welke subsidies en regelingen van toepassing zijn.</div>
+
+    <div class="form-group">
+      <label>Postcode</label>
+      <input type="text" id="postcode" placeholder="bijv. 1234 AB" maxlength="7">
+      <div class="hint">Gebruikt voor doorverwijzing naar gemeentelijke regelingen.</div>
+    </div>
+
+    <div class="form-group">
+      <label>Provincie</label>
+      <select id="provincie">
+        <option value="">Kies een provincie</option>
+        <option value="drenthe">Drenthe</option>
+        <option value="flevoland">Flevoland</option>
+        <option value="friesland">Friesland</option>
+        <option value="gelderland">Gelderland</option>
+        <option value="groningen">Groningen</option>
+        <option value="limburg">Limburg</option>
+        <option value="noord-brabant">Noord-Brabant</option>
+        <option value="noord-holland">Noord-Holland</option>
+        <option value="overijssel">Overijssel</option>
+        <option value="utrecht">Utrecht</option>
+        <option value="zeeland">Zeeland</option>
+        <option value="zuid-holland">Zuid-Holland</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Woningsituatie</label>
+      <select id="woningsituatie">
+        <option value="">Kies een optie</option>
+        <option value="eigenaar">Woningeigenaar</option>
+        <option value="huurder">Huurder</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Zonnepanelen aanwezig?</label>
+      <select id="zonnepanelen">
+        <option value="">Kies een optie</option>
+        <option value="ja">Ja</option>
+        <option value="nee">Nee</option>
+        <option value="recent">Recent gekocht maar nog niet geïnstalleerd</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Batterijcapaciteit (kWh)</label>
+      <input type="number" id="capaciteit" placeholder="bijv. 10" min="1" max="100">
+      <div class="hint">De opslagcapaciteit van de te installeren thuisbatterij.</div>
+    </div>
+
+    <div class="form-group">
+      <label>Type energiecontract</label>
+      <select id="contract">
+        <option value="">Kies een optie</option>
+        <option value="dynamisch">Dynamisch</option>
+        <option value="variabel">Variabel</option>
+        <option value="vast">Vast</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Heeft de batterij een energiemanagementsysteem (EMS)?</label>
+      <select id="ems">
+        <option value="">Kies een optie</option>
+        <option value="ja">Ja</option>
+        <option value="nee">Nee of onbekend</option>
+      </select>
+      <div class="hint">Een EMS stuurt automatisch het laden en ontladen van de batterij op basis van energieprijzen.</div>
+    </div>
+
+    <div class="form-group">
+      <label>Geschatte investering batterij (€)</label>
+      <input type="number" id="investering" placeholder="bijv. 6000" min="0">
+      <div class="hint">Inclusief installatie, exclusief BTW.</div>
+    </div>
+
+    <button class="btn-primary" id="btn-check">Check subsidies</button>
+    <p id="check-status" style="color:#ef4444; font-size:0.85rem; margin-top:0.5rem;"></p>
+  </div>
+
+  <!-- RESULTATEN -->
+  <div id="resultaten">
+    <div class="sectie-titel">Subsidies en regelingen voor deze klant</div>
+    <div id="resultaten-lijst"></div>
+    <p class="disclaimer">Deze check is indicatief op basis van bekende regelingen per april 2026. Voorwaarden kunnen wijzigen. Raadpleeg altijd de officiële bronnen voor de meest actuele informatie.</p>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://sjnfzyvuhizpkziaxdtb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqbmZ6eXZ1aGl6cGt6aWF4ZHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwODIwNTIsImV4cCI6MjA4MTY1ODA1Mn0.2TpBDRjKSbdyOX8hh1qG9Y2RqyUBZMb6D0PJGZl-EfQ";
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  sb.auth.getSession().then(async ({ data }) => {
+    if (!data?.session) { window.location.href = "/"; return; }
+    const user = data.session.user;
+    document.getElementById("user-email").textContent = user.email;
+    const welcomeEl = document.getElementById("user-welcome");
+    if (welcomeEl) {
+      try {
+        const { data: prof } = await sb.from("profiles").select("full_name").eq("id", user.id).single();
+        if (prof?.full_name) welcomeEl.textContent = `Welkom ${prof.full_name.split(" ")[0]}.`;
+      } catch(_) {}
+    }
+  });
+
+  document.getElementById("btn-logout").addEventListener("click", async () => {
+    await sb.auth.signOut();
+    window.location.href = "/";
+  });
+
+  document.getElementById("btn-check").addEventListener("click", () => {
+    const status = document.getElementById("check-status");
+
+    const postcode = document.getElementById("postcode").value.trim();
+    const provincie = document.getElementById("provincie").value;
+    const woningsituatie = document.getElementById("woningsituatie").value;
+    const zonnepanelen = document.getElementById("zonnepanelen").value;
+    const capaciteit = parseFloat(document.getElementById("capaciteit").value);
+    const contract = document.getElementById("contract").value;
+    const ems = document.getElementById("ems").value;
+    const investering = parseFloat(document.getElementById("investering").value);
+
+    if (!provincie || !woningsituatie || !zonnepanelen || !capaciteit || !contract || !ems) {
+      status.textContent = "Vul alle verplichte velden in.";
+      return;
+    }
+    status.textContent = "";
+
+    const resultaten = [];
+
+    // =====================
+    // 1. FLEVOLAND SUBSIDIE
+    // =====================
+    if (provincie === "flevoland") {
+      const geldig = (zonnepanelen === "ja" || zonnepanelen === "recent") &&
+                     capaciteit >= 5 && capaciteit <= 20 &&
+                     woningsituatie === "eigenaar";
+      if (geldig) {
+        const subsidie = isFinite(investering) ? Math.min(1250, Math.max(0, Math.round(investering * 0.25))) : null;
+        resultaten.push({
+          kleur: "groen",
+          icon: "✅",
+          titel: "Flevoland Provinciale Subsidie",
+          tekst: "De klant komt in aanmerking voor 25% subsidie op de aanschafkosten van de thuisbatterij.",
+          bedrag: subsidie ? `Tot €${subsidie} subsidie (max. €1.250)` : "Tot 25% van aanschafkosten (max. €1.250)",
+          extra: "Geldig t/m 1 oktober 2027 of zolang het budget strekt. Aanvragen via de provincie Flevoland."
+        });
+      } else {
+        const redenen = [];
+        if (zonnepanelen === "nee") redenen.push("geen zonnepanelen");
+        if (capaciteit < 5 || capaciteit > 20) redenen.push("capaciteit buiten 5-20 kWh");
+        if (woningsituatie === "huurder") redenen.push("huurder (toestemming verhuurder vereist)");
+        resultaten.push({
+          kleur: "rood",
+          icon: "❌",
+          titel: "Flevoland Provinciale Subsidie",
+          tekst: `De klant komt niet in aanmerking: ${redenen.join(", ")}.`,
+          bedrag: null,
+          extra: null
+        });
+      }
+    } else {
+      resultaten.push({
+        kleur: "rood",
+        icon: "❌",
+        titel: "Flevoland Provinciale Subsidie",
+        tekst: "Niet van toepassing. Deze subsidie is alleen beschikbaar voor inwoners van Flevoland.",
+        bedrag: null,
+        extra: null
+      });
+    }
+
+    // =====================
+    // 2. BTW-TERUGGAVE
+    // =====================
+    if (contract === "dynamisch" && ems === "ja") {
+      const btwBedrag = isFinite(investering) ? Math.round(investering * 0.21) : null;
+      resultaten.push({
+        kleur: "groen",
+        icon: "✅",
+        titel: "BTW-teruggave (21%)",
+        tekst: "De klant voldoet aan de voorwaarden voor BTW-teruggave. Dynamisch contract + EMS aanwezig.",
+        bedrag: btwBedrag ? `Circa €${btwBedrag} terug` : "21% van aanschaf + installatie",
+        extra: "De klant meldt zich aan als BTW-ondernemer bij de Belastingdienst. Dit kan tot 5 jaar na aankoop."
+      });
+    } else if (contract !== "dynamisch" && ems === "ja") {
+      resultaten.push({
+        kleur: "oranje",
+        icon: "⚠️",
+        titel: "BTW-teruggave (21%) — mogelijk na contractwissel",
+        tekst: "De batterij heeft een EMS maar de klant heeft geen dynamisch contract. Bij overstap naar dynamisch tarief kan de klant alsnog BTW terugvragen.",
+        bedrag: isFinite(investering) ? `Potentieel €${Math.round(investering * 0.21)} bij dynamisch contract` : null,
+        extra: "Voorwaarden: dynamisch energiecontract, EMS aanwezig, stroom terugleveren aan energiemaatschappij."
+      });
+    } else {
+      resultaten.push({
+        kleur: "rood",
+        icon: "❌",
+        titel: "BTW-teruggave (21%)",
+        tekst: "De klant voldoet niet aan de voorwaarden. Vereist: dynamisch energiecontract én een EMS in de batterij.",
+        bedrag: null,
+        extra: null
+      });
+    }
+
+    // =====================
+    // 3. NATIONAAL WARMTEFONDS
+    // =====================
+    resultaten.push({
+      kleur: "groen",
+      icon: "✅",
+      titel: "Nationaal Warmtefonds — Energiebespaarlening",
+      tekst: "Altijd beschikbaar voor woningeigenaren. Gunstige lening tot €8.500 speciaal voor thuisbatterijen.",
+      bedrag: "0% rente bij inkomen onder €60.000 — tot 4% daarboven",
+      extra: "Aanvragen via nationaalwarmtefonds.nl. Geen subsidie maar een voordelige financiering."
+    });
+
+    // =====================
+    // 4. GEMEENTELIJKE REGELINGEN
+    // =====================
+    const postcodeLink = postcode
+      ? `https://www.verbeterjehuis.nl/energiesubsidiewijzer/?postcode=${postcode.replace(" ", "")}&maatregel=thuisbatterij`
+      : "https://www.verbeterjehuis.nl/energiesubsidiewijzer/";
+
+    resultaten.push({
+      kleur: "blauw",
+      icon: "🔍",
+      titel: "Gemeentelijke en lokale regelingen",
+      tekst: `Sommige gemeenten bieden eigen subsidies of leningen aan voor thuisbatterijen. Check de Energiesubsidiewijzer voor actuele regelingen in de gemeente van de klant.`,
+      link: { url: postcodeLink, label: "Open Energiesubsidiewijzer →" },
+      bedrag: null,
+      extra: null
+    });
+
+    // Toon resultaten
+    const lijst = document.getElementById("resultaten-lijst");
+    lijst.innerHTML = resultaten.map(r => `
+      <div class="resultaat-card ${r.kleur}">
+        <div class="resultaat-icon">${r.icon}</div>
+        <div style="flex:1;">
+          <div class="resultaat-titel">${r.titel}</div>
+          <div class="resultaat-tekst">${r.tekst}</div>
+          ${r.bedrag ? `<div class="resultaat-bedrag">${r.bedrag}</div>` : ""}
+          ${r.extra ? `<div class="resultaat-tekst" style="margin-top:0.4rem; color:#94a3b8;">${r.extra}</div>` : ""}
+          ${r.link ? `<div style="margin-top:0.5rem;"><a href="${r.link.url}" target="_blank">${r.link.label}</a></div>` : ""}
+        </div>
+      </div>
+    `).join("");
+
+    document.getElementById("resultaten").style.display = "block";
+    document.getElementById("resultaten").scrollIntoView({ behavior: "smooth" });
+  });
+</script>
+</body>
+</html>
