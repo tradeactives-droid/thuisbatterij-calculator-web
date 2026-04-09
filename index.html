@@ -1241,8 +1241,6 @@
       </div>
 
       <div class="user-actions">
-        <span id="prospect-naam-header" style="color:#94a3b8; font-size:0.85rem;"></span>
-        <button id="btn-opslaan-header" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
         <span id="user-email"></span>
         <button id="btn-logout" class="btn-secondary">Uitloggen</button>
       </div>
@@ -1276,6 +1274,10 @@
     op basis van uw <strong>jaarverbruik, jaaropwek</strong> en een realistisch verbruiksprofiel.
   </p>
 
+  <div id="opslaan-balk" style="display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; margin-bottom:1rem;">
+    <span id="prospect-naam-content" style="color:#94a3b8; font-size:0.85rem;"></span>
+    <button id="btn-opslaan-content" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
+  </div>
   <button class="btn-primary" id="to-step-0-next" style="font-size:1rem; padding:14px 24px;">
     Start berekening
   </button>
@@ -1525,6 +1527,10 @@
   <div id="profile-status" class="status">Vul jaarverbruik en jaaropwek in om door te gaan.</div>
 
   <br>
+  <div id="opslaan-balk" style="display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; margin-bottom:1rem;">
+    <span id="prospect-naam-content" style="color:#94a3b8; font-size:0.85rem;"></span>
+    <button id="btn-opslaan-content" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
+  </div>
   <button class="btn-primary" id="to-step-2">Volgende</button>
 </div>
 
@@ -1677,6 +1683,10 @@
   <div id="huishoud-status" class="status">Kies een huishoudprofiel om door te gaan.</div>
 
   <br>
+  <div id="opslaan-balk" style="display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; margin-bottom:1rem;">
+    <span id="prospect-naam-content" style="color:#94a3b8; font-size:0.85rem;"></span>
+    <button id="btn-opslaan-content" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
+  </div>
   <button class="btn-secondary" id="back-to-1">Vorige</button>
   <button class="btn-primary" id="to-step-3">Volgende</button>
 </div>
@@ -1825,6 +1835,10 @@
 
     </div> <!-- 👈 SLUIT .field (degradatie) -->
 
+  <div id="opslaan-balk" style="display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; margin-bottom:1rem;">
+    <span id="prospect-naam-content" style="color:#94a3b8; font-size:0.85rem;"></span>
+    <button id="btn-opslaan-content" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
+  </div>
   <button class="btn-secondary" id="back-to-2">Vorige</button>
   <button class="btn-primary" id="to-step-4">Volgende</button>
   </div>  
@@ -1917,6 +1931,10 @@
     Dynamische prijzen werden gesimuleerd op basis van historische marktdata (APX-profiel).
   </div>
 
+  <div id="opslaan-balk" style="display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; margin-bottom:1rem;">
+    <span id="prospect-naam-content" style="color:#94a3b8; font-size:0.85rem;"></span>
+    <button id="btn-opslaan-content" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
+  </div>
   <button class="btn-secondary" id="back-to-3">Vorige</button>
   <button class="btn-primary" id="to-step-5">Volgende</button>
 </div>
@@ -1945,6 +1963,10 @@
     <input id="tlv_monthly_fee" type="number" step="0.01" value="0">
   </div>
 
+  <div id="opslaan-balk" style="display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; margin-bottom:1rem;">
+    <span id="prospect-naam-content" style="color:#94a3b8; font-size:0.85rem;"></span>
+    <button id="btn-opslaan-content" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
+  </div>
   <button class="btn-secondary" id="back-to-4">Vorige</button>
   <button class="btn-primary" id="btn-compute">Berekenen</button>
   
@@ -2125,6 +2147,10 @@
     📄 Download PDF
   </button>
 
+  <div id="opslaan-balk" style="display:flex; align-items:center; justify-content:flex-end; gap:0.75rem; margin-bottom:1rem;">
+    <span id="prospect-naam-content" style="color:#94a3b8; font-size:0.85rem;"></span>
+    <button id="btn-opslaan-content" class="btn-primary" style="font-size:0.85rem; padding:0.4rem 1rem;">Opslaan</button>
+  </div>
   <button class="btn-primary" id="btn-open-analyse" style="margin-top:16px; width:100%;">
     Bekijk uitgebreide analyse
   </button>
@@ -4365,7 +4391,7 @@ sb.auth.getSession().then(async ({ data }) => {
         sessionStorage.removeItem("em_laden_results");
         sessionStorage.removeItem("em_laden_stap");
         activateStep(6);
-        const naamHeader = document.getElementById("prospect-naam-header");
+        const naamHeader = document.getElementById("prospect-naam-content");
         if (naamHeader && window._geladen_prospect_naam) naamHeader.textContent = window._geladen_prospect_naam;
         if (window.computedResult) {
           const _tariff = document.getElementById("tariff-type")?.value || "enkel";
@@ -4749,7 +4775,7 @@ document.getElementById("btn-opslaan")?.addEventListener("click", () => {
   document.getElementById("prospect-naam-input").value = "";
   document.getElementById("opslaan-status").textContent = "";
 });
-document.getElementById("btn-opslaan-header")?.addEventListener("click", () => {
+document.getElementById("btn-opslaan-content")?.addEventListener("click", () => {
   document.getElementById("btn-opslaan")?.click();
 });
 
@@ -4805,7 +4831,7 @@ document.getElementById("btn-opslaan-bevestigen")?.addEventListener("click", asy
     status.textContent = "Opgeslagen!";
     setTimeout(() => {
       document.getElementById("opslaan-modal").style.display = "none";
-      const naamHeader = document.getElementById("prospect-naam-header");
+      const naamHeader = document.getElementById("prospect-naam-content");
       if (naamHeader) naamHeader.textContent = naam;
       laadProspects();
     }, 800);
